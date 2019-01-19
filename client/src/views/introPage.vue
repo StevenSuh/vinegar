@@ -1,7 +1,7 @@
 <template>
   <div class="intro">
     <h1>this is the landing page!!!!!!!</h1>
-    <input type="text" id="roomName" value="somethingnotblank">
+    <input type="text" id="roomName" value="somethingnotblank"> <br>
     <button id="enterRoom">
         enter
     </button>
@@ -16,8 +16,6 @@ export default {
       let roomName = document.getElementById("roomName")
       button.addEventListener("click", ()=>{
           this.$router.push(`editor/${roomName.value}`)
-          
-
       })
   }
   

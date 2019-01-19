@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
+    <img alt="Vue logo" src="./assets/b.png">
    <!-- <HelloWorld msg="wadup coolman chat app"></HelloWorld>
    <editorTest></editorTest> -->
-   <router-link to="editor">Editor</router-link>
+   
    <router-view/>
   </div>
 </template>
