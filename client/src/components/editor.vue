@@ -164,11 +164,16 @@ export default {
        
     },
 
+    sockets: {
+      connect: function(){
+        console.log("asdf")
+      }
+    },
+
     data() {
         return {
             editor: null,
-            
-
+            webSocket: null
         }
     },
     mounted() {
@@ -195,6 +200,11 @@ export default {
         ]
 
         })
+      
+      
+      
+      
+
     },
     beforeDestroy() {
         this.editor.destroy()
@@ -214,6 +224,10 @@ export default {
 
 .menubar{
     text-align: left
+}
+
+.ProseMirror {
+  outline:none
 }
 
 
