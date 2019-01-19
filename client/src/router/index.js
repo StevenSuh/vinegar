@@ -19,10 +19,13 @@ export default new Router({
         component: editor
     },
     {
-        path: '',
-        name: "",
+        path: '/',
+        name: "intro",
         component: introPage
     },
-
+    {
+      path: '*',
+      redirect: '/',
+    }
   ]
 })

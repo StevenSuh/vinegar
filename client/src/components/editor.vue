@@ -165,9 +165,14 @@ export default {
     },
 
     sockets: {
-      connect: function(){
-        console.log("asdf")
-      }
+      connect: function(...args){
+        this.$socket.emit('joinRoom', {
+          room: this.$route.params.roomname,
+        });
+      },
+      onEditorUpdate: function (data) {
+        this.editor.setContent(data);
+      },
     },
 
     data() {
@@ -180,6 +185,15 @@ export default {
         this.editor = new Editor({
             content: '<p>This is just a boring paragraph</p>',
             autoFocus: true, 
+            onUpdate: (state) => {
+              const { roomname } = this.$route.params;
+              const htmlData = state.getHTML();
+
+              this.$socket.emit('onEditorUpdate', {
+                data: htmlData,
+                room: roomname,
+              });
+            },
             extensions: [
               new Blockquote(),
               new BulletList(),
