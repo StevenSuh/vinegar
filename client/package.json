@@ -10,7 +10,8 @@
   "dependencies": {
     "tiptap": "^1.7.0",
     "tiptap-extensions": "^1.7.0",
-    "vue": "^2.5.21"
+    "vue": "^2.5.21",
+    "vue-router": "^3.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.3.0",
