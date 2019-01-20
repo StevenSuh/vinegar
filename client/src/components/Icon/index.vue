@@ -1,12 +1,13 @@
 <template>
-  <div class="icon" :class="[`icon--${name}`, `icon--${size}`, { 'has-align-fix': fixAlign }]">
-      <img :src="`/icons/${name}.svg`"/>
+  <div
+    class="icon"
+    :class="[`icon--${name}`, `icon--${size}`, {'has-align-fix': fixAlign}]"
+  >
+    <img :src="`/icons/${name}.svg`" />
   </div>
 </template>
 
 <script>
-
-
 export default {
   props: {
     name: {},
@@ -20,9 +21,7 @@ export default {
       default: true,
     },
   },
-
-
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -32,8 +31,8 @@ export default {
   vertical-align: middle;
   width: 0.8rem;
   height: 0.8rem;
-  margin: 0 .3rem;
-  top: -.05rem;
+  margin: 0 0.3rem;
+  top: -0.05rem;
   fill: currentColor;
 
   // &.has-align-fix {
@@ -54,7 +53,6 @@ export default {
   &:last-child {
     margin-right: 0;
   }
-
 }
 
 // svg sprite
@@ -69,13 +67,8 @@ symbol {
     stroke: none;
   }
 
-  *[d="M0 0h24v24H0z"] {
+  *[d='M0 0h24v24H0z'] {
     display: none;
   }
 }
 </style>
-
-
-
-
-

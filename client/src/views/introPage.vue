@@ -1,25 +1,28 @@
 <template>
   <div class="intro">
     <h1>this is the landing page!!!!!!!</h1>
-    <input type="text" id="roomName" value="somethingnotblank"> <br>
-    <button id="enterRoom">
-        enter
-    </button>
+    <input type="text" id="roomName" value="somethingnotblank" /> <br />
+    <button id="enterRoom">enter</button>
+    <QuillEditor></QuillEditor>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'introPage',
-  mounted: function(){
-      let button = document.getElementById("enterRoom")
-      let roomName = document.getElementById("roomName")
-      button.addEventListener("click", ()=>{
-          this.$router.push(`editor/${roomName.value}`)
-      })
-  }
-  
-}
+  import QuillEditor from '@/components/quillEditor.vue';
+
+  export default {
+    name: 'introPage',
+    components: {
+      QuillEditor,
+    },
+    mounted: function() {
+      let button = document.getElementById('enterRoom');
+      let roomName = document.getElementById('roomName');
+      button.addEventListener('click', () => {
+        this.$router.push(`editor/${roomName.value}`);
+      });
+    },
+  };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

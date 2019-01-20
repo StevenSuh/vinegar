@@ -1,27 +1,27 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/b.png">
-   <!-- <HelloWorld msg="wadup coolman chat app"></HelloWorld>
-   <editorTest></editorTest> -->
-   
-   <router-view/>
+    <img alt="Vue logo" src="./assets/b.png" />
+    <!--
+      <HelloWorld msg="wadup coolman chat app"></HelloWorld>
+      <editorTest></editorTest>
+    -->
+
+    <router-view />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import editorTest from './components/editor.vue'
-
+import HelloWorld from './components/HelloWorld.vue';
+import editorTest from './components/editor.vue';
 
 export default {
   name: 'app',
   components: {
     HelloWorld,
 
-      editorTest
-
-  }
-}
+    editorTest,
+  },
+};
 </script>
 
 <style>

@@ -1,27 +1,26 @@
 <template>
-   <div class="editor">
+  <div class="editor">
     <editor-menu-bar :editor="editor">
-      <div class="menubar" slot-scope="{ commands, isActive }">
-
+      <div class="menubar" slot-scope="{commands, isActive}">
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.bold() }"
+          :class="{'is-active': isActive.bold()}"
           @click="commands.bold"
         >
-        <icon name="bold"></icon>
+          <icon name="bold"></icon>
         </button>
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.italic() }"
+          :class="{'is-active': isActive.italic()}"
           @click="commands.italic"
         >
-        <icon name="italic" />
+          <icon name="italic" />
         </button>
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.strike() }"
+          :class="{'is-active': isActive.strike()}"
           @click="commands.strike"
         >
           <icon name="strike" />
@@ -29,7 +28,7 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.underline() }"
+          :class="{'is-active': isActive.underline()}"
           @click="commands.underline"
         >
           <icon name="underline" />
@@ -37,7 +36,7 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.code() }"
+          :class="{'is-active': isActive.code()}"
           @click="commands.code"
         >
           <icon name="code" />
@@ -45,7 +44,7 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.paragraph() }"
+          :class="{'is-active': isActive.paragraph()}"
           @click="commands.paragraph"
         >
           <icon name="paragraph" />
@@ -53,31 +52,31 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 1 }) }"
-          @click="commands.heading({ level: 1 })"
+          :class="{'is-active': isActive.heading({level: 1})}"
+          @click="commands.heading({level: 1});"
         >
           H1
         </button>
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 2 }) }"
-          @click="commands.heading({ level: 2 })"
+          :class="{'is-active': isActive.heading({level: 2})}"
+          @click="commands.heading({level: 2});"
         >
           H2
         </button>
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.heading({ level: 3 }) }"
-          @click="commands.heading({ level: 3 })"
+          :class="{'is-active': isActive.heading({level: 3})}"
+          @click="commands.heading({level: 3});"
         >
           H3
         </button>
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.bullet_list() }"
+          :class="{'is-active': isActive.bullet_list()}"
           @click="commands.bullet_list"
         >
           <icon name="ul" />
@@ -85,7 +84,7 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.ordered_list() }"
+          :class="{'is-active': isActive.ordered_list()}"
           @click="commands.ordered_list"
         >
           <icon name="ol" />
@@ -93,7 +92,7 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.blockquote() }"
+          :class="{'is-active': isActive.blockquote()}"
           @click="commands.blockquote"
         >
           <icon name="quote" />
@@ -101,39 +100,23 @@
 
         <button
           class="menubar__button"
-          :class="{ 'is-active': isActive.code_block() }"
+          :class="{'is-active': isActive.code_block()}"
           @click="commands.code_block"
         >
           <icon name="code" />
         </button>
-
-        <button
-          class="menubar__button"
-          @click="commands.undo"
-        >
-          <icon name="undo" />
-        </button>
-
-        <button
-          class="menubar__button"
-          @click="commands.redo"
-        >
-          <icon name="redo" />
-        </button>
-
       </div>
     </editor-menu-bar>
-    <br>
+    <br />
     <editor-content class="editor__content" :editor="editor" />
-  </div> 
-
-    
+  </div>
 </template>
 
 <script>
 // Import the editor
-import Icon from '@/components/Icon'
-import { Editor, EditorContent, EditorMenuBar} from 'tiptap'
+import Icon from '@/components/Icon';
+import { EditorState } from 'prosemirror-state';
+import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
 import {
   Blockquote,
   CodeBlock,
@@ -151,100 +134,98 @@ import {
   Strike,
   Underline,
   History,
-} from 'tiptap-extensions'
+} from 'tiptap-extensions';
 
 export default {
-    name: "editorTest",
+  name: 'editorTest',
 
-    components: {
-        EditorContent,
-        EditorMenuBar,
-        Icon
-  
-       
+  components: {
+    EditorContent,
+    EditorMenuBar,
+    Icon,
+  },
+
+  sockets: {
+    connect: function(...args) {
+      this.$socket.emit('joinRoom', {
+        room: this.$route.params.roomname,
+      });
     },
+    onEditorUpdate: function(data) {
+      this.editor.setContent(data);
+    },
+  },
 
-    sockets: {
-      connect: function(...args){
-        this.$socket.emit('joinRoom', {
+  data() {
+    return {
+      editor: null,
+      webSocket: null,
+    };
+  },
+  mounted() {
+    this.editor = new Editor({
+      content: '<p>This is just a boring paragraph</p>',
+      autoFocus: true,
+      onUpdate: state => {
+        this.$socket.emit('onEditorUpdate', {
+          data: state.getHTML(),
           room: this.$route.params.roomname,
         });
       },
-      onEditorUpdate: function (data) {
-        this.editor.setContent(data);
-      },
-    },
-
-    data() {
-        return {
-            editor: null,
-            webSocket: null
-        }
-    },
-    mounted() {
-        this.editor = new Editor({
-            content: '<p>This is just a boring paragraph</p>',
-            autoFocus: true, 
-            onUpdate: (state) => {
-              const { roomname } = this.$route.params;
-              const htmlData = state.getHTML();
-
-              this.$socket.emit('onEditorUpdate', {
-                data: htmlData,
-                room: roomname,
-              });
-            },
-            extensions: [
-              new Blockquote(),
-              new BulletList(),
-              new CodeBlock(),
-              new HardBreak(),
-              new Heading({ levels: [1, 2, 3] }),
-              new ListItem(),
-              new OrderedList(),
-              new TodoItem(),
-              new TodoList(),
-              new Bold(),
-              new Code(),
-              new Italic(),
-              new Link(),
-              new Strike(),
-              new Underline(),
-              new History(),
-        ]
-
-        })
-      
-      
-      
-      
-
-    },
-    beforeDestroy() {
-        this.editor.destroy()
-    },
-}
+      extensions: [
+        new Blockquote(),
+        new BulletList(),
+        new CodeBlock(),
+        new HardBreak(),
+        new Heading({levels: [1, 2, 3]}),
+        new ListItem(),
+        new OrderedList(),
+        new TodoItem(),
+        new TodoList(),
+        new Bold(),
+        new Code(),
+        new Italic(),
+        new Link(),
+        new Strike(),
+        new Underline(),
+        new History(),
+      ],
+    });
+  },
+  beforeDestroy() {
+    this.editor.destroy();
+  },
+};
 </script>
 
 <style>
-.editor{
-    outline: none;
-    height: 50vh;
-    width: 50vw;
-    margin: auto;
-    text-align: left;
-    overflow: scroll;
+.editor {
+  outline: none;
+  height: 50vh;
+  width: 50vw;
+  margin: auto;
+  text-align: left;
+  overflow: scroll;
 }
 
-.menubar{
-    text-align: left
+.menubar {
+  text-align: left;
 }
 
 .ProseMirror {
-  outline:none
+  outline: none;
 }
 
+.ProseMirror * {
+  animation: fadeColor 0.2s forwards;
+}
 
-
-
+@keyframes fadeColor {
+  from {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
 </style>
