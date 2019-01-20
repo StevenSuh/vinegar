@@ -1,14 +1,18 @@
-const { Pool } = require('pg');
 const Sequelize = require('sequelize');
+const {
+  pgDbName,
+  pgUsername,
+  pgPassword,
+} = require('../config');
 
 let dbClient = null;
 
 module.exports = async () => {
   if (!dbClient) {
     dbClient = new Sequelize(
-      'postgres', // database
-      'postgres', // username
-      'postgres', // password
+      pgDbName, // database
+      pgUsername, // username
+      pgPassword, // password
       {
         dialect: 'postgres',
         host: 'localhost',
