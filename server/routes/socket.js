@@ -12,8 +12,16 @@ module.exports = (app) => {
       }
     });
   
-    socket.on('onEditorUpdate', function({ data, room }) {
-      socket.broadcast.to(room).emit('onEditorUpdate', data);
+    socket.on('onEditorTextUpdate', function({ data, room }) {
+      socket.broadcast.to(room).emit('onEditorTextUpdate', data);
+    });
+
+    socket.on('onEditorSelectionUpdate', function({ data, name, room, userId }) {
+      socket.broadcast.to(room).emit('onEditorSelectionUpdate', {
+        data,
+        name,
+        userId,
+      });
     });
   });
 
