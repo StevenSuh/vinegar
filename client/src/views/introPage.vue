@@ -3,24 +3,40 @@
     <h1>this is the landing page!!!!!!!</h1>
     <input type="text" id="roomName" value="somethingnotblank" /> <br />
     <button id="enterRoom">enter</button>
-    <QuillEditor></QuillEditor>
+    <button id="oauth">
+      <a v-if="signinUrlLoaded" :href="signinUrl">Sign In</a>
+      <span v-else>...</span>
+    </button>
   </div>
 </template>
 
 <script>
-  import QuillEditor from '@/components/quillEditor.vue';
+  import { getSigninUrl } from '../services/api';
 
   export default {
-    name: 'introPage',
-    components: {
-      QuillEditor,
+    data() {
+      return {
+        signinUrlLoaded: false,
+        signinUrl: '',
+      };
     },
-    mounted: function() {
+    name: 'introPage',
+    methods: {
+      async onInit() {
+        const res = await getSigninUrl();
+
+        this.signinUrl = res.signinUrl;
+        this.signinUrlLoaded = true;
+      },
+    },
+    mounted() {
       let button = document.getElementById('enterRoom');
       let roomName = document.getElementById('roomName');
       button.addEventListener('click', () => {
         this.$router.push(`editor/${roomName.value}`);
       });
+
+      this.onInit();
     },
   };
 </script>
