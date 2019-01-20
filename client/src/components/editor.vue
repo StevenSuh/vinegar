@@ -1,231 +1,135 @@
 <template>
-  <div class="editor">
-    <editor-menu-bar :editor="editor">
-      <div class="menubar" slot-scope="{commands, isActive}">
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.bold()}"
-          @click="commands.bold"
-        >
-          <icon name="bold"></icon>
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.italic()}"
-          @click="commands.italic"
-        >
-          <icon name="italic" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.strike()}"
-          @click="commands.strike"
-        >
-          <icon name="strike" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.underline()}"
-          @click="commands.underline"
-        >
-          <icon name="underline" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.code()}"
-          @click="commands.code"
-        >
-          <icon name="code" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.paragraph()}"
-          @click="commands.paragraph"
-        >
-          <icon name="paragraph" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.heading({level: 1})}"
-          @click="commands.heading({level: 1});"
-        >
-          H1
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.heading({level: 2})}"
-          @click="commands.heading({level: 2});"
-        >
-          H2
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.heading({level: 3})}"
-          @click="commands.heading({level: 3});"
-        >
-          H3
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.bullet_list()}"
-          @click="commands.bullet_list"
-        >
-          <icon name="ul" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.ordered_list()}"
-          @click="commands.ordered_list"
-        >
-          <icon name="ol" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.blockquote()}"
-          @click="commands.blockquote"
-        >
-          <icon name="quote" />
-        </button>
-
-        <button
-          class="menubar__button"
-          :class="{'is-active': isActive.code_block()}"
-          @click="commands.code_block"
-        >
-          <icon name="code" />
-        </button>
-      </div>
-    </editor-menu-bar>
-    <br />
-    <editor-content class="editor__content" :editor="editor" />
-  </div>
+  <div
+    ref="editor"
+    v-html="value"
+    :id="hello"
+  ></div>
 </template>
 
 <script>
-// Import the editor
-import Icon from '@/components/Icon';
-import { EditorState } from 'prosemirror-state';
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
-import {
-  Blockquote,
-  CodeBlock,
-  HardBreak,
-  Heading,
-  OrderedList,
-  BulletList,
-  ListItem,
-  TodoItem,
-  TodoList,
-  Bold,
-  Code,
-  Italic,
-  Link,
-  Strike,
-  Underline,
-  History,
-} from 'tiptap-extensions';
+  import Quill from 'quill';
+  import { Range } from 'quill/core/selection';
+  import QuillCursors from 'quill-cursors';
 
-export default {
-  name: 'editorTest',
+  import 'quill/dist/quill.core.css'
+  import 'quill/dist/quill.snow.css'
 
-  components: {
-    EditorContent,
-    EditorMenuBar,
-    Icon,
-  },
+  import 'quill-cursors/dist/quill-cursors.css';
 
-  sockets: {
-    connect: function(...args) {
-      this.$socket.emit('joinRoom', {
-        room: this.$route.params.roomname,
+  Quill.register('modules/cursors', QuillCursors);
+
+  export default {
+    props: {
+      name: {
+        type: String,
+        default: 'Name',
+      },
+      userId: {
+        type: String,
+        default: 'userId',
+      },
+      value: {
+        type: String,
+        default: 'Hello world!',
+      },
+    },
+    data() {
+      return {
+        editor: null,
+        webSocket: null,
+        hello: 'world',
+      };
+    },
+    methods: {
+      onCheckBlur: function() {
+        if (!this.editor.hasFocus()) {
+          this.$socket.emit('onEditorSelectionRemove', {
+            room: this.$route.params.roomname,
+            userId: this.userId,
+          });
+          this.hello = 'bye';
+        }
+      },
+      selectionUpdate(range, oldRange, source) {
+        if (source === 'user' && range) {
+          this.$socket.emit('onEditorSelectionUpdate', {
+            data: range,
+            name: this.name,
+            room: this.$route.params.roomname,
+            userId: this.userId,
+          });
+        }
+      },
+      textUpdate(delta, oldDelta, source) {
+        if (source === 'user') {
+          this.$socket.emit('onEditorTextUpdate', {
+            data: delta,
+            room: this.$route.params.roomname,
+          });
+        }
+        // this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML : '');
+      }
+    },
+    mounted() {
+      this.editor = new Quill(this.$refs.editor, {
+        modules: {
+          cursors: true,
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike', 'code'],        // toggled buttons
+            ['blockquote', 'code-block'],
+
+            [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'direction': 'rtl' }],                         // text direction
+
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+
+            ['clean']                                         // remove formatting button
+          ],
+        },
+        theme: 'snow',
       });
-    },
-    onEditorUpdate: function(data) {
-      this.editor.setContent(data);
-    },
-  },
 
-  data() {
-    return {
-      editor: null,
-      webSocket: null,
-    };
-  },
-  mounted() {
-    this.editor = new Editor({
-      content: '<p>This is just a boring paragraph</p>',
-      autoFocus: true,
-      onUpdate: state => {
-        this.$socket.emit('onEditorUpdate', {
-          data: state.getHTML(),
+      this.editor.root.innerHTML = this.value;
+
+      this.editor.on('selection-change', this.selectionUpdate);
+      this.editor.on('text-change', this.textUpdate);
+
+      // add checkBlur event to window
+      window.addEventListener('click', this.onCheckBlur);
+    },
+    sockets: {
+      connect: function () {
+        this.$socket.emit('joinRoom', {
           room: this.$route.params.roomname,
         });
       },
-      extensions: [
-        new Blockquote(),
-        new BulletList(),
-        new CodeBlock(),
-        new HardBreak(),
-        new Heading({levels: [1, 2, 3]}),
-        new ListItem(),
-        new OrderedList(),
-        new TodoItem(),
-        new TodoList(),
-        new Bold(),
-        new Code(),
-        new Italic(),
-        new Link(),
-        new Strike(),
-        new Underline(),
-        new History(),
-      ],
-    });
-  },
-  beforeDestroy() {
-    this.editor.destroy();
-  },
-};
+      onEditorSelectionUpdate: function({ data, name, userId }) {
+        const range = new Range(data.index, data.length);
+
+        this.editor.getModule('cursors').setCursor(
+          userId,
+          range,
+          name,
+          'red',
+        );
+      },
+      onEditorSelectionRemove: function({ userId }) {
+        this.editor.getModule('cursors').removeCursor(userId);
+      },
+      onEditorTextUpdate: function(data) {
+        this.editor.updateContents(data);
+      },
+    },
+    beforeDestroy() {
+      window.removeEventListener('blur', this.onCheckBlur);
+    },
+  }
 </script>
-
-<style>
-.editor {
-  outline: none;
-  height: 50vh;
-  width: 50vw;
-  margin: auto;
-  text-align: left;
-  overflow: scroll;
-}
-
-.menubar {
-  text-align: left;
-}
-
-.ProseMirror {
-  outline: none;
-}
-
-.ProseMirror * {
-  animation: fadeColor 0.2s forwards;
-}
-
-@keyframes fadeColor {
-  from {
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-  to {
-    background-color: rgba(0, 0, 0, 0);
-  }
-}
-</style>

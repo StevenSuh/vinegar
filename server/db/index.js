@@ -16,15 +16,19 @@ module.exports = async () => {
       },
     );
 
-    const Users = require('./UsersModel')(dbClient);
+    const Intervals = require('./IntervalsModel')(dbClient);
     const Rooms = require('./RoomsModel')(dbClient);
+    const Users = require('./UsersModel')(dbClient);
 
     // associations
+    Intervals.belongsTo(Users);
+    Intervals.belongsTo(Rooms);
     Users.belongsTo(Rooms);
 
     // table creation if non-existent
-    await Users.sync({ force: false });
+    await Intervals.sync({ force: false });
     await Rooms.sync({ force: false });
+    await Users.sync({ force: false });
   }
 
   return dbClient;

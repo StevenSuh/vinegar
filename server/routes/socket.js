@@ -23,6 +23,10 @@ module.exports = (app) => {
         userId,
       });
     });
+
+    socket.on('onEditorSelectionRemove', function({ room, userId }) {
+      socket.broadcast.to(room).emit('onEditorSelectionRemove', { userId });
+    });
   });
 
   return httpServer;

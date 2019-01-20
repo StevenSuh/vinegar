@@ -1,28 +1,33 @@
+const Sequelize = require('sequelize');
+
 module.exports = (dbClient) => {
-  const Users = dbClient.define('users', {
+  const Intervals = dbClient.define('intervals', {
     active: {
       allowNull: false,
       defaultValue: false,
       type: Sequelize.BOOLEAN,
-    },
-    gid: {
-      allowNull: false,
-      type: Sequelize.STRING,
     },
     id: {
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    name: {
+    downvote: {
       allowNull: false,
-      type: Sequelize.STRING,
+      defaultValue: 0,
+      type: Sequelize.INTEGER,
     },
+    upvote: {
+      allowNull: false,
+      defaultValue: 0,
+      type: Sequelize.INTEGER,
+    },
+    // userId,
     // roomId,
   }, {
     freezeTableName: true,
     timestamps: true,
   });
 
-  return Users;
+  return Intervals;
 };
