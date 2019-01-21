@@ -31,7 +31,12 @@ export default {
   text-align: center;
 }
 
-.button.larger > * {
+.button.medium > * {
+  font-size: 20px;
+  padding: 14px 36px;
+}
+
+.button.large > * {
   font-size: 22px;
   padding: 16px 42px;
 }
@@ -53,5 +58,15 @@ export default {
 
 .minimal:hover > * {
   color: var(--main-font-color);
+}
+
+@media (max-width: 416px) {
+  .button.medium > * {
+    font-size: 16px;
+  }
+
+  .button.large > * {
+    font-size: 16px;
+  }
 }
 </style>

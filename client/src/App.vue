@@ -10,6 +10,19 @@ export default {
 
 <style>
 :root {
+  /*
+  reference
+
+  @custom-media --xx-small-viewport only screen and (max-width: 320px);
+  @custom-media --x-small-viewport only screen and (max-width: 416px);
+  @custom-media --small-viewport only screen and (min-width: 416px) and (max-width: 580px);
+  @custom-media --medium-viewport only screen and (min-width: 580px) and (max-width: 864px);
+  @custom-media --large-viewport only screen and (min-width: 864px) and (max-width: 1096px);
+  @custom-media --x-large-viewport only screen and (min-width: 1096px);
+  @custom-media --phone (--x-small-viewport), (--small-viewport);
+  @custom-media --desktop (--large-viewport), (--x-large-viewport);
+  */
+
   --main-bg-color: #f88379;
   --main-bg-color-hover: #ee7d74;
   --gray-bg-color: #f7f7f7;
@@ -17,6 +30,7 @@ export default {
 
   --main-font-color: #f88379;
   --main-font-color-hover: #ee7d74;
+  --main-font-color-light: #FEF3F2;
   --gray-font-color: #bac1c9;
   --black-font-color: #444444;
   --white-font-color: #ffffff;
@@ -52,6 +66,10 @@ a {
   text-decoration: none;
 }
 
+button {
+  background-color: transparent;
+}
+
 a,
 button,
 a:focus,
@@ -81,6 +99,20 @@ button:focus {
 .container {
   margin: auto;
   width: 80%;
+}
+
+@media (max-width: 416px) {
+  .container {
+    width: 90%;
+  }
+}
+
+.hover {
+  transition: opacity var(--transition-duration) var(--transition-curve);
+}
+
+.hover:hover {
+  opacity: 0.5;
 }
 
 /* margin */
