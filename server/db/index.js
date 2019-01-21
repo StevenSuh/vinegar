@@ -16,6 +16,7 @@ module.exports = async () => {
       {
         dialect: 'postgres',
         host: 'localhost',
+        operatorsAliases: false,
         port: 5432,
       },
     );
@@ -30,9 +31,10 @@ module.exports = async () => {
     Users.belongsTo(Rooms);
 
     // table creation if non-existent
-    await Intervals.sync({ force: false });
-    await Rooms.sync({ force: false });
-    await Users.sync({ force: false });
+    // note: order of operation depends on table associations
+    await Rooms.sync({ alter:true, force: false });
+    await Users.sync({ alter:true, force: false });
+    await Intervals.sync({ alter:true, force: false });
   }
 
   return dbClient;

@@ -1,4 +1,4 @@
-import Sequelize from 'sequelize';
+const Sequelize = require('sequelize');
 
 let Users = null;
 
@@ -10,9 +10,14 @@ module.exports = (dbClient) => {
         defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
+      email: {
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
       gid: {
         allowNull: false,
         type: Sequelize.STRING,
+        unique: true,
       },
       id: {
         autoIncrement: true,
@@ -21,6 +26,15 @@ module.exports = (dbClient) => {
       },
       name: {
         allowNull: false,
+        defaultValue: '',
+        type: Sequelize.STRING,
+      },
+      phone: {
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
+      sessionId: {
+        allowNull: true,
         type: Sequelize.STRING,
       },
       // roomId,

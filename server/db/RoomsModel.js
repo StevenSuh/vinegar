@@ -22,7 +22,7 @@ module.exports = (dbClient) => {
       text: {
         allowNull: false,
         defaultValue: '',
-        type: Sequelize.TEXT('long'),
+        type: Sequelize.TEXT,
       },
     }, {
       freezeTableName: true,

@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 let Intervals = null;
 
 module.exports = (dbClient) => {
-  if (Intervals) {
+  if (!Intervals) {
     Intervals = dbClient.define('intervals', {
       active: {
         allowNull: false,
@@ -32,6 +32,5 @@ module.exports = (dbClient) => {
       timestamps: true,
     });
   }
-  
   return Intervals;
 };

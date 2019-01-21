@@ -1,12 +1,20 @@
+const uuidv4 = require('uuid/v4');
+
 const {
   urlGoogle,
   getGoogleAccountFromCode,
 } = require('../auth-utils');
 
+const dbClient = require('../db')();
+const Users = require('../db/UsersModel')(dbClient);
+
 module.exports = (app) => {
   // authentication
-  app.get('/api/signin', (_req, res) => {
-    res.json({ signinUrl: urlGoogle() });
+  app.get('/api/signin', (req, res) => {
+    if (req.cookies.sessionId) {
+      return res.json({ signinUrl: '/find' });
+    }
+    return res.json({ signinUrl: urlGoogle() });
   });
 
   app.get('/callback', async (req, res) => {
@@ -15,21 +23,25 @@ module.exports = (app) => {
     const {
       gid,
       email,
-      tokens: {
-        access_token,
-        expiry_date,
-      },
+      tokens: { expiry_date },
     } = await getGoogleAccountFromCode(code);
 
-    // create user on db
-    // fjldsjfadls;jflds
+    const sessionId = uuidv4();
 
-    res.cookie('access_token', access_token, {
+    // create or update user on db
+    Users.upsert({
+      active: false,
+      email,
+      gid,
+      sessionId,
+    });
+
+    res.cookie('sessionId', sessionId, {
       expires: new Date(expiry_date),
       httpOnly: true,
       secure: false, // TODO: change to true
     });
 
-    res.redirect('http://localhost:8080/#/editor');
+    res.redirect('http://localhost:8080/find');
   });
 };

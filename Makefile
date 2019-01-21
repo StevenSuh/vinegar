@@ -1,5 +1,5 @@
 serve:
-	cd client && npm run serve &>/dev/null & cd server && npm run serve
+	cd client && npm run serve >/dev/null & cd server && npm run serve 
 install:
 	cd client && yarn & cd server && yarn
 prettier:
