@@ -6,10 +6,10 @@
           <nav class="navbar">
             <h2 class="nav-header">Vinegar</h2>
             <div class="nav-items">
-              <button class="marginRight small" ref="about" type="minimal">
+              <ButtonComponent class="marginRight small" ref="about" type="minimal">
                 <p>About</p>
-              </button>
-              <button ref="oauth" type="primary">
+              </ButtonComponent>
+              <ButtonComponent ref="oauth" type="primary">
                 <a
                   :href="signinUrl"
                   v-if="signinUrlLoaded && signinUrl !== '/find'"
@@ -28,7 +28,7 @@
                     <Loader color="white" />
                   </span>
                 </span>
-              </button>
+              </ButtonComponent>
             </div>
           </nav>
         </div>
@@ -39,9 +39,9 @@
             <p class="content-p marginTop marginBottom">
               Take notes in a distributed manner.
             </p>
-            <button type="primary" size="larger">
+            <ButtonComponent type="primary" size="larger">
               <router-link tag="a" to="/find"> Join Your Class </router-link>
-            </button>
+            </ButtonComponent>
           </div>
           <img class="right" :src="rightAsset" alt="landing asset right" />
         </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import Button from '@/components/button.vue';
+import ButtonComponent from '@/components/button.vue';
 import Loader from '@/components/loader.vue';
 import {getSigninUrl} from '@/services/api';
 
@@ -65,7 +65,7 @@ import rightAsset from '@/assets/landing_right.png';
 
 export default {
   components: {
-    Button,
+    ButtonComponent,
     Loader,
   },
   data() {
