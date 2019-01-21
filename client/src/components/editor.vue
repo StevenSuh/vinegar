@@ -1,18 +1,14 @@
 <template>
-  <div
-    ref="editor"
-    v-html="value"
-    :id="hello"
-  ></div>
+  <div ref="editor" v-html="value" :id="hello"></div>
 </template>
 
 <script>
 import Quill from 'quill';
-import { Range } from 'quill/core/selection';
+import {Range} from 'quill/core/selection';
 import QuillCursors from 'quill-cursors';
 
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
 
 import 'quill-cursors/dist/quill-cursors.css';
 
@@ -68,30 +64,30 @@ export default {
         });
       }
       // this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML : '');
-    }
+    },
   },
   mounted() {
     this.editor = new Quill(this.$refs.editor, {
       modules: {
         cursors: true,
         toolbar: [
-          ['bold', 'italic', 'underline', 'strike', 'code'],        // toggled buttons
+          ['bold', 'italic', 'underline', 'strike', 'code'], // toggled buttons
           ['blockquote', 'code-block'],
 
-          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-          [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-          [{ 'direction': 'rtl' }],                         // text direction
+          [{header: 1}, {header: 2}], // custom button values
+          [{list: 'ordered'}, {list: 'bullet'}],
+          [{script: 'sub'}, {script: 'super'}], // superscript/subscript
+          [{indent: '-1'}, {indent: '+1'}], // outdent/indent
+          [{direction: 'rtl'}], // text direction
 
-          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{size: ['small', false, 'large', 'huge']}], // custom dropdown
+          [{header: [1, 2, 3, 4, 5, 6, false]}],
 
-          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-          [{ 'font': [] }],
-          [{ 'align': [] }],
+          [{color: []}, {background: []}], // dropdown with defaults from theme
+          [{font: []}],
+          [{align: []}],
 
-          ['clean']                                         // remove formatting button
+          ['clean'], // remove formatting button
         ],
       },
       theme: 'snow',
@@ -106,22 +102,17 @@ export default {
     window.addEventListener('click', this.onCheckBlur);
   },
   sockets: {
-    connect: function () {
+    connect: function() {
       this.$socket.emit('joinRoom', {
         room: this.$route.params.roomname,
       });
     },
-    onEditorSelectionUpdate: function({ data, name, userId }) {
+    onEditorSelectionUpdate: function({data, name, userId}) {
       const range = new Range(data.index, data.length);
 
-      this.editor.getModule('cursors').setCursor(
-        userId,
-        range,
-        name,
-        'red',
-      );
+      this.editor.getModule('cursors').setCursor(userId, range, name, 'red');
     },
-    onEditorSelectionRemove: function({ userId }) {
+    onEditorSelectionRemove: function({userId}) {
       this.editor.getModule('cursors').removeCursor(userId);
     },
     onEditorTextUpdate: function(data) {
@@ -131,5 +122,5 @@ export default {
   beforeDestroy() {
     window.removeEventListener('blur', this.onCheckBlur);
   },
-}
+};
 </script>

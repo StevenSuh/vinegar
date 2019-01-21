@@ -1,10 +1,5 @@
 <template>
-  <button
-    class="button"
-    :class="[type, size]"
-  >
-    <slot></slot>
-  </button>
+  <button class="button" :class="[type, size]"><slot></slot></button>
 </template>
 
 <script>
@@ -24,7 +19,7 @@ export default {
       throw new Error('Slot/child is missing a tag');
     }
   },
-}
+};
 </script>
 
 <style scoped>
@@ -44,7 +39,8 @@ export default {
 .primary > * {
   background-color: var(--main-bg-color);
   color: var(--white-font-color);
-  transition: background-color var(--transition-duration) var(--transition-curve);
+  transition: background-color var(--transition-duration)
+    var(--transition-curve);
 }
 
 .primary:hover > * {
@@ -59,4 +55,3 @@ export default {
   color: var(--main-font-color);
 }
 </style>
-

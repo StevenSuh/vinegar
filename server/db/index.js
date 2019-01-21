@@ -32,9 +32,9 @@ module.exports = async () => {
 
     // table creation if non-existent
     // note: order of operation depends on table associations
-    await Rooms.sync({ alter:true, force: false });
-    await Users.sync({ alter:true, force: false });
-    await Intervals.sync({ alter:true, force: false });
+    await Rooms.sync({ alter: true, force: false });
+    await Users.sync({ alter: true, force: false });
+    await Intervals.sync({ alter: true, force: false });
   }
 
   return dbClient;

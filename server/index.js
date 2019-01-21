@@ -12,10 +12,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors({ credentials: true, origin: true }));
+  app.use(cors({credentials: true, origin: true}));
   app.use(express.static(__dirname + 'client/public'));
 } else {
-  app.use(cors({ credentials: true, origin: 'http://localhost:8080' }));
+  app.use(cors({credentials: true, origin: 'http://localhost:8080'}));
 }
 
 require('./routes/api')(app);

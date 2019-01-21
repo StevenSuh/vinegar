@@ -14,11 +14,6 @@ module.exports = (dbClient) => {
         allowNull: true,
         type: Sequelize.STRING,
       },
-      gid: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        unique: true,
-      },
       id: {
         autoIncrement: true,
         primaryKey: true,
@@ -41,6 +36,11 @@ module.exports = (dbClient) => {
     }, {
       freezeTableName: true,
       timestamps: true,
+      gid: {
+        allowNull: false,
+        type: Sequelize.STRING,
+        unique: true,
+      },
     });
   }
   return Users;
