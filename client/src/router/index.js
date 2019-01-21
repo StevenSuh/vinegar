@@ -1,31 +1,32 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import editor from '@/components/editor.vue'
-import HelloWorld from '@/components/HelloWorld.vue' 
+import Vue from 'vue';
+import Router from 'vue-router';
 
-import introPage from '@/views/introPage.vue'
-Vue.use(Router)
+import landingPage from '@/views/landingPage.vue';
+import findPage from '@/views/findPage.vue';
+import sessionPage from '@/views/sessionPage.vue';
+
+Vue.use(Router);
 export default new Router({
+  mode: 'history',
   routes: [
     {
-      path: '/home',
-      name: 'HelloWorld',
-      component: HelloWorld
-
+      path: '/',
+      name: "landing",
+      component: landingPage,
     },
     {
-        path: '/editor/:roomname',
-        name: 'editor',
-        component: editor
+      path: '/find',
+      name: 'find',
+      component: findPage,
     },
     {
-        path: '/',
-        name: "intro",
-        component: introPage
+      path: '/session/:roomname',
+      name: 'session',
+      component: sessionPage,
     },
     {
       path: '*',
       redirect: '/',
     }
-  ]
+  ],
 })

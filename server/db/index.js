@@ -1,17 +1,22 @@
-const { Pool } = require('pg');
 const Sequelize = require('sequelize');
+const {
+  pgDbName,
+  pgUsername,
+  pgPassword,
+} = require('../config');
 
 let dbClient = null;
 
 module.exports = async () => {
   if (!dbClient) {
     dbClient = new Sequelize(
-      'postgres', // database
-      'postgres', // username
-      'postgres', // password
+      pgDbName, // database
+      pgUsername, // username
+      pgPassword, // password
       {
         dialect: 'postgres',
         host: 'localhost',
+        operatorsAliases: false,
         port: 5432,
       },
     );
@@ -26,9 +31,10 @@ module.exports = async () => {
     Users.belongsTo(Rooms);
 
     // table creation if non-existent
-    await Intervals.sync({ force: false });
-    await Rooms.sync({ force: false });
-    await Users.sync({ force: false });
+    // note: order of operation depends on table associations
+    await Rooms.sync({ alter:true, force: false });
+    await Users.sync({ alter:true, force: false });
+    await Intervals.sync({ alter:true, force: false });
   }
 
   return dbClient;
