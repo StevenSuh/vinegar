@@ -30,6 +30,7 @@ export default {
 
   --main-font-color: #f88379;
   --main-font-color-hover: #ee7d74;
+  --main-font-color-light: #FEF3F2;
   --gray-font-color: #bac1c9;
   --black-font-color: #444444;
   --white-font-color: #ffffff;
