@@ -1,8 +1,5 @@
 <template>
-  <span
-    class="loader"
-    :class="[color, size]"
-  />
+  <span class="loader" :class="[color, size]" />
 </template>
 
 <script>
@@ -17,9 +14,8 @@ export default {
       default: '',
     },
   },
-}
+};
 </script>
-
 
 <style scoped>
 .loader {

@@ -1,7 +1,5 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <div id="app"><router-view /></div>
 </template>
 
 <script>
@@ -12,16 +10,16 @@ export default {
 
 <style>
 :root {
-  --main-bg-color: #F88379;
-  --main-bg-color-hover: #EE7D74;
-  --gray-bg-color: #F7F7F7;
-  --white-bg-color: #FFFFFF;
+  --main-bg-color: #f88379;
+  --main-bg-color-hover: #ee7d74;
+  --gray-bg-color: #f7f7f7;
+  --white-bg-color: #ffffff;
 
-  --main-font-color: #F88379;
-  --main-font-color-hover: #EE7D74;
-  --gray-font-color: #BAC1C9;
+  --main-font-color: #f88379;
+  --main-font-color-hover: #ee7d74;
+  --gray-font-color: #bac1c9;
   --black-font-color: #444444;
-  --white-font-color: #FFFFFF;
+  --white-font-color: #ffffff;
 
   --transition-curve: cubic-bezier(0.4, 0, 0.2, 1);
   --transition-duration: 0.2s;

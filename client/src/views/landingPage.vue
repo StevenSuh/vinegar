@@ -6,10 +6,10 @@
           <nav class="navbar">
             <h2 class="nav-header">Vinegar</h2>
             <div class="nav-items">
-              <Button class="marginRight small" ref="about" type="minimal">
+              <button class="marginRight small" ref="about" type="minimal">
                 <p>About</p>
-              </Button>
-              <Button ref="oauth" type="primary">
+              </button>
+              <button ref="oauth" type="primary">
                 <a
                   :href="signinUrl"
                   v-if="signinUrlLoaded && signinUrl !== '/find'"
@@ -25,10 +25,10 @@
                 </router-link>
                 <span class="oauth-placeholder" v-else>
                   <span class="loader-absolute">
-                    <Loader color="white"/>
+                    <Loader color="white" />
                   </span>
                 </span>
-              </Button>
+              </button>
             </div>
           </nav>
         </div>
@@ -36,12 +36,12 @@
           <img class="left" :src="leftAsset" alt="landing asset left" />
           <div class="content-message">
             <h1 class="content-header">Divide and Conquer.</h1>
-            <p class="content-p marginTop marginBottom">Take notes in a distributed manner.</p>
-            <Button type="primary" size="larger">
-              <router-link tag="a" to="/find">
-                Join Your Class
-              </router-link>
-            </Button>
+            <p class="content-p marginTop marginBottom">
+              Take notes in a distributed manner.
+            </p>
+            <button type="primary" size="larger">
+              <router-link tag="a" to="/find"> Join Your Class </router-link>
+            </button>
           </div>
           <img class="right" :src="rightAsset" alt="landing asset right" />
         </div>
@@ -56,39 +56,39 @@
 </template>
 
 <script>
-  import Button from '@/components/button.vue';
-  import Loader from '@/components/loader.vue';
-  import { getSigninUrl } from '@/services/api';
+import Button from '@/components/button.vue';
+import Loader from '@/components/loader.vue';
+import {getSigninUrl} from '@/services/api';
 
-  import leftAsset from '@/assets/landing_left.png';
-  import rightAsset from '@/assets/landing_right.png';
+import leftAsset from '@/assets/landing_left.png';
+import rightAsset from '@/assets/landing_right.png';
 
-  export default {
-    components: {
-      Button,
-      Loader,
+export default {
+  components: {
+    Button,
+    Loader,
+  },
+  data() {
+    return {
+      leftAsset,
+      rightAsset,
+      show: false,
+      signinUrlLoaded: false,
+      signinUrl: '',
+    };
+  },
+  name: 'introPage',
+  methods: {
+    async onInit() {
+      this.signinUrl = await getSigninUrl();
+      this.signinUrlLoaded = true;
     },
-    data() {
-      return {
-        leftAsset,
-        rightAsset,
-        show: false,
-        signinUrlLoaded: false,
-        signinUrl: '',
-      };
-    },
-    name: 'introPage',
-    methods: {
-      async onInit() {
-        this.signinUrl = await getSigninUrl();
-        this.signinUrlLoaded = true;
-      },
-    },
-    mounted: async function() {
-      await this.onInit();
-      this.show = true;
-    },
-  };
+  },
+  mounted: async function() {
+    await this.onInit();
+    this.show = true;
+  },
+};
 </script>
 
 <style scoped>
