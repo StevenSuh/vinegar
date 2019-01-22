@@ -24,7 +24,7 @@
         :value="searchInput"
         v-on:onChange="onInputChange"
       />
-      <transition name="fade">
+      <transition name="fadeNoDelay">
         <SearchResult
           :data="searchResult"
           v-if="searchResult.length > 0"

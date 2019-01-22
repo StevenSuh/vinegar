@@ -90,7 +90,9 @@ input:focus {
 
 /* animation */
 .fade-enter-active,
-.fade-leave-active {
+.fade-leave-active,
+.fadeNoDelay-enter-active,
+.fadeNoDelay-leave-active {
   transition: opacity var(--transition-duration) var(--transition-curve);
 }
 
@@ -99,7 +101,9 @@ input:focus {
 }
 
 .fade-enter,
-.fade-leave-to {
+.fade-leave-to,
+.fadeNoDelay-enter,
+.fadeNoDelay-leave-to {
   opacity: 0;
 }
 
