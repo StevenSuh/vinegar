@@ -1,9 +1,7 @@
 <template>
   <div>
     <div class="bg-overlay"></div>
-    <div class="content">
-      <slot></slot>
-    </div>
+    <div class="content"><slot></slot></div>
   </div>
 </template>
 
@@ -15,7 +13,7 @@ export default {
   beforeDestroy() {
     document.body.classList.remove('overflow');
   },
-}
+};
 </script>
 
 <style>

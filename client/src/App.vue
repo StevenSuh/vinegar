@@ -25,14 +25,14 @@ export default {
 
   --main-bg-color: #f88379;
   --main-bg-color-hover: #ee7d74;
-  --gray-bg-color-2: #CBD0D6;
+  --gray-bg-color-2: #cbd0d6;
   --gray-bg-color: #f7f7f7;
   --gray-bg-color-hover: #f5f5f5;
   --white-bg-color: #ffffff;
 
   --main-font-color: #f88379;
   --main-font-color-hover: #ee7d74;
-  --main-font-color-light: #FEF3F2;
+  --main-font-color-light: #fef3f2;
   --gray-font-color: #bac1c9;
   --black-font-color: #444444;
   --white-font-color: #ffffff;

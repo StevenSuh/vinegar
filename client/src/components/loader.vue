@@ -3,10 +3,7 @@
 </template>
 
 <script>
-const animation = [
-  { transform: 'rotate(0deg)' },
-  { transform: 'rotate(360deg)' },
-];
+const animation = [{transform: 'rotate(0deg)'}, {transform: 'rotate(360deg)'}];
 
 const timing = {
   duration: 500,

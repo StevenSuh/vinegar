@@ -1,11 +1,7 @@
 <template>
-  <div>
-    create session
-  </div>
+  <div>create session</div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>

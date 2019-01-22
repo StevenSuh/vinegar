@@ -1,10 +1,6 @@
 <template>
   <div class="result-wrapper">
-    <div
-      class="result-item"
-      v-for="item in data"
-      :key="item.sessionId"
-    >
+    <div class="result-item" v-for="item in data" :key="item.sessionId">
       <h6>{{ item.schoolName }}</h6>
       <p>{{ item.sessionName }}</p>
       <p>{{ item.createdAt }}</p>
@@ -21,7 +17,7 @@ export default {
       default: [],
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -40,7 +36,8 @@ export default {
 .result-item {
   cursor: pointer;
   padding: 15px 20px;
-  transition: background-color var(--transition-duration) var(--transition-curve);
+  transition: background-color var(--transition-duration)
+    var(--transition-curve);
 }
 
 .result-item:hover {

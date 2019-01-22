@@ -1,8 +1,6 @@
 <template>
   <div class="join-wrapper">
-    <H2 class="join-header paddingTop large">
-      Join a Session
-    </H2>
+    <h2 class="join-header paddingTop large">Join a Session</h2>
     <p class="join-message paddingTop small">
       Search for the session you'd like to join.
     </p>
@@ -12,7 +10,7 @@
       <InputComponent
         autocomplete="off"
         autosearch="on"
-        :class="{ 'search-expanded': searchResult.length > 0 }"
+        :class="{'search-expanded': searchResult.length > 0}"
         id="join-input"
         label="Search"
         name="search"
@@ -25,10 +23,7 @@
         v-on:onChange="onInputChange"
       />
       <transition name="fadeNoDelay">
-        <SearchResult
-          :data="searchResult"
-          v-if="searchResult.length > 0"
-        />
+        <SearchResult :data="searchResult" v-if="searchResult.length > 0" />
       </transition>
     </div>
   </div>
@@ -69,7 +64,7 @@ export default {
       return Boolean(regex.exec(value));
     },
   },
-}
+};
 </script>
 
 <style scoped>

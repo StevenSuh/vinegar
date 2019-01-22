@@ -1,9 +1,11 @@
 <template>
   <div class="find-wrapper">
-    <H2 class="find-action-header paddingTop large">
+    <h2 class="find-action-header paddingTop large">
       {{ 'Hello, ' }}<span>User</span>
-    </H2>
-    <p class="find-action-message paddingTop small">Let's help you get started.</p>
+    </h2>
+    <p class="find-action-message paddingTop small">
+      Let's help you get started.
+    </p>
     <div class="find-action-wrapper">
       <div class="find-action join" v-on:click="onClickJoin">
         <img class="action-box join-box" :src="joinBoxImage" alt="join box" />
@@ -12,7 +14,11 @@
       </div>
       <p class="find-action-p">or</p>
       <div class="find-action create" v-on:click="onClickCreate">
-        <img class="action-box create-box" :src="createBoxImage" alt="create box" />
+        <img
+          class="action-box create-box"
+          :src="createBoxImage"
+          alt="create box"
+        />
         <p class="action-title">Create a Session</p>
         <p class="action-message">Want to create a session?</p>
       </div>
@@ -36,7 +42,7 @@ export default {
     onClickJoin: Function,
     onClickCreate: Function,
   },
-}
+};
 </script>
 
 <style scoped>
