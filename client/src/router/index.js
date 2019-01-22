@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import landingPage from '@/views/landingPage.vue';
-import findPage from '@/views/findPage.vue';
-import sessionPage from '@/views/sessionPage.vue';
+import landingPage from '@/views/landingPage';
+import findPage from '@/views/findPage';
+import sessionPage from '@/views/sessionPage';
 
 Vue.use(Router);
 export default new Router({
@@ -20,7 +20,7 @@ export default new Router({
       component: findPage,
     },
     {
-      path: '/session/:roomname',
+      path: '/session/:school/:session',
       name: 'session',
       component: sessionPage,
     },

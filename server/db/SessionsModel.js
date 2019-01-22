@@ -1,48 +1,47 @@
 const Sequelize = require('sequelize');
 
-let Users = null;
+let Sessions = null;
 
 module.exports = (dbClient) => {
-  if (!Users) {
-    Users = dbClient.define('users', {
+  if (!Sessions) {
+    Sessions = dbClient.define('sessions', {
       active: {
         allowNull: false,
         defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
-      email: {
-        allowNull: true,
-        type: Sequelize.STRING,
-      },
-      gid: {
+      content: {
         allowNull: false,
-        type: Sequelize.STRING,
+        defaultValue: '',
+        type: Sequelize.TEXT,
+      },
+      // minutes
+      duration: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
       },
       id: {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
+      participants: {
+        allowNull: true,
+        type: Sequelize.INTEGER,
+      },
+      schoolName: {
         allowNull: false,
-        defaultValue: '',
         type: Sequelize.STRING,
       },
-      phone: {
-        allowNull: true,
+      sessionName: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
-      cookieId: {
-        allowNull: true,
-        unique: false,
-        type: Sequelize.STRING,
-      },
-      // sessionId,
+      // ownerId
     }, {
-      indexes: [{ unique: true, fields: ['gid'] }],
       freezeTableName: true,
       timestamps: true,
     });
   }
-  return Users;
+  return Sessions;
 };

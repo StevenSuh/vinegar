@@ -33,7 +33,7 @@
           </nav>
         </div>
         <div class="content marginTop small">
-          <img class="left" :src="leftAsset" alt="landing asset left" />
+          <img class="left" :src="leftImage" alt="landing asset left" />
           <div class="content-message">
             <h1 class="content-header">Divide and Conquer.</h1>
             <p class="content-p marginTop marginBottom">
@@ -43,7 +43,7 @@
               <router-link tag="a" to="/find"> Join Your Session </router-link>
             </ButtonComponent>
           </div>
-          <img class="right" :src="rightAsset" alt="landing asset right" />
+          <img class="right" :src="rightImage" alt="landing asset right" />
         </div>
       </div>
       <div class="section-how paddingTop paddingBottom small" ref="how">
@@ -54,19 +54,19 @@
               <div class="how-item-icon-wrapper">
                 <img
                   class="how-item-icon"
-                  :src="findRoomAsset"
-                  alt="find room asset"
+                  :src="findSessionImage"
+                  alt="find session asset"
                 />
               </div>
               <p class="how-item-caption marginTop small">
-                Create or join a room
+                Create or join a session
               </p>
             </div>
             <div class="how-item">
               <div class="how-item-icon-wrapper">
                 <img
                   class="how-item-icon"
-                  :src="alarmClockAsset"
+                  :src="alarmClockImage"
                   alt="alarm clock asset"
                 />
               </div>
@@ -78,7 +78,7 @@
               <div class="how-item-icon-wrapper">
                 <img
                   class="how-item-icon"
-                  :src="exclamationAsset"
+                  :src="exclamationImage"
                   alt="exclamation asset"
                 />
               </div>
@@ -88,7 +88,7 @@
             </div>
             <div class="how-item">
               <div class="how-item-icon-wrapper">
-                <img class="how-item-icon" :src="mugAsset" alt="mug asset" />
+                <img class="how-item-icon" :src="mugImage" alt="mug asset" />
               </div>
               <p class="how-item-caption marginTop small">
                 Meanwhile, enjoy doing something else!
@@ -107,7 +107,7 @@
             <div class="team-item">
               <img
                 class="team-item-icon"
-                :src="jeffreAsset"
+                :src="jeffreImage"
                 alt="jeffre asset"
               />
               <p class="team-item-name">Jeffre</p>
@@ -119,56 +119,56 @@
                 >
                   <img
                     class="team-item-links-img hover"
-                    :src="linkedinAsset"
+                    :src="linkedinImage"
                     alt="linkedin square"
                   />
                 </a>
                 <a href="https://github.com/jeffreyyang3" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="githubAsset"
+                    :src="githubImage"
                     alt="github"
                   />
                 </a>
                 <a href="https://jeffreyyang3.github.io" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="heartAsset"
+                    :src="heartImage"
                     alt="heart"
                   />
                 </a>
               </div>
             </div>
             <div class="team-item">
-              <img class="team-item-icon" :src="lyanaAsset" alt="lyana asset" />
+              <img class="team-item-icon" :src="lyanaImage" alt="lyana asset" />
               <p class="team-item-name">Lyana</p>
               <p class="team-item-caption">{{ 'Dog & Roomba Lover' }}</p>
               <div class="team-item-links">
                 <a href="https://www.linkedin.com/in/lyanna-ho" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="linkedinAsset"
+                    :src="linkedinImage"
                     alt="linkedin square"
                   />
                 </a>
                 <a href="https://github.com/lyannerz" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="githubAsset"
+                    :src="githubImage"
                     alt="github"
                   />
                 </a>
                 <a href="https://lyannerz.github.io" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="heartAsset"
+                    :src="heartImage"
                     alt="heart"
                   />
                 </a>
               </div>
             </div>
             <div class="team-item">
-              <img class="team-item-icon" :src="steveAsset" alt="steve asset" />
+              <img class="team-item-icon" :src="steveImage" alt="steve asset" />
               <p class="team-item-name">Steve</p>
               <p class="team-item-caption">{{ 'Code Monkey & GTA Gamer' }}</p>
               <div class="team-item-links">
@@ -178,28 +178,28 @@
                 >
                   <img
                     class="team-item-links-img hover"
-                    :src="linkedinAsset"
+                    :src="linkedinImage"
                     alt="linkedin square"
                   />
                 </a>
                 <a href="https://github.com/stevensuh" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="githubAsset"
+                    :src="githubImage"
                     alt="github"
                   />
                 </a>
                 <a href="https://stevensuh.me" target="_blank">
                   <img
                     class="team-item-links-img hover"
-                    :src="heartAsset"
+                    :src="heartImage"
                     alt="heart"
                   />
                 </a>
               </div>
             </div>
           </div>
-          <img class="snoo paddingTop small" :src="snooAsset" alt="snoo" />
+          <img class="snoo paddingTop large" :src="snooImage" alt="snoo" />
           <ButtonComponent
             class="team-start marginTop small"
             size="large"
@@ -208,8 +208,8 @@
             <router-link tag="a" to="/find">Get Started</router-link>
           </ButtonComponent>
         </div>
-        <img class="squiggles" :src="squigglesAsset" alt="squiggles" />
-        <img class="dots" :src="dotsAsset" alt="dots" />
+        <img class="squiggles" :src="squigglesImage" alt="squiggles" />
+        <img class="dots" :src="dotsImage" alt="dots" />
         <div class="paddingBottom small"></div>
       </div>
       <div class="footer paddingTop paddingBottom large">
@@ -224,7 +224,7 @@
           <p>
             {{ 'Made with ' }}
             <span>
-              <img class="footer-heart" :src="heartAsset" alt="heart" />
+              <img class="footer-heart" :src="heartImage" alt="heart" />
             </span>
             {{ ' at Westside, Santa Cruz' }}
           </p>
@@ -235,25 +235,25 @@
 </template>
 
 <script>
-import ButtonComponent from '@/components/button.vue';
-import Loader from '@/components/loader.vue';
+import ButtonComponent from '@/components/button';
+import Loader from '@/components/loader';
 import {getSigninUrl} from '@/services/api';
 
-import alarmClockAsset from '@/assets/alarmClock.png';
-import dotsAsset from '@/assets/dots.png';
-import exclamationAsset from '@/assets/exclamation.png';
-import findRoomAsset from '@/assets/findRoom.png';
-import githubAsset from '@/assets/github.png';
-import heartAsset from '@/assets/heart.png';
-import jeffreAsset from '@/assets/jeffre.png';
-import leftAsset from '@/assets/landing_left.png';
-import linkedinAsset from '@/assets/linkedin-square.png';
-import lyanaAsset from '@/assets/lyana.png';
-import mugAsset from '@/assets/mug.png';
-import rightAsset from '@/assets/landing_right.png';
-import snooAsset from '@/assets/snoo.png';
-import squigglesAsset from '@/assets/squiggles.png';
-import steveAsset from '@/assets/steve.png';
+import alarmClockImage from '@/assets/alarmClock.png';
+import dotsImage from '@/assets/dots.png';
+import exclamationImage from '@/assets/exclamation.png';
+import findSessionImage from '@/assets/findSession.png';
+import githubImage from '@/assets/github.png';
+import heartImage from '@/assets/heart.png';
+import jeffreImage from '@/assets/jeffre.png';
+import leftImage from '@/assets/landing_left.png';
+import linkedinImage from '@/assets/linkedin-square.png';
+import lyanaImage from '@/assets/lyana.png';
+import mugImage from '@/assets/mug.png';
+import rightImage from '@/assets/landing_right.png';
+import snooImage from '@/assets/snoo.png';
+import squigglesImage from '@/assets/squiggles.png';
+import steveImage from '@/assets/steve.png';
 
 export default {
   components: {
@@ -262,33 +262,35 @@ export default {
   },
   data() {
     return {
-      // img assets
-      alarmClockAsset,
-      dotsAsset,
-      exclamationAsset,
-      findRoomAsset,
-      githubAsset,
-      jeffreAsset,
-      heartAsset,
-      leftAsset,
-      linkedinAsset,
-      lyanaAsset,
-      mugAsset,
-      rightAsset,
-      snooAsset,
-      squigglesAsset,
-      steveAsset,
-
       // state
       show: false,
       signinUrlLoaded: false,
       signinUrl: '',
+
+      // img assets
+      alarmClockImage,
+      dotsImage,
+      exclamationImage,
+      findSessionImage,
+      githubImage,
+      jeffreImage,
+      heartImage,
+      leftImage,
+      linkedinImage,
+      lyanaImage,
+      mugImage,
+      rightImage,
+      snooImage,
+      squigglesImage,
+      steveImage,
     };
   },
   name: 'introPage',
   methods: {
-    async onInit() {
-      this.signinUrl = await getSigninUrl();
+    onInit: async function() {
+      const { signinUrl } = await getSigninUrl();
+
+      this.signinUrl = signinUrl;
       this.signinUrlLoaded = true;
     },
     onClickAbout() {
@@ -370,7 +372,7 @@ export default {
 
 .content-message {
   margin: 0 auto;
-  padding-top: 10%;
+  padding-top: 12%;
   text-align: center;
 }
 
@@ -606,6 +608,10 @@ export default {
   .squiggles,
   .dots {
     display: none;
+  }
+
+  .snoo {
+    padding-top: 20px;
   }
 
   .footer-items {

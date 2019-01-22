@@ -19,7 +19,7 @@ export default {
 
 <style scoped>
 .loader {
-  animation: load 0.75s linear infinite;
+  animation: load 0.5s linear infinite;
   border: 2.5px solid transparent;
   border-top: 2.5px solid var(--black-font-color);
   border-right: 2.5px solid var(--black-font-color);
@@ -29,9 +29,37 @@ export default {
   width: 24px;
 }
 
+.loader.medium {
+  border-width: 3px;
+  height: 50px;
+  width: 50px;
+}
+
+.loader.large {
+  border-width: 4px;
+  height: 74px;
+  width: 74px;
+}
+
+.loader.x-large {
+  border-width: 5px;
+  height: 100px;
+  width: 100px;
+}
+
 .loader.white {
   border-top-color: var(--white-font-color);
   border-right-color: var(--white-font-color);
+}
+
+.loader.red {
+  border-top-color: var(--main-bg-color);
+  border-right-color: var(--main-bg-color);
+}
+
+.loader.gray {
+  border-top-color: var(--gray-font-color);
+  border-right-color: var(--gray-font-color);
 }
 
 @keyframes load {

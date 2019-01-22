@@ -6,26 +6,26 @@ module.exports = (app) => {
   const io = SocketIo(httpServer);
 
   io.on('connection', function(socket) {
-    socket.on('joinRoom', function({ room }) {
-      if (!(/[^\w.]/.test(room))) {
-        socket.join(room);
+    socket.on('joinSession', function({ session }) {
+      if (!(/[^\w.]/.test(session))) {
+        socket.join(session);
       }
     });
-  
-    socket.on('onEditorTextUpdate', function({ data, room }) {
-      socket.broadcast.to(room).emit('onEditorTextUpdate', data);
+
+    socket.on('onEditorTextUpdate', function({ data, session }) {
+      socket.broadcast.to(session).emit('onEditorTextUpdate', data);
     });
 
-    socket.on('onEditorSelectionUpdate', function({ data, name, room, userId }) {
-      socket.broadcast.to(room).emit('onEditorSelectionUpdate', {
+    socket.on('onEditorSelectionUpdate', function({ data, name, session, userId }) {
+      socket.broadcast.to(session).emit('onEditorSelectionUpdate', {
         data,
         name,
         userId,
       });
     });
 
-    socket.on('onEditorSelectionRemove', function({ room, userId }) {
-      socket.broadcast.to(room).emit('onEditorSelectionRemove', { userId });
+    socket.on('onEditorSelectionRemove', function({ session, userId }) {
+      socket.broadcast.to(session).emit('onEditorSelectionRemove', { userId });
     });
   });
 
