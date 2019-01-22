@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       inputValue: this.value,
-      searchDuration: 300,
+      searchDelay: 300,
       searchTimeout: null,
     };
   },
@@ -54,7 +54,7 @@ export default {
       if (value.length > 2) {
         this.searchTimeout = setTimeout(
           this.onAutosearch,
-          this.searchDuration,
+          this.searchDelay,
           value,
         );
       } else {
