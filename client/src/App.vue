@@ -25,7 +25,9 @@ export default {
 
   --main-bg-color: #f88379;
   --main-bg-color-hover: #ee7d74;
+  --gray-bg-color-2: #CBD0D6;
   --gray-bg-color: #f7f7f7;
+  --gray-bg-color-hover: #f5f5f5;
   --white-bg-color: #ffffff;
 
   --main-font-color: #f88379;
@@ -35,7 +37,7 @@ export default {
   --black-font-color: #444444;
   --white-font-color: #ffffff;
 
-  --transition-curve: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-curve: cubic-bezier(0.8, 0, 0.2, 1);
   --transition-duration: 0.2s;
 }
 
@@ -72,8 +74,10 @@ button {
 
 a,
 button,
+input,
 a:focus,
-button:focus {
+button:focus,
+input:focus {
   border: none;
   outline: 0;
 }
@@ -88,6 +92,10 @@ button:focus {
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity var(--transition-duration) var(--transition-curve);
+}
+
+.fade-enter-active {
+  transition-delay: var(--transition-duration);
 }
 
 .fade-enter,

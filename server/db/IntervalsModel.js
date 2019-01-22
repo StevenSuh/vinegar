@@ -26,7 +26,7 @@ module.exports = (dbClient) => {
         type: Sequelize.INTEGER,
       },
       // userId,
-      // roomId,
+      // sessionId,
     }, {
       freezeTableName: true,
       timestamps: true,
