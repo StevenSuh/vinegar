@@ -1,9 +1,22 @@
 <template>
-  <span class="loader" :class="[color, size]" />
+  <span class="loader" :class="[color, size]" ref="loader" />
 </template>
 
 <script>
+const animation = [
+  { transform: 'rotate(0deg)' },
+  { transform: 'rotate(360deg)' },
+];
+
+const timing = {
+  duration: 500,
+  iterations: Infinity,
+};
+
 export default {
+  mounted() {
+    this.$refs.loader.animate(animation, timing);
+  },
   props: {
     color: {
       type: String,
@@ -19,7 +32,6 @@ export default {
 
 <style scoped>
 .loader {
-  animation: load 0.5s linear infinite;
   border: 2.5px solid transparent;
   border-top: 2.5px solid var(--black-font-color);
   border-right: 2.5px solid var(--black-font-color);
@@ -60,14 +72,5 @@ export default {
 .loader.gray {
   border-top-color: var(--gray-font-color);
   border-right-color: var(--gray-font-color);
-}
-
-@keyframes load {
-  from {
-    transform: rotate(0deg) translateZ(0);
-  }
-  to {
-    transform: rotate(360deg) translateZ(0);
-  }
 }
 </style>
