@@ -87,7 +87,7 @@ export default {
           [{font: ['rubik', 'roboto']}],
 
           [{color: []}, {background: []}], // dropdown with defaults from theme
-          [{align: []}],
+          [{align: ''}, {align: 'center'}, {align: 'right'}],
 
           ['clean'], // remove formatting button
         ],
@@ -278,12 +278,15 @@ export default {
 }
 
 .ql-picker-label:focus,
-.ql-picker-item:focus {
-  outline: none;
+.ql-picker-item:focus,
+.ql-picker-options:focus {
+  outline: none !important;
 }
 
 .ql-snow .ql-picker-label::before {
   line-height: 26px;
+  position: relative;
+  top: -4px;
 }
 
 .ql-font-rubik,
