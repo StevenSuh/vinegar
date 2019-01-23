@@ -11,13 +11,7 @@
       :value="inputValue"
       ref="input"
     />
-    <label
-      class="label"
-      :for="id"
-      v-if="label"
-    >
-      {{ label }}
-    </label>
+    <label class="label" :for="id" v-if="label"> {{ label }} </label>
   </div>
 </template>
 
@@ -35,7 +29,7 @@ export default {
   },
   methods: {
     onInputChange(e) {
-      const { value } = e.target;
+      const {value} = e.target;
       if (this.onValidate && !this.onValidate(value)) {
         this.$refs.input.value = this.value;
         return;
@@ -55,7 +49,7 @@ export default {
         this.searchTimeout = setTimeout(
           this.onAutosearch,
           this.searchDelay,
-          value,
+          value
         );
       } else {
         this.onClearSearch && this.onClearSearch();
@@ -110,9 +104,9 @@ export default {
       if (value !== oldValue) {
         this.$refs.input.value = value;
       }
-    }
+    },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -160,4 +154,3 @@ export default {
   user-select: none;
 }
 </style>
-

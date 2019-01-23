@@ -10,8 +10,16 @@
             <h2 class="nav-header">Vinegar</h2>
           </nav>
         </div>
-        <img class="find-left-img" :src="leftImage" alt="find page left asset" />
-        <img class="find-right-img" :src="rightImage" alt="find page right asset" />
+        <img
+          class="find-left-img"
+          :src="leftImage"
+          alt="find page left asset"
+        />
+        <img
+          class="find-right-img"
+          :src="rightImage"
+          alt="find page right asset"
+        />
         <div class="container">
           <transition name="fade">
             <div v-if="loaded">
@@ -25,14 +33,10 @@
                     />
                   </transition>
                   <transition name="fade">
-                    <JoinSession
-                      v-if="isJoiningSession"
-                    />
+                    <JoinSession v-if="isJoiningSession" />
                   </transition>
                   <transition name="fade">
-                    <CreateSession
-                      v-if="isCreatingSession"
-                    />
+                    <CreateSession v-if="isCreatingSession" />
                   </transition>
                 </div>
               </transition>
@@ -114,7 +118,7 @@ export default {
       this.isCreatingSession = true;
     },
     onInit: async function() {
-      const { isAuthenticated, uid = '' } = await getAuthStatus();
+      const {isAuthenticated, uid = ''} = await getAuthStatus();
       setTimeout(() => {
         this.isAuthenticated = isAuthenticated;
         this.loaded = true;
@@ -129,7 +133,7 @@ export default {
     this.show = true;
     this.onInit();
   },
-}
+};
 </script>
 
 <style scoped>

@@ -288,7 +288,7 @@ export default {
   name: 'introPage',
   methods: {
     onInit: async function() {
-      const { signinUrl } = await getSigninUrl();
+      const {signinUrl} = await getSigninUrl();
 
       this.signinUrl = signinUrl;
       this.signinUrlLoaded = true;
