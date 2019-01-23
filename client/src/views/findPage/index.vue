@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import {getAuthStatus, getSigninUrl} from '@/services/api';
+import {getAuthStatus} from '@/services/api';
 import Loader from '@/components/loader';
 import SessionDecision from '@/views/findPage/sessionDecision';
 import JoinSession from '@/views/findPage/joinSession';
