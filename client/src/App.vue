@@ -25,6 +25,7 @@ export default {
 
   --main-bg-color: #f88379;
   --main-bg-color-hover: #ee7d74;
+  --gray-bg-color-3: #f0f0f0;
   --gray-bg-color-2: #cbd0d6;
   --gray-bg-color: #f7f7f7;
   --gray-bg-color-hover: #f5f5f5;
