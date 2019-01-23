@@ -14,9 +14,12 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 
 import 'quill-cursors/dist/quill-cursors.css';
+import PlainClipboard from './PlainClipboard'
+
+Quill.register('modules/clipboard', PlainClipboard, true)
 
 const Font = Quill.import('formats/font');
-Font.whitelist = ['rubik', 'roboto'];
+Font.whitelist = ['rubik'];
 
 Quill.register(Font, true);
 Quill.register('modules/cursors', QuillCursors);
@@ -88,7 +91,6 @@ export default {
 
             [{size: ['small', false, 'large', 'huge']}], // custom dropdown
             [{header: [1, 2, 3, 4, 5, 6, false]}],
-            [{font: ['rubik', 'roboto']}],
 
             [{color: []}, {background: []}], // dropdown with defaults from theme
             [{align: ''}, {align: 'center'}, {align: 'right'}],
@@ -337,11 +339,20 @@ button.ql-active,
   font-weight: 400;
 }
 
-.ql-font-roboto,
-.ql-picker-item[data-value='roboto']::before,
-.ql-picker-label[data-value='roboto']::before {
-  content: 'Roboto' !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-weight: 400;
+code {
+  display: inline-block;
+  z-index: -1;
+}
+
+code,
+code *,
+pre,
+pre * {
+  font-family: monospace !important;
+}
+
+code strong,
+pre strong {
+  font-weight: 800 !important;
 }
 </style>
