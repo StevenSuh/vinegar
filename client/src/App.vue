@@ -85,6 +85,7 @@ input:focus {
 * {
   font-family: 'Rubik', Helvetica, Arial, sans-serif;
   box-sizing: border-box;
+  outline: 0 !important;
   position: relative;
 }
 

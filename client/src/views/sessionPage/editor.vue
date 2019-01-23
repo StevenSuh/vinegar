@@ -277,12 +277,6 @@ export default {
   border: none !important;
 }
 
-.ql-picker-label:focus,
-.ql-picker-item:focus,
-.ql-picker-options:focus {
-  outline: none !important;
-}
-
 .ql-snow .ql-picker-label::before {
   line-height: 26px;
   position: relative;
