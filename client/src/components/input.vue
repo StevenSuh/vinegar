@@ -121,7 +121,7 @@ export default {
   border-radius: 6px;
   font-size: 17px;
   font-weight: 300;
-  padding: 17px 20px;
+  padding: 18px 25px;
   transition: padding var(--transition-duration) var(--transition-curve);
   width: 100%;
 }
@@ -131,20 +131,20 @@ export default {
 }
 
 .input:focus {
-  padding-top: 25px;
+  padding-top: 27px;
   padding-bottom: 9px;
 }
 
 .input:focus + .label {
   opacity: 1;
-  transform: translateY(6px);
+  transform: translateY(8px);
 }
 
 .label {
   color: var(--main-font-color);
   font-size: 14px;
   font-weight: 400;
-  left: 20px;
+  left: 25px;
   opacity: 0;
   position: absolute;
   top: 0;

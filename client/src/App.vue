@@ -34,6 +34,7 @@ export default {
   --main-font-color: #f88379;
   --main-font-color-hover: #ee7d74;
   --main-font-color-light: #fef3f2;
+  --dark-gray-font-color: #575757;
   --gray-font-color: #bac1c9;
   --black-font-color: #444444;
   --white-font-color: #ffffff;

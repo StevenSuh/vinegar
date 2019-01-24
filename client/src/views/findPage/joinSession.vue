@@ -19,11 +19,11 @@
         :onValidate="onValidate"
         placeholder="Type your session name..."
         type="search"
-        :value="searchInput"
+        :value="searchQuery"
         v-on:onChange="onInputChange"
       />
       <transition name="fadeNoDelay">
-        <SearchResult :data="searchResult" v-if="searchResult.length > 0" />
+        <SearchResult :data="searchResult" :query="searchQuery" v-if="searchResult.length > 0" />
       </transition>
     </div>
   </div>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       // state
-      searchInput: '',
+      searchQuery: '',
       searchOffset: 0,
       searchResult: [],
     };
@@ -55,7 +55,7 @@ export default {
       this.searchResult = [];
     },
     onInputChange: function(value) {
-      this.searchInput = value;
+      this.searchQuery = value;
     },
     onSearch: async function() {
       this.searchResult = await getSearchSessionResults();
