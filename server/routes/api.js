@@ -36,7 +36,7 @@ module.exports = (app) => {
     });
   });
 
-  app.get('/callback', async (req, res) => {
+  app.get('/api/callback', async (req, res) => {
     const { code } = req.query;
 
     const {
