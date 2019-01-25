@@ -7,13 +7,19 @@ import Quill from 'quill';
 import {Range} from 'quill/core/selection';
 import QuillCursors from 'quill-cursors';
 
+import RedoIcon from '!raw-loader!quill/assets/icons/redo.svg';
+import UndoIcon from '!raw-loader!quill/assets/icons/undo.svg';
+
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 
 import 'quill-cursors/dist/quill-cursors.css';
+import PlainClipboard from './PlainClipboard'
+
+Quill.register('modules/clipboard', PlainClipboard, true)
 
 const Font = Quill.import('formats/font');
-Font.whitelist = ['rubik', 'roboto'];
+Font.whitelist = ['rubik'];
 
 Quill.register(Font, true);
 Quill.register('modules/cursors', QuillCursors);
@@ -72,25 +78,35 @@ export default {
     this.editor = new Quill(this.$refs.editor, {
       modules: {
         cursors: true,
-        toolbar: [
-          ['bold', 'italic', 'underline', 'strike', 'code'], // toggled buttons
-          ['blockquote', 'code-block'],
+        toolbar: {
+          container: [
+            ['bold', 'italic', 'underline', 'strike', 'code'], // toggled buttons
+            ['blockquote', 'code-block'],
 
-          [{header: 1}, {header: 2}], // custom button values
-          [{list: 'ordered'}, {list: 'bullet'}],
-          [{script: 'sub'}, {script: 'super'}], // superscript/subscript
-          [{indent: '-1'}, {indent: '+1'}], // outdent/indent
-          [{direction: 'rtl'}], // text direction
+            [{header: 1}, {header: 2}], // custom button values
+            [{list: 'ordered'}, {list: 'bullet'}],
+            [{script: 'sub'}, {script: 'super'}], // superscript/subscript
+            [{indent: '-1'}, {indent: '+1'}], // outdent/indent
+            [{direction: 'rtl'}], // text direction
 
-          [{size: ['small', false, 'large', 'huge']}], // custom dropdown
-          [{header: [1, 2, 3, 4, 5, 6, false]}],
-          [{font: ['rubik', 'roboto']}],
+            [{size: ['small', false, 'large', 'huge']}], // custom dropdown
+            [{header: [1, 2, 3, 4, 5, 6, false]}],
 
-          [{color: []}, {background: []}], // dropdown with defaults from theme
-          [{align: ''}, {align: 'center'}, {align: 'right'}],
+            [{color: []}, {background: []}], // dropdown with defaults from theme
+            [{align: ''}, {align: 'center'}, {align: 'right'}],
 
-          ['clean'], // remove formatting button
-        ],
+            ['clean'], // remove formatting button
+            ['undo', 'redo'],
+          ],
+          handlers: {
+            undo: () => {
+              this.editor.history.undo();
+            },
+            redo: () => {
+              this.editor.history.redo();
+            },
+          },
+        },
       },
       theme: 'snow',
     });
@@ -99,6 +115,9 @@ export default {
 
     this.editor.on('selection-change', this.selectionUpdate);
     this.editor.on('text-change', this.textUpdate);
+
+    document.getElementsByClassName('ql-undo')[0].innerHTML = UndoIcon;
+    document.getElementsByClassName('ql-redo')[0].innerHTML = RedoIcon;
 
     // add checkBlur event to window
     window.addEventListener('click', this.onCheckBlur);
@@ -136,7 +155,7 @@ export default {
 }
 
 .ql-snow .ql-picker {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .ql-editor strong {
@@ -172,92 +191,115 @@ export default {
   top: calc(50% - 1px);
 }
 
+.ql-picker:active,
+.ql-formats > button:active,
+.ql-picker-item:active,
+.ql-picker:focus,
+.ql-formats > button:focus,
+.ql-picker-item:focus,
+button.ql-active,
+.ql-expanded {
+  background-color: var(--main-font-color-light) !important;
+}
+
 .ql-picker:hover,
 .ql-formats > button:hover,
 .ql-picker-item:hover {
-  background-color: var(--main-font-color-light);
+  background-color: var(--gray-bg-color-3);
 }
 
-.ql-snow.ql-toolbar button:hover,
-.ql-snow .ql-toolbar button:hover,
 .ql-snow.ql-toolbar button:focus,
 .ql-snow .ql-toolbar button:focus,
 .ql-snow.ql-toolbar button.ql-active,
 .ql-snow .ql-toolbar button.ql-active,
-.ql-snow.ql-toolbar .ql-picker-label:hover,
-.ql-snow .ql-toolbar .ql-picker-label:hover,
 .ql-snow.ql-toolbar .ql-picker-label.ql-active,
 .ql-snow .ql-toolbar .ql-picker-label.ql-active,
-.ql-snow.ql-toolbar .ql-picker-item:hover,
-.ql-snow .ql-toolbar .ql-picker-item:hover,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected,
 .ql-picker.ql-expanded .ql-picker-label::before {
-  color: var(--main-font-color);
+  color: var(--main-font-color) !important;
 }
 
-.ql-snow.ql-toolbar button:hover .ql-stroke,
-.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button:hover,
+.ql-snow .ql-toolbar button:hover,
+.ql-snow.ql-toolbar .ql-picker-label:hover,
+.ql-snow .ql-toolbar .ql-picker-label:hover,
+.ql-snow.ql-toolbar .ql-picker-item:hover,
+.ql-snow .ql-toolbar .ql-picker-item:hover {
+  color: var(--black-font-color);
+}
+
 .ql-snow.ql-toolbar button:focus .ql-stroke,
 .ql-snow .ql-toolbar button:focus .ql-stroke,
 .ql-snow.ql-toolbar button.ql-active .ql-stroke,
 .ql-snow .ql-toolbar button.ql-active .ql-stroke,
-.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
-.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke,
 .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
 .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
-.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
-.ql-snow.ql-toolbar button:hover .ql-stroke-miter,
-.ql-snow .ql-toolbar button:hover .ql-stroke-miter,
 .ql-snow.ql-toolbar button:focus .ql-stroke-miter,
 .ql-snow .ql-toolbar button:focus .ql-stroke-miter,
 .ql-snow.ql-toolbar button.ql-active .ql-stroke-miter,
 .ql-snow .ql-toolbar button.ql-active .ql-stroke-miter,
-.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
-.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
 .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
 .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
-.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
-.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,
 .ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-stroke {
-  stroke: var(--main-font-color);
+  stroke: var(--main-font-color) !important;
 }
 
-.ql-snow.ql-toolbar button:hover .ql-fill,
-.ql-snow .ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke,
+.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
+.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke,
+.ql-snow.ql-toolbar button:hover .ql-stroke-miter,
+.ql-snow .ql-toolbar button:hover .ql-stroke-miter,
+.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
+.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
+.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
+.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter {
+  stroke: var(--black-font-color);
+}
+
+
 .ql-snow.ql-toolbar button:focus .ql-fill,
 .ql-snow .ql-toolbar button:focus .ql-fill,
 .ql-snow.ql-toolbar button.ql-active .ql-fill,
 .ql-snow .ql-toolbar button.ql-active .ql-fill,
-.ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,
-.ql-snow .ql-toolbar .ql-picker-label:hover .ql-fill,
 .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill,
 .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-fill,
-.ql-snow.ql-toolbar .ql-picker-item:hover .ql-fill,
-.ql-snow .ql-toolbar .ql-picker-item:hover .ql-fill,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-fill,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-fill,
-.ql-snow.ql-toolbar button:hover .ql-stroke.ql-fill,
-.ql-snow .ql-toolbar button:hover .ql-stroke.ql-fill,
 .ql-snow.ql-toolbar button:focus .ql-stroke.ql-fill,
 .ql-snow .ql-toolbar button:focus .ql-stroke.ql-fill,
 .ql-snow.ql-toolbar button.ql-active .ql-stroke.ql-fill,
 .ql-snow .ql-toolbar button.ql-active .ql-stroke.ql-fill,
-.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
-.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
 .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,
 .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,
-.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
-.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill,
-.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill {
-  fill: var(--main-font-color);
+.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill,
+.ql-snow .ql-picker.ql-expanded .ql-picker-label .ql-fill {
+  fill: var(--main-font-color) !important;
 }
+
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow .ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,
+.ql-snow .ql-toolbar .ql-picker-label:hover .ql-fill,
+.ql-snow.ql-toolbar .ql-picker-item:hover .ql-fill,
+.ql-snow .ql-toolbar .ql-picker-item:hover .ql-fill,
+.ql-snow.ql-toolbar button:hover .ql-stroke.ql-fill,
+.ql-snow .ql-toolbar button:hover .ql-stroke.ql-fill,
+.ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
+.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
+.ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
+.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill {
+  fill: var(--black-font-color);
+}
+
 
 .ql-toolbar.ql-snow .ql-picker-options {
   border-radius: 5px;
@@ -277,16 +319,16 @@ export default {
   border: none !important;
 }
 
-.ql-picker-label:focus,
-.ql-picker-item:focus,
-.ql-picker-options:focus {
-  outline: none !important;
-}
-
 .ql-snow .ql-picker-label::before {
   line-height: 26px;
   position: relative;
   top: -4px;
+}
+
+.ql-snow .ql-picker.ql-header .ql-picker-label::before, .ql-snow .ql-picker.ql-header .ql-picker-item::before,
+.ql-snow .ql-picker.ql-size .ql-picker-label::before, .ql-snow .ql-picker.ql-size .ql-picker-item::before {
+  font-family: 'Rubik', sans-serif !important;
+  font-weight: 400 !important;
 }
 
 .ql-font-rubik,
@@ -297,11 +339,20 @@ export default {
   font-weight: 400;
 }
 
-.ql-font-roboto,
-.ql-picker-item[data-value='roboto']::before,
-.ql-picker-label[data-value='roboto']::before {
-  content: 'Roboto' !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-weight: 400;
+code {
+  display: inline-block;
+  z-index: -1;
+}
+
+code,
+code *,
+pre,
+pre * {
+  font-family: monospace !important;
+}
+
+code strong,
+pre strong {
+  font-weight: 800 !important;
 }
 </style>

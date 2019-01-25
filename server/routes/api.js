@@ -56,8 +56,8 @@ module.exports = (app) => {
     });
 
     res.cookie('cookieId', cookieId, {
-      expires: new Date(expiry_date),
       httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       secure: false, // TODO: change to true
     });
 
@@ -76,9 +76,9 @@ module.exports = (app) => {
       [Sequelize.Op.and]: [
         Sequelize.where(
           // concat these two columns
-          Sequelize.fn('concat', Sequelize.col('schoolName'), Sequelize.col('sessionName')),
+          Sequelize.fn('concat', Sequelize.col('schoolName'), ' ', Sequelize.col('sessionName')),
           // case insensitive search
-          { [Sequelize.Op.iLike]: '%' + searchQuery + '%' },
+          { [Sequelize.Op.iLike]: `%${searchQuery}%` },
         ),
         { active: true },
       ],
@@ -92,13 +92,11 @@ module.exports = (app) => {
 
     const filteredSessions = sessions.filter(({
       createdAt,
-      duration,
       schoolName,
       sessionName,
       id,
     }) => ({
       createdAt,
-      duration,
       schoolName,
       sessionName,
       sessionId: id,
@@ -107,42 +105,36 @@ module.exports = (app) => {
     res.json([
       {
         createdAt: '2019-01-21 23:58:35.425-08',
-        duration: 60,
         schoolName: 'UCSC',
         sessionName: 'CMPS 101',
         sessionId: '1',
       },
       {
         createdAt: '2019-01-20 23:58:35.425-08',
-        duration: 60,
         schoolName: 'UCSC',
         sessionName: 'CMPS 107',
         sessionId: '2',
       },
       {
         createdAt: '2019-01-19 23:58:35.425-08',
-        duration: 60,
         schoolName: 'UCSC',
         sessionName: 'CMPS 102',
         sessionId: '3',
       },
       {
         createdAt: '2019-01-19 23:58:35.425-08',
-        duration: 60,
         schoolName: 'UCSC',
         sessionName: 'CMPS 102',
         sessionId: '4',
       },
       {
         createdAt: '2019-01-19 23:58:35.425-08',
-        duration: 60,
         schoolName: 'UCSC',
         sessionName: 'CMPS 102',
         sessionId: '5',
       },
       {
         createdAt: '2019-01-19 23:58:35.425-08',
-        duration: 60,
         schoolName: 'UCSC',
         sessionName: 'CMPS 102',
         sessionId: '6',

@@ -25,6 +25,7 @@ export default {
 
   --main-bg-color: #f88379;
   --main-bg-color-hover: #ee7d74;
+  --gray-bg-color-3: #f0f0f0;
   --gray-bg-color-2: #cbd0d6;
   --gray-bg-color: #f7f7f7;
   --gray-bg-color-hover: #f5f5f5;
@@ -33,6 +34,7 @@ export default {
   --main-font-color: #f88379;
   --main-font-color-hover: #ee7d74;
   --main-font-color-light: #fef3f2;
+  --dark-gray-font-color: #575757;
   --gray-font-color: #bac1c9;
   --black-font-color: #444444;
   --white-font-color: #ffffff;
@@ -85,6 +87,7 @@ input:focus {
 * {
   font-family: 'Rubik', Helvetica, Arial, sans-serif;
   box-sizing: border-box;
+  outline: 0 !important;
   position: relative;
 }
 
