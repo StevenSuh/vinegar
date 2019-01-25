@@ -25,13 +25,18 @@ module.exports = async () => {
     const Sessions = require('./SessionsModel')(dbClient);
     const Users = require('./UsersModel')(dbClient);
 
+    // create tables
+    await Sessions.sync({ alter: true, force: false });
+    await Users.sync({ alter: true, force: false });
+    await Intervals.sync({ alter: true, force: false });
+
     // associations
     Intervals.belongsTo(Users, { foreignKey: 'userId' });
     Intervals.belongsTo(Sessions, { foreignKey: 'sessionId' });
     Users.belongsTo(Sessions, { foreignKey: 'sessionId' });
     Sessions.belongsTo(Users, { foreignKey: 'ownerId' });
 
-    // table creation if non-existent
+    // add table associations
     // note: order of operation depends on table associations
     await Sessions.sync({ alter: true, force: false });
     await Users.sync({ alter: true, force: false });

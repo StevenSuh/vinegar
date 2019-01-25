@@ -30,9 +30,9 @@ class PlainClipboard extends Clipboard {
     const index = text.length + range.index;
     const length = 0
 
-    this.quill.updateContents(delta, 'silent')
-    this.quill.setSelection(index, length, 'silent')
-    this.quill.scrollIntoView()
+    this.quill.updateContents(delta, 'user');
+    this.quill.setSelection(index, length, 'user');
+    this.quill.scrollIntoView();
   }
 }
 

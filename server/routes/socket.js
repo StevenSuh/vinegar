@@ -1,5 +1,8 @@
 const http = require('http');
 const SocketIo = require('socket.io');
+const {ALLOWED_CHARACTERS} = require('../defs');
+
+const regex = new RegExp('^$|^[' + ALLOWED_CHARACTERS.join('') + ']+$');
 
 module.exports = (app) => {
   const httpServer = http.Server(app);
@@ -7,7 +10,7 @@ module.exports = (app) => {
 
   io.on('connection', function(socket) {
     socket.on('joinSession', function({ session }) {
-      if (!(/[^\w.]/.test(session))) {
+      if (regex.exec(session)) {
         socket.join(session);
       }
     });
