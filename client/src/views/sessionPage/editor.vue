@@ -30,12 +30,6 @@ export default {
       type: String,
       default: 'Name',
     },
-    school: String,
-    session: String,
-    userId: {
-      type: String,
-      default: 'userId',
-    },
     value: {
       type: String,
       default: 'Hello world!',
@@ -50,10 +44,7 @@ export default {
   methods: {
     onCheckBlur: function() {
       if (!this.editor.hasFocus()) {
-        this.$socket.emit('onEditorSelectionRemove', {
-          session: `${this.school}-${this.session}`,
-          userId: this.userId,
-        });
+        this.$socket.emit('onEditorSelectionRemove');
       }
     },
     selectionUpdate(range, oldRange, source) {
@@ -61,8 +52,6 @@ export default {
         this.$socket.emit('onEditorSelectionUpdate', {
           data: range,
           name: this.name,
-          session: `${this.school}-${this.session}`,
-          userId: this.userId,
         });
       }
     },
@@ -70,10 +59,8 @@ export default {
       if (source === 'user') {
         this.$socket.emit('onEditorTextUpdate', {
           data: delta,
-          session: `${this.school}-${this.session}`,
         });
       }
-      // this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML : '');
     },
   },
   mounted() {
@@ -126,9 +113,7 @@ export default {
   },
   sockets: {
     connect: function() {
-      this.$socket.emit('joinSession', {
-        session: `${this.school}-${this.session}`,
-      });
+      this.$socket.emit('onJoinSession');
     },
     onEditorSelectionUpdate: function({data, name, userId}) {
       const range = new Range(data.index, data.length);
@@ -138,8 +123,8 @@ export default {
     onEditorSelectionRemove: function({userId}) {
       this.editor.getModule('cursors').removeCursor(userId);
     },
-    onEditorTextUpdate: function(data) {
-      this.editor.updateContents(data);
+    onEditorTextUpdate: function({data, userId}) {
+      this.editor.updateContents(data, userId);
     },
   },
   beforeDestroy() {
