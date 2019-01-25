@@ -23,11 +23,11 @@ const getSessionName = (socket) => {
   return null;
 };
 
-const getSessionIdCookie = (socket) => {
+const getCookieId = (socket) => {
   const reqCookie = socket.request.headers.cookie;
   const cookies = cookie.parse(reqCookie);
 
-  return cookies.sessionId;
+  return cookies.cookieId;
 };
 
 // main
@@ -37,7 +37,7 @@ module.exports = (app) => {
 
   io.on('connection', function(socket) {
     const sessionName = getSessionName(socket);
-    const userId = getSessionIdCookie(socket); // obfuscated
+    const userId = getCookieId(socket); // obfuscated
 
     socket.on('onJoinSession', function() {
       if (sessionName) {
