@@ -10,6 +10,10 @@ const dbClient = require('../db')();
 const Users = require('../db/UsersModel')(dbClient);
 const Sessions = require('../db/SessionsModel')(dbClient);
 
+// const {ALLOWED_CHARACTERS} = require('../defs');
+
+// const regex = new RegExp('^$|^[' + ALLOWED_CHARACTERS.join('') + ']+$');
+
 module.exports = (app) => {
   // authentication
   app.get('/api/signin', (req, res) => {
@@ -36,7 +40,7 @@ module.exports = (app) => {
     });
   });
 
-  app.get('/callback', async (req, res) => {
+  app.get('/api/callback', async (req, res) => {
     const { code } = req.query;
 
     const {

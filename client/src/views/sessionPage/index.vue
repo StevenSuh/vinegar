@@ -1,5 +1,5 @@
 <template>
-  <Editor />
+  <Editor :session="$route.params.session" :school="$route.params.school" />
 </template>
 
 <script>

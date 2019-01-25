@@ -28,56 +28,57 @@ export default {
       return `${hours}:${minutes} ${ampm}`;
     },
     highlightSchool(data) {
+      const query = this.query.toLowerCase();
       const fullName = `${data.schoolName} ${data.sessionName}`.toLowerCase();
 
       const indexes = [];
       let i = 0;
       while (i < data.schoolName.length) {
-        const index = fullName.indexOf(this.query, i);
+        const index = fullName.indexOf(query, i);
 
         if (index === -1) {
           break;
         }
 
-        i = index + this.query.length;
+        i = index + query.length;
         indexes.push(index);
       }
 
       i = 0;
       const filteredName = indexes.reduce((accumulated, index) => {
         const result = accumulated + data.schoolName.slice(i, index) + '<span class="highlightSearch">' +
-          data.schoolName.slice(index, index + this.query.length) + '</span>';
+          data.schoolName.slice(index, index + query.length) + '</span>';
 
-        i = index + this.query.length;
+        i = index + query.length;
         return result;
       }, '');
 
       return filteredName + data.schoolName.slice(i);
     },
     highlightSession(data) {
+      const query = this.query.toLowerCase();
       const fullName = `${data.schoolName} ${data.sessionName}`.toLowerCase();
 
       const indexes = [];
       let i = 0;
       while (i < fullName.length) {
-        const index = fullName.indexOf(this.query, i);
+        const index = fullName.indexOf(query, i);
 
         if (index === -1) {
           break;
         }
 
-        i = index + this.query.length;
+        i = index + query.length;
 
         if (i > data.schoolName.length) {
           indexes.push(index);
         }
       }
 
-
       i = 0;
       const filteredName = indexes.reduce((accumulated, index) => {
         index -= (data.schoolName.length + 1);
-        const queryLen = this.query.length + Math.min(index, 0);
+        const queryLen = query.length + Math.min(index, 0);
         index = Math.max(index, 0);
 
         const result = accumulated + data.sessionName.slice(i, index) + '<span class="highlightSearch">' +

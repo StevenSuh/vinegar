@@ -30,6 +30,8 @@ export default {
       type: String,
       default: 'Name',
     },
+    school: String,
+    session: String,
     userId: {
       type: String,
       default: 'userId',
@@ -49,7 +51,7 @@ export default {
     onCheckBlur: function() {
       if (!this.editor.hasFocus()) {
         this.$socket.emit('onEditorSelectionRemove', {
-          session: `${this.school}/${this.session}`,
+          session: `${this.school}-${this.session}`,
           userId: this.userId,
         });
       }
@@ -59,7 +61,7 @@ export default {
         this.$socket.emit('onEditorSelectionUpdate', {
           data: range,
           name: this.name,
-          session: `${this.school}/${this.session}`,
+          session: `${this.school}-${this.session}`,
           userId: this.userId,
         });
       }
@@ -68,7 +70,7 @@ export default {
       if (source === 'user') {
         this.$socket.emit('onEditorTextUpdate', {
           data: delta,
-          session: `${this.school}/${this.session}`,
+          session: `${this.school}-${this.session}`,
         });
       }
       // this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML : '');
@@ -125,7 +127,7 @@ export default {
   sockets: {
     connect: function() {
       this.$socket.emit('joinSession', {
-        session: `${this.school}/${this.session}`,
+        session: `${this.school}-${this.session}`,
       });
     },
     onEditorSelectionUpdate: function({data, name, userId}) {
