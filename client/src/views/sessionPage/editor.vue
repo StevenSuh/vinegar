@@ -14,7 +14,9 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 
 import 'quill-cursors/dist/quill-cursors.css';
-import PlainClipboard from './PlainClipboard'
+
+import {codeBlockIndentHandler} from './editorUtils';
+import PlainClipboard from './PlainClipboard';
 
 Quill.register('modules/clipboard', PlainClipboard, true)
 
@@ -30,12 +32,6 @@ export default {
       type: String,
       default: 'Name',
     },
-    school: String,
-    session: String,
-    userId: {
-      type: String,
-      default: 'userId',
-    },
     value: {
       type: String,
       default: 'Hello world!',
@@ -50,36 +46,38 @@ export default {
   methods: {
     onCheckBlur: function() {
       if (!this.editor.hasFocus()) {
-        this.$socket.emit('onEditorSelectionRemove', {
-          session: `${this.school}-${this.session}`,
-          userId: this.userId,
-        });
+        this.$socket.emit('onEditorSelectionRemove');
       }
     },
-    selectionUpdate(range, oldRange, source) {
-      if (source === 'user' && range) {
-        this.$socket.emit('onEditorSelectionUpdate', {
-          data: range,
-          name: this.name,
-          session: `${this.school}-${this.session}`,
-          userId: this.userId,
-        });
+    selectionUpdate(type, range, oldRange, source) {
+      if (type === 'selection-change') {
+        if (source !== Quill.sources.API && range) {
+          this.$socket.emit('onEditorSelectionUpdate', {
+            data: range,
+            name: this.name,
+          });
+        }
       }
     },
     textUpdate(delta, oldDelta, source) {
-      if (source === 'user') {
+      if (source === Quill.sources.USER) {
         this.$socket.emit('onEditorTextUpdate', {
           data: delta,
-          session: `${this.school}-${this.session}`,
         });
       }
-      // this.$emit('input', this.editor.getText() ? this.editor.root.innerHTML : '');
     },
   },
   mounted() {
     this.editor = new Quill(this.$refs.editor, {
       modules: {
-        cursors: true,
+        cursors: {
+          autoRegisterListener: false,
+        },
+        keyboard: {
+          bindings: {
+            'indent code-block': codeBlockIndentHandler(true),
+          },
+        },
         toolbar: {
           container: [
             ['bold', 'italic', 'underline', 'strike', 'code'], // toggled buttons
@@ -115,7 +113,7 @@ export default {
 
     this.editor.format('font', 'rubik');
 
-    this.editor.on('selection-change', this.selectionUpdate);
+    this.editor.on('editor-change', this.selectionUpdate);
     this.editor.on('text-change', this.textUpdate);
 
     document.getElementsByClassName('ql-undo')[0].innerHTML = UndoIcon;
@@ -126,9 +124,7 @@ export default {
   },
   sockets: {
     connect: function() {
-      this.$socket.emit('joinSession', {
-        session: `${this.school}-${this.session}`,
-      });
+      this.$socket.emit('onJoinSession');
     },
     onEditorSelectionUpdate: function({data, name, userId}) {
       const range = new Range(data.index, data.length);
@@ -138,8 +134,8 @@ export default {
     onEditorSelectionRemove: function({userId}) {
       this.editor.getModule('cursors').removeCursor(userId);
     },
-    onEditorTextUpdate: function(data) {
-      this.editor.updateContents(data);
+    onEditorTextUpdate: function({data, userId}) {
+      this.editor.updateContents(data, userId);
     },
   },
   beforeDestroy() {

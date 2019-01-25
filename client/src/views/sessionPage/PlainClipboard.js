@@ -1,10 +1,9 @@
-import Quill from 'quill'
-const Clipboard = Quill.import('modules/clipboard')
-const Delta = Quill.import('delta')
+import Quill from 'quill';
+const Clipboard = Quill.import('modules/clipboard');
+const Delta = Quill.import('delta');
 
 class PlainClipboard extends Clipboard {
   onPaste (e) {
-    window.quill = this.quill;
     e.preventDefault();
     const range = this.quill.getSelection();
     const text = e.clipboardData.getData('text/plain');
@@ -28,10 +27,10 @@ class PlainClipboard extends Clipboard {
       .delete(range.length)
       .insert(text, attribute);
     const index = text.length + range.index;
-    const length = 0
+    const length = 0;
 
-    this.quill.updateContents(delta, 'user');
-    this.quill.setSelection(index, length, 'user');
+    this.quill.updateContents(delta, Quill.sources.USER);
+    this.quill.setSelection(index, length, Quill.sources.USER);
     this.quill.scrollIntoView();
   }
 }
