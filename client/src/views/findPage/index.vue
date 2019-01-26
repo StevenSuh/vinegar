@@ -123,7 +123,7 @@ export default {
         this.isAuthenticated = isAuthenticated;
         this.loaded = true;
         this.uid = uid;
-      }, 2000);
+      }, 10);
     },
     onResize: function() {
       this.isMobile = window.innerWidth <= MIN_MOBILE_WIDTH;

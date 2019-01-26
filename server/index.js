@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== 'production') {
     throw new Error('Your config.js does not exist. Get the file from owners of this repo else this project will not be able to run');
   }
 
-  const configTemplate = require('./config_tempalte');
+  const configTemplate = require('./config_template');
   const config = require('./config');
 
   for (let key in configTemplate) {
@@ -27,6 +27,9 @@ const PORT = process.env.PORT || 5000;
 const WS_PORT = process.env.WS_PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'production') {

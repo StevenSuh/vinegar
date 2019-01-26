@@ -6,18 +6,18 @@ module.exports = (dbClient) => {
   if (!Sessions) {
     Sessions = dbClient.define('sessions', {
       active: {
-        allowNull: false,
+        allowNull: true,
         defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
       content: {
-        allowNull: false,
+        allowNull: true,
         defaultValue: '',
         type: Sequelize.TEXT,
       },
       // minutes
       duration: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.INTEGER,
       },
       id: {
