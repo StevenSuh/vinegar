@@ -1,7 +1,25 @@
 const express = require('express');
+
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+
+if (process.env.NODE_ENV !== 'production') {
+  const fs = require('fs');
+
+  if (!fs.existsSync('./config.js')) {
+    throw new Error('Your config.js does not exist. Get the file from owners of this repo else this project will not be able to run');
+  }
+
+  const configTemplate = require('./config_tempalte');
+  const config = require('./config');
+
+  for (let key in configTemplate) {
+    if (!config[key]) {
+      throw new Error(`Your config.js is missing ${key} property`);
+    }
+  }
+}
 
 const app = express();
 
