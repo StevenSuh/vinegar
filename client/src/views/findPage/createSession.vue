@@ -16,10 +16,20 @@ export default {
   mounted: function(){
     document.getElementById("submit").addEventListener("click", async (event)=>{
       event.preventDefault();
-      console.log( await postSession({
+      let post = await postSession({
         schoolName: document.getElementById("schoolName").value,
         sessionName: document.getElementById("sessionName").value
-      }))
+      })
+      if(post.created){
+        alert(`created new room ${post.schoolName} - ${post.sessionName}`)
+      }
+      else{
+        alert(`${post.schoolName} - ${post.sessionName} already exists. Redirecting you there...`)
+      }
+      this.$router.push(`session/${post.schoolName}/${post.sessionName}`)
+
+
+
     })
   }
 };

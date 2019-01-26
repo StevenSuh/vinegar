@@ -30,8 +30,7 @@ module.exports = (app) => {
       "schoolName": req.body.schoolName,
     }})
     .spread((user, created) => {
-      console.log("created???   ")
-      console.log(created)
+
       if(created){
         return res.json({
           created: true,
