@@ -85,7 +85,7 @@ export default {
 
 .search-wrapper {
   margin: auto;
-  width: 750px;
+  width: 75%;
 }
 
 .search-title {

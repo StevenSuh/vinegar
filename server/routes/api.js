@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize');
 const uuidv4 = require('uuid/v4');
 
 const {
@@ -7,12 +6,8 @@ const {
 } = require('../auth-utils');
 
 const dbClient = require('../db')();
-const Users = require('../db/UsersModel')(dbClient);
-const Sessions = require('../db/SessionsModel')(dbClient);
-
-// const {ALLOWED_CHARACTERS} = require('../defs');
-
-// const regex = new RegExp('^$|^[' + ALLOWED_CHARACTERS.join('') + ']+$');
+const Users = require('../db/users/model')(dbClient);
+const Sessions = require('../db/sessions/model')(dbClient);
 
 module.exports = (app) => {
   // authentication
@@ -69,7 +64,7 @@ module.exports = (app) => {
     }
     return res.json({
       isAuthenticated: true,
-      uid: user.id,
+      uid: user.getDataValue(Users.id),
     });
   });
 
@@ -79,7 +74,6 @@ module.exports = (app) => {
     const {
       gid,
       email,
-      tokens: { expiry_date },
     } = await getGoogleAccountFromCode(code);
 
     const cookieId = uuidv4();
@@ -109,74 +103,13 @@ module.exports = (app) => {
     } = req.query;
 
     const searchQuery = query.toLowerCase();
-    const searchCriteria = {
-      [Sequelize.Op.and]: [
-        Sequelize.where(
-          // concat these two columns
-          Sequelize.fn('concat', Sequelize.col('schoolName'), ' ', Sequelize.col('sessionName')),
-          // case insensitive search
-          { [Sequelize.Op.iLike]: `%${searchQuery}%` },
-        ),
-        { active: true },
-      ],
-    }
-
-    const sessions = await Sessions.findAll({
+    const sessions = await Sessions.searchFullName({
+      attributes: [Sessions.CREATED_AT, Sessions.SCHOOL_NAME, Sessions.SESSION_NAME, Sessions.ID],
       limit,
       offset,
-      where: searchCriteria,
+      query: searchQuery,
     });
 
-    const filteredSessions = sessions.filter(({
-      createdAt,
-      schoolName,
-      sessionName,
-      id,
-    }) => ({
-      createdAt,
-      schoolName,
-      sessionName,
-      sessionId: id,
-    }));
-
-    res.json([
-      {
-        createdAt: '2019-01-21 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 101',
-        sessionId: '1',
-      },
-      {
-        createdAt: '2019-01-20 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 107',
-        sessionId: '2',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '3',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '4',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '5',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '6',
-      },
-    ]);
-    // res.json(filteredSessions);
+    res.json(sessions);
   });
 };

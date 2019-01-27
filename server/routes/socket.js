@@ -15,7 +15,7 @@ const Chats = require('../db/chatModel')(dbClient);
 
 
 // helpers
-const getSessionName = (socket) => {
+const getSchoolAndSession = (socket) => {
   const { referer } = socket.request.headers;
 
 
@@ -29,11 +29,21 @@ const getSessionName = (socket) => {
 
   const sessionParse = sessionRegex.exec(decodedUrl);
 
-  if (sessionParse) {
-    const sessionName = `${sessionParse[2]}-${sessionParse[3]}`; // TODO
+  // TODO
+  return {
+    schoolName: sessionParse[2],
+    sessionName: sessionParse[3],
+  };
+};
 
-    if (characterRegex.exec(sessionName)) {
-      return sessionName;
+const getSessionName = (socket) => {
+  const { schoolName, sessionName } = getSchoolAndSession(socket);
+
+  if (sessionParse) {
+    const session = `${schoolName}-${sessionName}`;
+
+    if (characterRegex.exec(session)) {
+      return session;
     }
   }
   return null;
@@ -51,35 +61,23 @@ module.exports = (app) => {
   const httpServer = http.Server(app);
   const io = SocketIo(httpServer);
 
-  io.on('connection', async function(socket) {
-    const sessionName = getSessionName(socket);
-    const cookieId = getCookieId(socket); // obfuscated
-    const { referer } = socket.request.headers;
-    let decodedUrl = null;
+  io.on('connection', function(socket) {
+    const session = getSessionName(socket);
+    const userId = getCookieId(socket); // obfuscated
 
-    try {
-      decodedUrl = decodeURI(referer);
-    } catch (err) {
-      throw new Error('Invalid url');
-    }
-    const sessionParse = sessionRegex.exec(decodedUrl);
-    const session = await Sessions.findOne({where: {
-      schoolName: sessionParse[2],
-      sessionName: sessionParse[3]
-    }})
-    const user = await Users.findOne({where: {cookieId}})
-
-    if (sessionName) {
-      socket.join(sessionName);
-    } else {
+    socket.on('onJoinSession', function() {
+      if (session) {
+        socket.join(session);
+        return;
+      }
       socket.emit('exception', {
         errorMessage: 'Could not join a session due to invalid name',
       });
       return;
-    }
+    });
 
     socket.on('onEditorTextUpdate', function({ data }) {
-      socket.broadcast.to(sessionName).emit('onEditorTextUpdate', {data, cookieId});
+      socket.broadcast.to(session).emit('onEditorTextUpdate', {data, userId});
     });
 
     socket.on('chatSend', async function(data){
@@ -96,11 +94,11 @@ module.exports = (app) => {
     })
 
     socket.on('onEditorSelectionUpdate', function({ data, name }) {
-      socket.broadcast.to(sessionName).emit('onEditorSelectionUpdate', {data, name, cookieId});
+      socket.broadcast.to(session).emit('onEditorSelectionUpdate', {data, name, userId});
     });
 
     socket.on('onEditorSelectionRemove', function() {
-      socket.broadcast.to(sessionName).emit('onEditorSelectionRemove', {cookieId});
+      socket.broadcast.to(session).emit('onEditorSelectionRemove', {userId});
     });
   });
 

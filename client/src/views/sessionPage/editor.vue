@@ -1,5 +1,74 @@
 <template>
-  <div ref="editor" v-html="value"></div>
+  <div>
+    <div ref="toolbar">
+      <span class="ql-formats">
+        <button class="ql-bold" />
+        <button class="ql-italic" />
+        <button class="ql-underline" />
+        <button class="ql-strike" />
+        <button class="ql-code" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-blockquote" />
+        <button class="ql-code-block" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-header" value="1" />
+        <button class="ql-header" value="2" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-list" value="ordered" />
+        <button class="ql-list" value="bullet" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-script" value="sub" />
+        <button class="ql-script" value="super" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-indent" value="-1" />
+        <button class="ql-indent" value="+1" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-direction" value="rtl" />
+      </span>
+      <span class="ql-formats">
+        <select class="ql-size">
+          <option value="small" />
+          <option selected="selected" />
+          <option value="large" />
+          <option value="huge" />
+        </select>
+      </span>
+      <span class="ql-formats">
+        <select class="ql-header">
+          <option value="1" />
+          <option value="2" />
+          <option value="3" />
+          <option value="4" />
+          <option value="5" />
+          <option value="6" />
+          <option selected="selected" />
+        </select>
+      </span>
+      <span class="ql-formats">
+        <select class="ql-color" />
+        <select class="ql-background" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-align ql-active" value />
+        <button class="ql-align" value="center" />
+        <button class="ql-align" value="right" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-clean" />
+      </span>
+      <span class="ql-formats">
+        <button class="ql-undo" />
+        <button class="ql-redo" />
+      </span>
+    </div>
+    <div ref="editor" v-html="value" />
+</div>
 </template>
 
 <script>
@@ -15,7 +84,7 @@ import 'quill/dist/quill.snow.css';
 
 import 'quill-cursors/dist/quill-cursors.css';
 
-import {codeBlockIndentHandler} from './editorUtils';
+import {codeBlockIndentHandler} from './utils';
 import PlainClipboard from './PlainClipboard';
 
 Quill.register('modules/clipboard', PlainClipboard, true)
@@ -79,25 +148,7 @@ export default {
           },
         },
         toolbar: {
-          container: [
-            ['bold', 'italic', 'underline', 'strike', 'code'], // toggled buttons
-            ['blockquote', 'code-block'],
-
-            [{header: 1}, {header: 2}], // custom button values
-            [{list: 'ordered'}, {list: 'bullet'}],
-            [{script: 'sub'}, {script: 'super'}], // superscript/subscript
-            [{indent: '-1'}, {indent: '+1'}], // outdent/indent
-            [{direction: 'rtl'}], // text direction
-
-            [{size: ['small', false, 'large', 'huge']}], // custom dropdown
-            [{header: [1, 2, 3, 4, 5, 6, false]}],
-
-            [{color: []}, {background: []}], // dropdown with defaults from theme
-            [{align: ''}, {align: 'center'}, {align: 'right'}],
-
-            ['clean'], // remove formatting button
-            ['undo', 'redo'],
-          ],
+          container: this.$refs.toolbar,
           handlers: {
             undo: () => {
               this.editor.history.undo();

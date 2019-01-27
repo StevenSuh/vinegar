@@ -1,4 +1,8 @@
 const Sequelize = require('sequelize');
+const {
+  getFullName,
+  searchFullName,
+} = require('./methods');
 
 let Sessions = null;
 
@@ -37,11 +41,27 @@ module.exports = (dbClient) => {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      // ownerId
     }, {
+      getterMethods: {
+        getFullName,
+      },
       freezeTableName: true,
       timestamps: true,
     });
+
+    // class methods
+    Sessions.searchFullName = searchFullName;
+
+    // class definitions
+    Sessions.ACTIVE = 'active';
+    Sessions.CONTENT = 'content';
+    Sessions.CREATED_AT = 'createdAt';
+    Sessions.DURATION = 'duration';
+    Sessions.ID = 'id';
+    Sessions.PARTICIPANTS = 'participants';
+    Sessions.SCHOOL_NAME = 'schoolName';
+    Sessions.SESSION_NAME = 'sessionName';
+    Sessions.UPDATED_AT = 'updatedAt';
   }
   return Sessions;
 };

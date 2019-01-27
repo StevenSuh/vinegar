@@ -4,9 +4,21 @@
       <div class="find" v-if="!isMobile">
         <div class="container paddingTop">
           <nav class="navbar">
-            <router-link class="back-button-wrapper hover" tag="a" to="/">
+            <router-link
+              class="back-button-wrapper hover"
+              tag="a"
+              to="/"
+              v-if="isMakingChoice"
+            >
               <img class="back-button" :src="backImage" alt="back button" />
             </router-link>
+            <button
+              class="back-button-wrapper hover"
+              v-else
+              v-on:click="onSetIsMakingChoiceTrue"
+            >
+              <img class="back-button" :src="backImage" alt="back button" />
+            </button>
             <h2 class="nav-header">Vinegar</h2>
           </nav>
         </div>
@@ -119,14 +131,17 @@ export default {
     },
     onInit: async function() {
       const {isAuthenticated, uid = ''} = await getAuthStatus();
-      setTimeout(() => {
-        this.isAuthenticated = isAuthenticated;
-        this.loaded = true;
-        this.uid = uid;
-      }, 10);
+      this.isAuthenticated = isAuthenticated;
+      this.loaded = true;
+      this.uid = uid;
     },
     onResize: function() {
       this.isMobile = window.innerWidth <= MIN_MOBILE_WIDTH;
+    },
+    onSetIsMakingChoiceTrue: function() {
+      this.isMakingChoice = true;
+      this.isJoiningSession = false;
+      this.isCreatingSession = false;
     },
   },
   mounted: function() {
@@ -169,6 +184,7 @@ export default {
 }
 
 .back-button-wrapper {
+  cursor: pointer;
   position: absolute;
   left: calc(-60px - 5px);
   height: 60px;
@@ -187,8 +203,7 @@ export default {
   left: 0;
   pointer-events: none;
   position: absolute;
-  transform: scale(0.45);
-  transform-origin: 0 100%;
+  height: 85%;
 }
 
 .find-right-img {
@@ -196,7 +211,6 @@ export default {
   right: 40px;
   pointer-events: none;
   position: absolute;
-  transform: scale(0.45);
-  transform-origin: 100% 100%;
+  height: 85%;
 }
 </style>

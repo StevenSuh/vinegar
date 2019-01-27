@@ -25,12 +25,18 @@ module.exports = (dbClient) => {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
-      // userId,
-      // sessionId,
     }, {
       freezeTableName: true,
       timestamps: true,
     });
+
+    // class definitions
+    Intervals.ACTIVE = 'active';
+    Intervals.CREATED_AT = 'createdAt';
+    Intervals.DOWNVOTE = 'downvote';
+    Intervals.ID = 'id';
+    Intervals.UPVOTE = 'upvote';
+    Intervals.UPDATED_AT = 'updatedAt';
   }
   return Intervals;
 };

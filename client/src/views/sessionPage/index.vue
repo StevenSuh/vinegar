@@ -1,9 +1,10 @@
 <template>
-  <div id="sessionPage">
-    <Editor :session="$route.params.session" :school="$route.params.school" />
-    <chatRoom/>
-  </div>
-
+  <transition name="fade">
+    <div v-if="show" class="session">
+      <Editor :session="$route.params.session" :school="$route.params.school" />
+      <chatRoom/>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -27,5 +28,20 @@ export default {
   mounted: function(){
 
   },
+  data() {
+    return {
+      // show
+      show: false,
+    };
+  },
+  mounted() {
+    this.show = true;
+  },
 };
 </script>
+
+<style>
+.session {
+  height: 100vh;
+}
+</style>

@@ -100,7 +100,10 @@ input:focus {
 }
 
 .fade-enter-active {
+  height: 100%;
+  position: absolute;
   transition-delay: var(--transition-duration);
+  width: 100%;
 }
 
 .fade-enter,
