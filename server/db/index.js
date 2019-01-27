@@ -3,7 +3,7 @@ const {
   pgDbName,
   pgUsername,
   pgPassword,
-} = require('../config');
+} = require('config');
 
 let dbClient = null;
 

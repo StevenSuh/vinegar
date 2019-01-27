@@ -3,16 +3,16 @@ const uuidv4 = require('uuid/v4');
 const {
   urlGoogle,
   getGoogleAccountFromCode,
-} = require('../auth-utils');
+} = require('auth-utils');
 
-const dbClient = require('../db')();
-const Users = require('../db/users/model')(dbClient);
-const Sessions = require('../db/sessions/model')(dbClient);
+const dbClient = require('db')();
+const Users = require('db/users/model')(dbClient);
+const Sessions = require('db/sessions/model')(dbClient);
 
 module.exports = (app) => {
   // authentication
   app.get('/api/signin', (req, res) => {
-    if (req.cookies.cookieId) {
+    if (req.cookies.userCookieId) {
       return res.json({ signinUrl: '/find' });
     }
     return res.json({ signinUrl: urlGoogle() });
@@ -52,15 +52,15 @@ module.exports = (app) => {
   })
 
   app.get('/api/auth/status', async (req, res) => {
-    const { cookieId } = req.cookies;
-    if (!cookieId) {
+    const { userCookieId } = req.cookies;
+    if (!userCookieId) {
       return res.json({ isAuthenticated: false });
     }
 
-    const user = await Users.findOne({where: { cookieId }});
+    const user = await Users.findOne({where: { cookieId: userCookieId }});
 
     if (!user) {
-      res.clearCookie('cookieId');
+      res.clearCookie('userCookieId');
       return res.json({ isAuthenticated: false });
     }
     return res.json({ isAuthenticated: true });
@@ -74,17 +74,17 @@ module.exports = (app) => {
       email,
     } = await getGoogleAccountFromCode(code);
 
-    const cookieId = uuidv4();
+    const userCookieId = uuidv4();
 
     // create or update user on db
     Users.upsert({
       active: false,
       email,
       gid,
-      cookieId,
+      cookieId: userCookieId,
     });
 
-    res.cookie('cookieId', cookieId, {
+    res.cookie('userCookieId', userCookieId, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
       secure: false, // TODO: change to true
@@ -102,12 +102,23 @@ module.exports = (app) => {
 
     const searchQuery = query.toLowerCase();
     const sessions = await Sessions.findAllByFullName({
-      attributes: [Sessions.CREATED_AT, Sessions.SCHOOL_NAME, Sessions.SESSION_NAME, Sessions.ID],
+      attributes: [
+        Sessions.CREATED_AT,
+        Sessions.ID,
+        Sessions.PASSWORD,
+        Sessions.SCHOOL_NAME,
+        Sessions.SESSION_NAME,
+      ],
       limit,
       offset,
       query: searchQuery,
     });
 
-    res.json(sessions);
+    const filteredSessions = sessions.map(session => {
+      session.password = Boolean(session.password);
+      return session;
+    });
+
+    res.json(filteredSessions);
   });
 };

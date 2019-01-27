@@ -11,12 +11,20 @@
         <span class="name-filler" />
         <p class="result-session" v-html="highlightSession(item)" />
       </div>
-      <p>{{ 'Created at ' + formatDate(item.createdAt) }}</p>
+      <p class="detail">
+        {{ 'Created at ' + formatDate(item.createdAt) }}
+        <span class="protected" v-if="item.password">
+          {{ 'Protected' }}
+          <span class="lock" v-html="PasswordIcon" />
+        </span>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import PasswordIcon from '!raw-loader!@/assets/lock.svg';
+
 import {
   formatDate,
   highlightSchool,
@@ -24,6 +32,11 @@ import {
 } from './utils';
 
 export default {
+  data() {
+    return {
+      PasswordIcon,
+    };
+  },
   methods: {
     formatDate,
     highlightSchool,
@@ -49,10 +62,10 @@ export default {
 .result-wrapper {
   background-color: var(--white-bg-color);
   border: 1px solid var(--gray-bg-color-2);
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
   max-height: 340px;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 10px 0;
   top: -1px;
   width: 100%;
@@ -86,11 +99,34 @@ export default {
 .result-session {
   color: var(--dark-gray-font-color);
 }
+
+.detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.protected {
+  right: 30px;
+}
+
+.lock {
+  display: inline-block;
+  height: 24px;
+  right: -30px;
+  position: absolute;
+  top: -4px;
+  width: 24px;
+}
 </style>
 
 <style>
 .highlightSearch {
   color: var(--main-font-color);
   font-weight: 500;
+}
+
+.lock > svg {
+  stroke: var(--main-bg-color);
 }
 </style>

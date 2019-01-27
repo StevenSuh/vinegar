@@ -2,10 +2,11 @@ const cookie = require('cookie');
 const http = require('http');
 const pathToRegexp = require('path-to-regexp');
 const SocketIo = require('socket.io');
+const SocketRedis = require('socket.io-redis');
 
-const dbClient = require('../../db')();
-const Sessions = require('../../db/sessions/model')(dbClient);
-const Users = require('../../db/users/model')(dbClient);
+const dbClient = require('db')();
+const Sessions = require('db/sessions/model')(dbClient);
+const Users = require('db/users/model')(dbClient);
 
 const sessionRegex = pathToRegexp('http://localhost:8080/session/:school/:session');
 
@@ -22,11 +23,11 @@ const getSchoolAndSession = (socket) => {
   };
 };
 
-const getCookieId = (socket) => {
+const getUserCookieId = (socket) => {
   const reqCookie = socket.request.headers.cookie;
   const cookies = cookie.parse(reqCookie);
 
-  return cookies.cookieId;
+  return cookies.userCookieId;
 };
 
 const socketInit = (socket, session, user) => {
@@ -39,10 +40,11 @@ const socketInit = (socket, session, user) => {
 module.exports = (app) => {
   const httpServer = http.Server(app);
   const io = SocketIo(httpServer);
+  io.adapter(SocketRedis({ host: 'localhost', port: 6379 }));
 
   io.on('connection', async function(socket) {
     const { schoolName, sessionName } = getSchoolAndSession(socket);
-    const cookieId = getCookieId(socket);
+    const userCookieId = getUserCookieId(socket);
 
     const sessionPromise = Sessions.findActiveBySchoolAndSession({
       attributes: [Sessions.ID, Sessions.PASSWORD, Sessions.SCHOOL_NAME, Sessions.SESSION_NAME],
@@ -51,7 +53,7 @@ module.exports = (app) => {
     });
     const userPromise = Users.findOne({
       attributes: [Users.ID],
-      where: { cookieId },
+      where: { cookieId: userCookieId },
     });
 
     const [session, user] = await Promise.all([sessionPromise, userPromise]);
