@@ -66,10 +66,10 @@ module.exports = async () => {
     });
 
     // order of operation matters
-    await Sessions.sync({ alter: true, force: false });
-    await Users.sync({ alter: true, force: false });
     await Intervals.sync({ alter: true, force: false });
     await Chats.sync({ alter: true, force: false });
+    await Users.sync({ alter: true, force: false });
+    await Sessions.sync({ alter: true, force: false });
   }
 
   return dbClient;

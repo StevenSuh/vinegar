@@ -112,7 +112,6 @@ export default {
       isCreatingSession: false,
       loaded: false,
       show: false,
-      uid: '',
 
       // assets
       backImage,
@@ -130,10 +129,9 @@ export default {
       this.isCreatingSession = true;
     },
     onInit: async function() {
-      const {isAuthenticated, uid = ''} = await getAuthStatus();
+      const {isAuthenticated} = await getAuthStatus();
       this.isAuthenticated = isAuthenticated;
       this.loaded = true;
-      this.uid = uid;
     },
     onResize: function() {
       this.isMobile = window.innerWidth <= MIN_MOBILE_WIDTH;

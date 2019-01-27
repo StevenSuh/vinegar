@@ -58,7 +58,7 @@ export default {
       this.searchQuery = value;
     },
     onSearch: async function() {
-      this.searchResult = await getSearchSessionResults();
+      this.searchResult = await getSearchSessionResults(this.searchQuery);
     },
     onValidate: function(value) {
       return Boolean(regex.exec(value));

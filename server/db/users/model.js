@@ -34,7 +34,10 @@ module.exports = (dbClient) => {
       },
       cookieId: {
         allowNull: true,
-        unique: false,
+        type: Sequelize.STRING,
+      },
+      sessionCookieId: {
+        allowNull: true,
         type: Sequelize.STRING,
       },
     }, {

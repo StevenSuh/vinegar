@@ -401,4 +401,12 @@ code strong,
 pre strong {
   font-weight: 800 !important;
 }
+
+.ql-cursor-selection-block {
+  pointer-events: none;
+}
+
+.ql-cursor-name {
+  user-select: none;
+}
 </style>

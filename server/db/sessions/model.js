@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize');
 const {
   getFullName,
-  searchFullName,
+  findActiveBySchoolAndSession,
+  findAllByFullName,
 } = require('./methods');
 
 let Sessions = null;
@@ -33,6 +34,10 @@ module.exports = (dbClient) => {
         allowNull: true,
         type: Sequelize.INTEGER,
       },
+      password: {
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
       schoolName: {
         allowNull: false,
         type: Sequelize.STRING,
@@ -50,7 +55,8 @@ module.exports = (dbClient) => {
     });
 
     // class methods
-    Sessions.searchFullName = searchFullName;
+    Sessions.findActiveBySchoolAndSession = findActiveBySchoolAndSession;
+    Sessions.findAllByFullName = findAllByFullName;
 
     // class definitions
     Sessions.ACTIVE = 'active';
@@ -59,6 +65,7 @@ module.exports = (dbClient) => {
     Sessions.DURATION = 'duration';
     Sessions.ID = 'id';
     Sessions.PARTICIPANTS = 'participants';
+    Sessions.PASSWORD = 'password';
     Sessions.SCHOOL_NAME = 'schoolName';
     Sessions.SESSION_NAME = 'sessionName';
     Sessions.UPDATED_AT = 'updatedAt';

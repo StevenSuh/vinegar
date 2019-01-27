@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 module.exports = {
   // class methods
-  searchFullName: async function({
+  findAllByFullName: async function({
     attributes,
     limit,
     offset,
@@ -20,11 +20,25 @@ module.exports = {
       ],
     };
 
-    return await Sessions.findAll({
+    return await this.findAll({
       attributes,
       limit,
       offset,
       where: searchCriteria,
+    });
+  },
+  findActiveBySchoolAndSession: async function({
+    attributes,
+    schoolName,
+    sessionName,
+  }) {
+    return await this.findOne({
+      attributes,
+      where: {
+        active: true,
+        schoolName,
+        sessionName,
+      },
     });
   },
 

@@ -57,15 +57,13 @@ module.exports = (app) => {
       return res.json({ isAuthenticated: false });
     }
 
-    const user = await Users.findOne({ where: { cookieId } });
+    const user = await Users.findOne({where: { cookieId }});
+
     if (!user) {
       res.clearCookie('cookieId');
       return res.json({ isAuthenticated: false });
     }
-    return res.json({
-      isAuthenticated: true,
-      uid: user.getDataValue(Users.id),
-    });
+    return res.json({ isAuthenticated: true });
   });
 
   app.get('/api/callback', async (req, res) => {
@@ -103,7 +101,7 @@ module.exports = (app) => {
     } = req.query;
 
     const searchQuery = query.toLowerCase();
-    const sessions = await Sessions.searchFullName({
+    const sessions = await Sessions.findAllByFullName({
       attributes: [Sessions.CREATED_AT, Sessions.SCHOOL_NAME, Sessions.SESSION_NAME, Sessions.ID],
       limit,
       offset,
