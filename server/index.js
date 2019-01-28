@@ -27,6 +27,9 @@ const PORT = process.env.PORT || 5000;
 const WS_PORT = process.env.WS_PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'production') {

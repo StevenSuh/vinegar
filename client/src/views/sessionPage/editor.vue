@@ -123,19 +123,16 @@ export default {
     window.addEventListener('click', this.onCheckBlur);
   },
   sockets: {
-    connect: function() {
-      this.$socket.emit('onJoinSession');
-    },
-    onEditorSelectionUpdate: function({data, name, userId}) {
+    onEditorSelectionUpdate: function({data, name, cookieId}) {
       const range = new Range(data.index, data.length);
 
-      this.editor.getModule('cursors').setCursor(userId, range, name, 'red');
+      this.editor.getModule('cursors').setCursor(cookieId, range, name, 'red');
     },
-    onEditorSelectionRemove: function({userId}) {
-      this.editor.getModule('cursors').removeCursor(userId);
+    onEditorSelectionRemove: function({cookieId}) {
+      this.editor.getModule('cursors').removeCursor(cookieId);
     },
-    onEditorTextUpdate: function({data, userId}) {
-      this.editor.updateContents(data, userId);
+    onEditorTextUpdate: function({data, cookieId}) {
+      this.editor.updateContents(data, cookieId);
     },
   },
   beforeDestroy() {

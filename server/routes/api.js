@@ -22,6 +22,39 @@ module.exports = (app) => {
     }
     return res.json({ signinUrl: urlGoogle() });
   });
+  app.post('/api/create/session', (req, res) =>{ //findorcreate
+    //active, content, duration, id, participants,schoolName,sessionName,
+    Sessions.findOrCreate({where: {sessionName: req.body.sessionName,
+       schoolName: req.body.schoolName}, defaults: {
+      "sessionName": req.body.sessionName,
+      "schoolName": req.body.schoolName,
+    }})
+    .spread((user, created) => {
+
+      if(created){
+        return res.json({
+          created: true,
+          schoolName: req.body.schoolName,
+          sessionName: req.body.sessionName
+        })
+      }
+      else{
+        return res.json({
+          created: false,
+          schoolName: req.body.schoolName,
+          sessionName: req.body.sessionName
+        })
+      }
+    })
+   /* Sessions.create({
+      "sessionName": req.body.sessionName,
+      "schoolName": req.body.schoolName,
+
+
+    }).then(console.log("wowowowowowowowow")) */
+
+
+  })
 
   app.get('/api/auth/status', async (req, res) => {
     const { cookieId } = req.cookies;

@@ -12,6 +12,13 @@ const apiTemplate = fn => async (...args) => {
   }
 };
 
+export const postSession = apiTemplate(
+  async (data)=>{
+    const res = await axios.post(BASE_URL + "/api/create/session", data)
+    return res.data
+  }
+)
+
 export const getAuthStatus = apiTemplate(
   async () => {
     const res = await axios.get(
