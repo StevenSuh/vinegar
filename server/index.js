@@ -8,7 +8,9 @@ if (process.env.NODE_ENV !== 'production') {
   const fs = require('fs');
 
   if (!fs.existsSync('./config.js')) {
-    throw new Error('Your config.js does not exist. Get the file from owners of this repo.');
+    throw new Error(
+      'Your config.js does not exist. Get the file from owners of this repo.'
+    );
   }
 
   const configTemplate = require('./config_template');

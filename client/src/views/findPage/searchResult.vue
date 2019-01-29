@@ -2,7 +2,7 @@
   <div class="result-wrapper">
     <div
       class="result-item"
-      v-on:click="onClickItemFactory(item)"
+      v-on:click="onClickItemFactory(item);"
       v-for="item in data"
       :key="item.sessionId"
     >
@@ -14,8 +14,7 @@
       <p class="detail">
         {{ 'Created at ' + formatDate(item.createdAt) }}
         <span class="protected" v-if="item.password">
-          {{ 'Protected' }}
-          <span class="lock" v-html="PasswordIcon" />
+          {{ 'Protected' }} <span class="lock" v-html="PasswordIcon" />
         </span>
       </p>
     </div>
@@ -25,11 +24,7 @@
 <script>
 import PasswordIcon from '!raw-loader!@/assets/lock.svg';
 
-import {
-  formatDate,
-  highlightSchool,
-  highlightSession,
-} from './utils';
+import {formatDate, highlightSchool, highlightSession} from './utils';
 
 export default {
   data() {
@@ -41,7 +36,7 @@ export default {
     formatDate,
     highlightSchool,
     highlightSession,
-    onClickItemFactory: function({ schoolName, sessionName }) {
+    onClickItemFactory: function({schoolName, sessionName}) {
       this.$router.push(`/session/${schoolName}/${sessionName}`);
     },
   },

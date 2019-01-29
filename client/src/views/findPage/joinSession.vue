@@ -14,7 +14,7 @@
         label="Search"
         name="search"
         placeholder="Type your session name..."
-        suggestion='Try "UCSC"'
+        suggestion="Try &quot;UCSC&quot;"
         type="search"
         v-on:onChange="onInputChange"
         :class="{'search-expanded': searchResult.length > 0}"
@@ -23,7 +23,12 @@
         :value="searchQuery"
       />
       <transition name="fadeNoDelay">
-        <SearchResult class="searchResult" :data="searchResult" :query="searchQuery" v-if="searchResult.length > 0" />
+        <SearchResult
+          class="searchResult"
+          :data="searchResult"
+          :query="searchQuery"
+          v-if="searchResult.length > 0"
+        />
       </transition>
     </div>
   </div>

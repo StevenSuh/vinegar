@@ -7,7 +7,10 @@
         <ModalComponent v-if="isWelcome" :onClose="onCloseIsWelcome">
           <div class="modal">
             <h1 class="welcome-header">Welcome!</h1>
-            <form class="paddingTop paddingBottom" v-on:submit="onWelcomeFormSubmit">
+            <form
+              class="paddingTop paddingBottom"
+              v-on:submit="onWelcomeFormSubmit"
+            >
               <div>
                 <h6 class="input-title">Enter your name:</h6>
                 <InputComponent
@@ -52,7 +55,7 @@ import chatRoom from '@/views/sessionPage/chatRoom';
 
 import InputComponent from '@/components/input';
 import ModalComponent from '@/components/modal';
-import { onFormatPhone, onValidatePhone } from './utils';
+import {onFormatPhone, onValidatePhone} from './utils';
 
 export default {
   beforeCreate() {
@@ -95,8 +98,7 @@ export default {
   mounted() {
     this.show = true;
   },
-  sockets: {
-  },
+  sockets: {},
 };
 </script>
 

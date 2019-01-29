@@ -2,15 +2,12 @@
   <div>
     <div ref="toolbar">
       <span class="ql-formats">
-        <button class="ql-bold" />
-        <button class="ql-italic" />
-        <button class="ql-underline" />
-        <button class="ql-strike" />
+        <button class="ql-bold" /> <button class="ql-italic" />
+        <button class="ql-underline" /> <button class="ql-strike" />
         <button class="ql-code" />
       </span>
       <span class="ql-formats">
-        <button class="ql-blockquote" />
-        <button class="ql-code-block" />
+        <button class="ql-blockquote" /> <button class="ql-code-block" />
       </span>
       <span class="ql-formats">
         <button class="ql-header" value="1" />
@@ -59,16 +56,13 @@
         <button class="ql-align" value="center" />
         <button class="ql-align" value="right" />
       </span>
+      <span class="ql-formats"> <button class="ql-clean" /> </span>
       <span class="ql-formats">
-        <button class="ql-clean" />
-      </span>
-      <span class="ql-formats">
-        <button class="ql-undo" />
-        <button class="ql-redo" />
+        <button class="ql-undo" /> <button class="ql-redo" />
       </span>
     </div>
     <div ref="editor" v-html="value" />
-</div>
+  </div>
 </template>
 
 <script>
@@ -87,7 +81,7 @@ import 'quill-cursors/dist/quill-cursors.css';
 import {codeBlockIndentHandler} from './utils';
 import PlainClipboard from './PlainClipboard';
 
-Quill.register('modules/clipboard', PlainClipboard, true)
+Quill.register('modules/clipboard', PlainClipboard, true);
 
 const Font = Quill.import('formats/font');
 Font.whitelist = ['rubik'];
@@ -310,7 +304,6 @@ button.ql-active,
   stroke: var(--black-font-color);
 }
 
-
 .ql-snow.ql-toolbar button:focus .ql-fill,
 .ql-snow .ql-toolbar button:focus .ql-fill,
 .ql-snow.ql-toolbar button.ql-active .ql-fill,
@@ -346,7 +339,6 @@ button.ql-active,
   fill: var(--black-font-color);
 }
 
-
 .ql-toolbar.ql-snow .ql-picker-options {
   border-radius: 5px;
 }
@@ -371,8 +363,10 @@ button.ql-active,
   top: -4px;
 }
 
-.ql-snow .ql-picker.ql-header .ql-picker-label::before, .ql-snow .ql-picker.ql-header .ql-picker-item::before,
-.ql-snow .ql-picker.ql-size .ql-picker-label::before, .ql-snow .ql-picker.ql-size .ql-picker-item::before {
+.ql-snow .ql-picker.ql-header .ql-picker-label::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item::before,
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
   font-family: 'Rubik', sans-serif !important;
   font-weight: 400 !important;
 }

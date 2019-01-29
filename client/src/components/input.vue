@@ -14,8 +14,12 @@
       ref="input"
     />
     <label class="label" :for="id" v-if="label"> {{ label }} </label>
-    <p class="error-message" :class="size" v-if="errorMessage">{{ errorMessage }}</p>
-    <p class="suggestion" v-if="suggestion && !errorMessage">{{ suggestion }}</p>
+    <p class="error-message" :class="size" v-if="errorMessage">
+      {{ errorMessage }}
+    </p>
+    <p class="suggestion" v-if="suggestion && !errorMessage">
+      {{ suggestion }}
+    </p>
   </div>
 </template>
 
@@ -191,7 +195,7 @@ export default {
   user-select: none;
 }
 
-.input.small + .label  {
+.input.small + .label {
   font-size: 13px;
   left: 21px;
 }

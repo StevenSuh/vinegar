@@ -7,6 +7,7 @@ const SocketRedis = require('socket.io-redis');
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
+const Chats = require('db/chatModel')(dbClient);
 
 const sessionRegex = pathToRegexp('http://localhost:8080/session/:school/:session');
 
