@@ -3,7 +3,7 @@ const {
   googleClientSecret: clientSecret,
   googleRedirect: redirectUrl,
 } = require('config');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 
 const defaultScope = [
   'https://www.googleapis.com/auth/userinfo.email',
@@ -27,7 +27,7 @@ const getConnectUrl = auth =>
     scope: defaultScope,
   });
 
-const getGoogleOAuth2Api = auth => google.oauth2({version: 'v2', auth});
+const getGoogleOAuth2Api = auth => google.oauth2({ version: 'v2', auth });
 
 module.exports = {
   urlGoogle: () => {
@@ -37,7 +37,7 @@ module.exports = {
   },
   getGoogleAccountFromCode: async code => {
     const auth = createConnection();
-    const {tokens} = await auth.getToken(code);
+    const { tokens } = await auth.getToken(code);
 
     auth.setCredentials(tokens);
 

@@ -7,40 +7,20 @@
       Let's help you get started.
     </p>
     <div class="find-action-wrapper">
-      <div
-        class="find-action join"
-        @click="onClickJoin"
-      >
-        <img
-          class="action-box join-box"
-          :src="joinBoxImage"
-          alt="join box"
-        >
-        <p class="action-title">
-          Join a Session
-        </p>
-        <p class="action-message">
-          Looking for a session to join?
-        </p>
+      <div class="find-action join" @click="onClickJoin">
+        <img class="action-box join-box" :src="joinBoxImage" alt="join box" />
+        <p class="action-title">Join a Session</p>
+        <p class="action-message">Looking for a session to join?</p>
       </div>
-      <p class="find-action-p">
-        or
-      </p>
-      <div
-        class="find-action create"
-        @click="onClickCreate"
-      >
+      <p class="find-action-p">or</p>
+      <div class="find-action create" @click="onClickCreate">
         <img
           class="action-box create-box"
           :src="createBoxImage"
           alt="create box"
-        >
-        <p class="action-title">
-          Create a Session
-        </p>
-        <p class="action-message">
-          Want to create a session?
-        </p>
+        />
+        <p class="action-title">Create a Session</p>
+        <p class="action-message">Want to create a session?</p>
       </div>
     </div>
   </div>

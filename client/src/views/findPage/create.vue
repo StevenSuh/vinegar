@@ -2,27 +2,15 @@
   <div id="createSession">
     <div>create session</div>
     <form>
-      <input
-        id="schoolName"
-        type="text"
-        value="school name here"
-      >
-      <input
-        id="sessionName"
-        type="text"
-        value="course title here"
-      >
-      <input
-        id="submit"
-        type="submit"
-        value="Submit"
-      >
+      <input id="schoolName" type="text" value="school name here" />
+      <input id="sessionName" type="text" value="course title here" />
+      <input id="submit" type="submit" value="Submit" />
     </form>
   </div>
 </template>
 
 <script>
-import {postSession} from '@/services/api';
+import { postSession } from '@/services/api';
 
 export default {
   mounted() {
@@ -38,7 +26,7 @@ export default {
         alert(
           `${post.schoolName} - ${
             post.sessionName
-          } already exists. Redirecting you there...`
+          } already exists. Redirecting you there...`,
         );
       }
       this.$router.push(`session/${post.schoolName}/${post.sessionName}`);

@@ -1,31 +1,18 @@
 <template>
   <transition name="fade">
-    <div
-      v-if="show"
-      class="session"
-    >
-      <Editor
-        :session="$route.params.session"
-        :school="$route.params.school"
-      />
+    <div v-if="show" class="session">
+      <Editor :session="$route.params.session" :school="$route.params.school" />
       <Chat />
       <transition name="fadeNoDelay">
-        <ModalComponent
-          v-if="isWelcome"
-          :on-close="onCloseIsWelcome"
-        >
+        <ModalComponent v-if="isWelcome" :on-close="onCloseIsWelcome">
           <div class="modal">
-            <h1 class="welcome-header">
-              Welcome!
-            </h1>
+            <h1 class="welcome-header">Welcome!</h1>
             <form
               class="paddingTop paddingBottom"
               @submit="onWelcomeFormSubmit"
             >
               <div>
-                <h6 class="input-title">
-                  Enter your name:
-                </h6>
+                <h6 class="input-title">Enter your name:</h6>
                 <InputComponent
                   autocomplete="off"
                   :error-message="welcomeNameError"
@@ -38,9 +25,7 @@
                 />
               </div>
               <div class="marginTop small">
-                <h6 class="input-title">
-                  Phone (optional):
-                </h6>
+                <h6 class="input-title">Phone (optional):</h6>
                 <InputComponent
                   autocomplete="off"
                   :error-message="welcomePhoneError"
@@ -70,7 +55,7 @@ import Chat from '@/views/sessionPage/chat';
 
 import InputComponent from '@/components/input';
 import ModalComponent from '@/components/modal';
-import {onFormatPhone, onValidatePhone} from './utils';
+import { onFormatPhone, onValidatePhone } from './utils';
 
 export default {
   components: {
@@ -94,7 +79,7 @@ export default {
     Vue.use(
       new VueSocketIO({
         connection: 'http://localhost:3000',
-      })
+      }),
     );
   },
   mounted() {
