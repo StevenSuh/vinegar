@@ -24,7 +24,7 @@ module.exports = async () => {
     const Intervals = require('./intervals/model')(dbClient);
     const Sessions = require('./sessions/model')(dbClient);
     const Users = require('./users/model')(dbClient);
-    const Chats = require('./chatModel')(dbClient);
+    const Chats = require('./chats/model')(dbClient);
 
     // create tables
     await Users.sync({ alter: false, force: false });

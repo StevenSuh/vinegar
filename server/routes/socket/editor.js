@@ -1,4 +1,4 @@
-module.exports = (socket, { id: sessionId }, { id: userId }) => {
+module.exports = (_io, socket, { id: sessionId }, { id: userId }) => {
   socket.on('onEditorTextUpdate', function({ data }) {
     socket.broadcast.to(sessionId).emit('onEditorTextUpdate', {data, userId});
   });
@@ -10,4 +10,4 @@ module.exports = (socket, { id: sessionId }, { id: userId }) => {
   socket.on('onEditorSelectionRemove', function() {
     socket.broadcast.to(sessionId).emit('onEditorSelectionRemove', {userId});
   });
-}
+};

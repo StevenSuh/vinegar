@@ -51,7 +51,7 @@ module.exports = (dbClient) => {
     Users.COOKIE_ID = 'cookieId';
     Users.CREATED_AT = 'createdAt';
     Users.EMAIL = 'email';
-    Users.GID = 'GID';
+    Users.GID = 'gid';
     Users.ID = 'id';
     Users.NAME = 'name';
     Users.PHONE = 'phone';

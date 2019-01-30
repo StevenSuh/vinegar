@@ -38,17 +38,17 @@
               <transition name="fade">
                 <div v-if="isAuthenticated">
                   <transition name="fade">
-                    <SessionDecision
+                    <Decision
                       v-if="isMakingChoice"
                       :onClickJoin="onClickJoin"
                       :onClickCreate="onClickCreate"
                     />
                   </transition>
                   <transition name="fade">
-                    <JoinSession v-if="isJoiningSession" />
+                    <Join v-if="isJoiningSession" />
                   </transition>
                   <transition name="fade">
-                    <CreateSession v-if="isCreatingSession" />
+                    <Create v-if="isCreatingSession" />
                   </transition>
                 </div>
               </transition>
@@ -79,9 +79,9 @@
 <script>
 import {getAuthStatus} from '@/services/api';
 import Loader from '@/components/loader';
-import SessionDecision from '@/views/findPage/sessionDecision';
-import JoinSession from '@/views/findPage/joinSession';
-import CreateSession from '@/views/findPage/createSession';
+import Decision from '@/views/findPage/decision';
+import Join from '@/views/findPage/join';
+import Create from '@/views/findPage/create';
 
 import {MIN_MOBILE_WIDTH} from '@/defs';
 
@@ -97,10 +97,10 @@ export default {
     window.addEventListener('resize', this.onResize);
   },
   components: {
-    CreateSession,
-    JoinSession,
+    Create,
+    Join,
     Loader,
-    SessionDecision,
+    Decision,
   },
   data() {
     return {

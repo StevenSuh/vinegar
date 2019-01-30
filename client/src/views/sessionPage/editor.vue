@@ -97,7 +97,7 @@ export default {
     },
     value: {
       type: String,
-      default: 'Hello world!',
+      default: 'Hello world! ',
     },
   },
   data() {
@@ -115,10 +115,15 @@ export default {
     selectionUpdate(type, range, oldRange, source) {
       if (type === 'selection-change') {
         if (source !== Quill.sources.API && range) {
-          this.$socket.emit('onEditorSelectionUpdate', {
-            data: range,
-            name: this.name,
-          });
+          // this setTimeout is necessary because
+          // textUpdate is occurring at the same time
+          // causing cursor to update inaccurately
+          setTimeout(() => {
+            this.$socket.emit('onEditorSelectionUpdate', {
+              data: range,
+              name: this.name,
+            });
+          }, 0);
         }
       }
     },
@@ -168,16 +173,15 @@ export default {
     window.addEventListener('click', this.onCheckBlur);
   },
   sockets: {
-    onEditorSelectionUpdate: function({data, name, cookieId}) {
+    onEditorSelectionUpdate: function({data, name, userId}) {
       const range = new Range(data.index, data.length);
-
-      this.editor.getModule('cursors').setCursor(cookieId, range, name, 'red');
+      this.editor.getModule('cursors').setCursor(userId, range, name, 'red');
     },
-    onEditorSelectionRemove: function({cookieId}) {
-      this.editor.getModule('cursors').removeCursor(cookieId);
+    onEditorSelectionRemove: function({userId}) {
+      this.editor.getModule('cursors').removeCursor(userId);
     },
-    onEditorTextUpdate: function({data, cookieId}) {
-      this.editor.updateContents(data, cookieId);
+    onEditorTextUpdate: function({data, userId}) {
+      this.editor.updateContents(data, userId);
     },
   },
   beforeDestroy() {

@@ -7,7 +7,6 @@ const SocketRedis = require('socket.io-redis');
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
-const Chats = require('db/chatModel')(dbClient);
 
 const sessionRegex = pathToRegexp('http://localhost:8080/session/:school/:session');
 
@@ -31,10 +30,10 @@ const getUserCookieId = (socket) => {
   return cookies.userCookieId;
 };
 
-const socketInit = (socket, session, user) => {
+const socketInit = (io, socket, session, user) => {
   socket.join(session.id);
-  require('./editor')(socket, session, user);
-  // require('./chat')(socket, session, user);
+  require('./editor')(io, socket, session, user);
+  require('./chat')(io, socket, session, user);
 };
 
 // main
@@ -80,17 +79,7 @@ module.exports = (app) => {
       //   }
       //   user.name = name;
         // db update to name user
-        socketInit(socket, session, user);
-
-        socket.on('chatSend', async function(data){
-          io.in(session.id).emit('chatReceive', data)
-
-          await Chats.create({
-            message: data.message,
-            sessionId: session.id,
-            userId: user.id,
-          });
-        })
+        socketInit(io, socket, session, user);
       // });
     }
     socket.emit('exception', { errorMessage: 'There is no such session' });

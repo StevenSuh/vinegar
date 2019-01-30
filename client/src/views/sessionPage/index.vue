@@ -2,7 +2,7 @@
   <transition name="fade">
     <div v-if="show" class="session">
       <Editor :session="$route.params.session" :school="$route.params.school" />
-      <chatRoom/>
+      <Chat/>
       <transition name="fadeNoDelay">
         <ModalComponent v-if="isWelcome" :onClose="onCloseIsWelcome">
           <div class="modal">
@@ -51,7 +51,7 @@
 import Editor from '@/views/sessionPage/editor';
 import Vue from 'vue';
 import VueSocketIO from 'vue-socket.io';
-import chatRoom from '@/views/sessionPage/chatRoom';
+import Chat from '@/views/sessionPage/chat';
 
 import InputComponent from '@/components/input';
 import ModalComponent from '@/components/modal';
@@ -67,7 +67,7 @@ export default {
   },
   components: {
     Editor,
-    chatRoom,
+    Chat,
     InputComponent,
     ModalComponent,
   },
