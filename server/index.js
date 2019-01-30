@@ -11,7 +11,7 @@ const configTemplate = require('config_template');
 if (process.env.NODE_ENV !== 'production') {
   if (!fs.existsSync('./config.js')) {
     throw new Error(
-      'Your config.js does not exist. Get the file from owners of this repo.'
+      'Your config.js does not exist. Get the file from owners of this repo.',
     );
   }
 
@@ -31,15 +31,15 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors({credentials: true, origin: true}));
+  app.use(cors({ credentials: true, origin: true }));
   app.use(express.static(`${__dirname}client/public`));
 } else {
-  app.use(cors({credentials: true, origin: 'http://localhost:8080'}));
+  app.use(cors({ credentials: true, origin: 'http://localhost:8080' }));
 }
 
 require('./routes/api')(app);

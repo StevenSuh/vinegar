@@ -3,6 +3,6 @@ serve:
 install:
 	cd client && yarn && cd ../server && yarn
 prettier:
-	prettier --single-quote --trailing-comma es5 --print-width 80 --write **/*.js **/*.vue
+	prettier --write **/*.js **/*.vue
 lint:
-	make prettier && cd client && yarn lint --fix && cd ../server && yarn lint --fix
+	cd client && yarn lint --fix && cd ../server && yarn lint --fix && cd .. && make prettier

@@ -1,22 +1,14 @@
 <template>
   <div>
-    <div
-      class="bg-overlay"
-      @click="onClose"
-    />
-    <div
-      ref="content"
-      class="content"
-    >
-      <slot />
-    </div>
+    <div class="bg-overlay" @click="onClose" />
+    <div ref="content" class="content"><slot /></div>
   </div>
 </template>
 
 <script>
 const enterAnim = [
-  {opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)'},
-  {opacity: 1, transform: 'translate(-50%, -50%) scale(1)'},
+  { opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)' },
+  { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
 ];
 
 const enterTiming = {
@@ -27,8 +19,8 @@ const enterTiming = {
 };
 
 const leaveAnim = [
-  {opacity: 1, transform: 'translate(-50%, -50%) scale(1)'},
-  {opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)'},
+  { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+  { opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)' },
 ];
 
 const leaveTiming = {

@@ -4,17 +4,10 @@
       <div class="landing">
         <div class="container paddingTop">
           <nav class="navbar">
-            <h2 class="nav-header">
-              Vinegar
-            </h2>
+            <h2 class="nav-header">Vinegar</h2>
             <div class="nav-items">
-              <ButtonComponent
-                class="marginRight small"
-                type="minimal"
-              >
-                <p @click="onClickAbout">
-                  About
-                </p>
+              <ButtonComponent class="marginRight small" type="minimal">
+                <p @click="onClickAbout">About</p>
               </ButtonComponent>
               <ButtonComponent type="primary">
                 <a
@@ -30,10 +23,7 @@
                 >
                   Login
                 </router-link>
-                <span
-                  v-else
-                  class="oauth-placeholder"
-                >
+                <span v-else class="oauth-placeholder">
                   <span class="loader-absolute">
                     <Loader color="white" />
                   </span>
@@ -43,45 +33,22 @@
           </nav>
         </div>
         <div class="content marginTop small">
-          <img
-            class="left"
-            :src="leftImage"
-            alt="landing asset left"
-          >
+          <img class="left" :src="leftImage" alt="landing asset left" />
           <div class="content-message">
-            <h1 class="content-header">
-              Divide and Conquer.
-            </h1>
+            <h1 class="content-header">Divide and Conquer.</h1>
             <p class="content-p marginTop marginBottom">
               Loading balancing meets higher education.
             </p>
-            <ButtonComponent
-              type="primary"
-              size="large"
-            >
-              <router-link
-                tag="a"
-                to="/find"
-              >
-                Join Your Session
-              </router-link>
+            <ButtonComponent type="primary" size="large">
+              <router-link tag="a" to="/find"> Join Your Session </router-link>
             </ButtonComponent>
           </div>
-          <img
-            class="right"
-            :src="rightImage"
-            alt="landing asset right"
-          >
+          <img class="right" :src="rightImage" alt="landing asset right" />
         </div>
       </div>
-      <div
-        ref="how"
-        class="section-how paddingTop paddingBottom small"
-      >
+      <div ref="how" class="section-how paddingTop paddingBottom small">
         <div class="container paddingTop paddingBottom">
-          <h2 class="how-header">
-            How to Use
-          </h2>
+          <h2 class="how-header">How to Use</h2>
           <div class="how-items marginTop marginBottom large">
             <div class="how-item">
               <div class="how-item-icon-wrapper">
@@ -89,7 +56,7 @@
                   class="how-item-icon"
                   :src="findSessionImage"
                   alt="find session asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Create or join a session
@@ -101,7 +68,7 @@
                   class="how-item-icon"
                   :src="alarmClockImage"
                   alt="alarm clock asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Timer starts when everyone joins
@@ -113,7 +80,7 @@
                   class="how-item-icon"
                   :src="exclamationImage"
                   alt="exclamation asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Begin taking notes when notified
@@ -121,49 +88,30 @@
             </div>
             <div class="how-item">
               <div class="how-item-icon-wrapper">
-                <img
-                  class="how-item-icon"
-                  :src="mugImage"
-                  alt="mug asset"
-                >
+                <img class="how-item-icon" :src="mugImage" alt="mug asset" />
               </div>
               <p class="how-item-caption marginTop small">
                 Meanwhile, enjoy doing something else!
               </p>
             </div>
           </div>
-          <ButtonComponent
-            class="how-start"
-            size="medium"
-            type="primary"
-          >
-            <router-link
-              tag="a"
-              to="/find"
-            >
-              Get Started
-            </router-link>
+          <ButtonComponent class="how-start" size="medium" type="primary">
+            <router-link tag="a" to="/find"> Get Started </router-link>
           </ButtonComponent>
         </div>
       </div>
       <div class="section-team paddingTop paddingBottom">
         <div class="container paddingTop paddingBottom">
-          <h2 class="team-header marginBottom">
-            The Team
-          </h2>
+          <h2 class="team-header marginBottom">The Team</h2>
           <div class="team-items marginBottom large">
             <div class="team-item">
               <img
                 class="team-item-icon"
                 :src="jeffreImage"
                 alt="jeffre asset"
-              >
-              <p class="team-item-name">
-                Jeffre
-              </p>
-              <p class="team-item-caption">
-                {{ 'Skater & Bass Player' }}
-              </p>
+              />
+              <p class="team-item-name">Jeffre</p>
+              <p class="team-item-caption">{{ 'Skater & Bass Player' }}</p>
               <div class="team-item-links">
                 <a
                   href="https://www.linkedin.com/in/jeffreyyang3"
@@ -173,87 +121,56 @@
                     class="team-item-links-img hover"
                     :src="linkedinImage"
                     alt="linkedin square"
-                  >
+                  />
                 </a>
-                <a
-                  href="https://github.com/jeffreyyang3"
-                  target="_blank"
-                >
+                <a href="https://github.com/jeffreyyang3" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="githubImage"
                     alt="github"
-                  >
+                  />
                 </a>
-                <a
-                  href="https://jeffreyyang3.github.io"
-                  target="_blank"
-                >
+                <a href="https://jeffreyyang3.github.io" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="heartImage"
                     alt="heart"
-                  >
+                  />
                 </a>
               </div>
             </div>
             <div class="team-item">
-              <img
-                class="team-item-icon"
-                :src="lyanaImage"
-                alt="lyana asset"
-              >
-              <p class="team-item-name">
-                Lyana
-              </p>
-              <p class="team-item-caption">
-                {{ 'Dog & Roomba Lover' }}
-              </p>
+              <img class="team-item-icon" :src="lyanaImage" alt="lyana asset" />
+              <p class="team-item-name">Lyana</p>
+              <p class="team-item-caption">{{ 'Dog & Roomba Lover' }}</p>
               <div class="team-item-links">
-                <a
-                  href="https://www.linkedin.com/in/lyanna-ho"
-                  target="_blank"
-                >
+                <a href="https://www.linkedin.com/in/lyanna-ho" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="linkedinImage"
                     alt="linkedin square"
-                  >
+                  />
                 </a>
-                <a
-                  href="https://github.com/lyannerz"
-                  target="_blank"
-                >
+                <a href="https://github.com/lyannerz" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="githubImage"
                     alt="github"
-                  >
+                  />
                 </a>
-                <a
-                  href="https://lyannerz.github.io"
-                  target="_blank"
-                >
+                <a href="https://lyannerz.github.io" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="heartImage"
                     alt="heart"
-                  >
+                  />
                 </a>
               </div>
             </div>
             <div class="team-item">
-              <img
-                class="team-item-icon"
-                :src="steveImage"
-                alt="steve asset"
-              >
-              <p class="team-item-name">
-                Steve
-              </p>
-              <p class="team-item-caption">
-                {{ 'Code Monkey & GTA Gamer' }}
-              </p>
+              <img class="team-item-icon" :src="steveImage" alt="steve asset" />
+              <p class="team-item-name">Steve</p>
+              <p class="team-item-caption">{{ 'Code Monkey & GTA Gamer' }}</p>
               <div class="team-item-links">
                 <a
                   href="https://www.linkedin.com/in/steven-suh"
@@ -263,59 +180,36 @@
                     class="team-item-links-img hover"
                     :src="linkedinImage"
                     alt="linkedin square"
-                  >
+                  />
                 </a>
-                <a
-                  href="https://github.com/stevensuh"
-                  target="_blank"
-                >
+                <a href="https://github.com/stevensuh" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="githubImage"
                     alt="github"
-                  >
+                  />
                 </a>
-                <a
-                  href="https://stevensuh.me"
-                  target="_blank"
-                >
+                <a href="https://stevensuh.me" target="_blank">
                   <img
                     class="team-item-links-img hover"
                     :src="heartImage"
                     alt="heart"
-                  >
+                  />
                 </a>
               </div>
             </div>
           </div>
-          <img
-            class="snoo paddingTop large"
-            :src="snooImage"
-            alt="snoo"
-          >
+          <img class="snoo paddingTop large" :src="snooImage" alt="snoo" />
           <ButtonComponent
             class="team-start marginTop small"
             size="large"
             type="primary"
           >
-            <router-link
-              tag="a"
-              to="/find"
-            >
-              Get Started
-            </router-link>
+            <router-link tag="a" to="/find"> Get Started </router-link>
           </ButtonComponent>
         </div>
-        <img
-          class="squiggles"
-          :src="squigglesImage"
-          alt="squiggles"
-        >
-        <img
-          class="dots"
-          :src="dotsImage"
-          alt="dots"
-        >
+        <img class="squiggles" :src="squigglesImage" alt="squiggles" />
+        <img class="dots" :src="dotsImage" alt="dots" />
         <div class="paddingBottom small" />
       </div>
       <div class="footer paddingTop paddingBottom large">
@@ -330,11 +224,7 @@
           <p>
             {{ 'Made with ' }}
             <span>
-              <img
-                class="footer-heart"
-                :src="heartImage"
-                alt="heart"
-              >
+              <img class="footer-heart" :src="heartImage" alt="heart" />
             </span>
             {{ ' at Westside, Santa Cruz' }}
           </p>
@@ -347,7 +237,7 @@
 <script>
 import ButtonComponent from '@/components/button';
 import Loader from '@/components/loader';
-import {getSigninUrl} from '@/services/api';
+import { getSigninUrl } from '@/services/api';
 
 import alarmClockImage from '@/assets/alarmClock.png';
 import dotsImage from '@/assets/dots.png';
@@ -402,14 +292,14 @@ export default {
   },
   methods: {
     async onInit() {
-      const {signinUrl} = await getSigninUrl();
+      const { signinUrl } = await getSigninUrl();
 
       this.signinUrl = signinUrl;
       this.signinUrlLoaded = true;
     },
     onClickAbout() {
-      const {how} = this.$refs;
-      const {top} = how.getBoundingClientRect();
+      const { how } = this.$refs;
+      const { top } = how.getBoundingClientRect();
 
       window.scrollTo({
         top,

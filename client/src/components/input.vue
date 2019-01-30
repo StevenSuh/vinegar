@@ -12,25 +12,12 @@
       :type="type"
       :value="value"
       @input="onInputChange"
-    >
-    <label
-      v-if="label"
-      class="label"
-      :for="id"
-    >
-      {{ label }}
-    </label>
-    <p
-      v-if="errorMessage"
-      class="error-message"
-      :class="size"
-    >
+    />
+    <label v-if="label" class="label" :for="id"> {{ label }} </label>
+    <p v-if="errorMessage" class="error-message" :class="size">
       {{ errorMessage }}
     </p>
-    <p
-      v-if="suggestion && !errorMessage"
-      class="suggestion"
-    >
+    <p v-if="suggestion && !errorMessage" class="suggestion">
       {{ suggestion }}
     </p>
   </div>
@@ -99,7 +86,7 @@ export default {
   },
   methods: {
     onInputChange(e) {
-      const {value} = e.target;
+      const { value } = e.target;
       this.$refs.input.value = this.value;
 
       if (this.onValidate && !this.onValidate(value)) {
@@ -118,7 +105,7 @@ export default {
         this.searchTimeout = setTimeout(
           this.onAutosearch,
           this.searchDelay,
-          value
+          value,
         );
       } else if (this.onClearSearch) {
         this.onClearSearch();
