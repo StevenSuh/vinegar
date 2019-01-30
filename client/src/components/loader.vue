@@ -1,5 +1,9 @@
 <template>
-  <span class="loader" :class="[color, size]" ref="loader" />
+  <span
+    ref="loader"
+    class="loader"
+    :class="[color, size]"
+  />
 </template>
 
 <script>
@@ -11,9 +15,6 @@ const timing = {
 };
 
 export default {
-  mounted() {
-    this.$refs.loader.animate(animation, timing);
-  },
   props: {
     color: {
       type: String,
@@ -23,6 +24,9 @@ export default {
       type: String,
       default: '',
     },
+  },
+  mounted() {
+    this.$refs.loader.animate(animation, timing);
   },
 };
 </script>

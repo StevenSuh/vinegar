@@ -4,6 +4,10 @@ const {
   pgUsername,
   pgPassword,
 } = require('config');
+const getChatsModel = require('./chats/model');
+const getIntervalsModel = require('./intervals/model');
+const getSessionsModel = require('./sessions/model');
+const getUsersModel = require('./users/model');
 
 let dbClient = null;
 
@@ -21,16 +25,16 @@ module.exports = async () => {
       },
     );
 
-    const Intervals = require('./intervals/model')(dbClient);
-    const Sessions = require('./sessions/model')(dbClient);
-    const Users = require('./users/model')(dbClient);
-    const Chats = require('./chats/model')(dbClient);
+    const Chats = getChatsModel(dbClient);
+    const Intervals = getIntervalsModel(dbClient);
+    const Sessions = getSessionsModel(dbClient);
+    const Users = getUsersModel(dbClient);
 
     // create tables
-    await Users.sync({ alter: false, force: false });
-    await Sessions.sync({ alter: false, force: false });
-    await Intervals.sync({ alter: false, force: false });
     await Chats.sync({ alter: false, force: false });
+    await Intervals.sync({ alter: false, force: false });
+    await Sessions.sync({ alter: false, force: false });
+    await Users.sync({ alter: false, force: false });
 
     /*
       associations
@@ -42,7 +46,7 @@ module.exports = async () => {
       as: 'ChatMessages',
       foreignKey: { allowNull: false, name: 'sessionId' },
     });
-    Users.hasMany(Chats,{
+    Users.hasMany(Chats, {
       as: 'ChatMessages',
       foreignKey: { allowNull: false, name: 'userId' },
     });

@@ -10,23 +10,50 @@
         <button class="ql-blockquote" /> <button class="ql-code-block" />
       </span>
       <span class="ql-formats">
-        <button class="ql-header" value="1" />
-        <button class="ql-header" value="2" />
+        <button
+          class="ql-header"
+          value="1"
+        />
+        <button
+          class="ql-header"
+          value="2"
+        />
       </span>
       <span class="ql-formats">
-        <button class="ql-list" value="ordered" />
-        <button class="ql-list" value="bullet" />
+        <button
+          class="ql-list"
+          value="ordered"
+        />
+        <button
+          class="ql-list"
+          value="bullet"
+        />
       </span>
       <span class="ql-formats">
-        <button class="ql-script" value="sub" />
-        <button class="ql-script" value="super" />
+        <button
+          class="ql-script"
+          value="sub"
+        />
+        <button
+          class="ql-script"
+          value="super"
+        />
       </span>
       <span class="ql-formats">
-        <button class="ql-indent" value="-1" />
-        <button class="ql-indent" value="+1" />
+        <button
+          class="ql-indent"
+          value="-1"
+        />
+        <button
+          class="ql-indent"
+          value="+1"
+        />
       </span>
       <span class="ql-formats">
-        <button class="ql-direction" value="rtl" />
+        <button
+          class="ql-direction"
+          value="rtl"
+        />
       </span>
       <span class="ql-formats">
         <select class="ql-size">
@@ -52,16 +79,27 @@
         <select class="ql-background" />
       </span>
       <span class="ql-formats">
-        <button class="ql-align ql-active" value />
-        <button class="ql-align" value="center" />
-        <button class="ql-align" value="right" />
+        <button
+          class="ql-align ql-active"
+          value
+        />
+        <button
+          class="ql-align"
+          value="center"
+        />
+        <button
+          class="ql-align"
+          value="right"
+        />
       </span>
-      <span class="ql-formats"> <button class="ql-clean" /> </span>
+      <span class="ql-formats">
+        <button class="ql-clean" />
+      </span>
       <span class="ql-formats">
         <button class="ql-undo" /> <button class="ql-redo" />
       </span>
     </div>
-    <div ref="editor" v-html="value" />
+    <div ref="editor" />
   </div>
 </template>
 
@@ -81,6 +119,7 @@ import 'quill-cursors/dist/quill-cursors.css';
 import {codeBlockIndentHandler} from './utils';
 import PlainClipboard from './PlainClipboard';
 
+// setup editor
 Quill.register('modules/clipboard', PlainClipboard, true);
 
 const Font = Quill.import('formats/font');
@@ -89,15 +128,19 @@ Font.whitelist = ['rubik'];
 Quill.register(Font, true);
 Quill.register('modules/cursors', QuillCursors);
 
+const Block = Quill.import('blots/block');
+Block.tagName = 'DIV';
+Quill.register(Block, true);
+
 export default {
   props: {
     name: {
       type: String,
       default: 'Name',
     },
-    value: {
+    content: {
       type: String,
-      default: 'Hello world! ',
+      default: 'Hello world!',
     },
   },
   data() {
@@ -105,35 +148,6 @@ export default {
       editor: null,
       webSocket: null,
     };
-  },
-  methods: {
-    onCheckBlur: function() {
-      if (!this.editor.hasFocus()) {
-        this.$socket.emit('onEditorSelectionRemove');
-      }
-    },
-    selectionUpdate(type, range, oldRange, source) {
-      if (type === 'selection-change') {
-        if (source !== Quill.sources.API && range) {
-          // this setTimeout is necessary because
-          // textUpdate is occurring at the same time
-          // causing cursor to update inaccurately
-          setTimeout(() => {
-            this.$socket.emit('onEditorSelectionUpdate', {
-              data: range,
-              name: this.name,
-            });
-          }, 0);
-        }
-      }
-    },
-    textUpdate(delta, oldDelta, source) {
-      if (source === Quill.sources.USER) {
-        this.$socket.emit('onEditorTextUpdate', {
-          data: delta,
-        });
-      }
-    },
   },
   mounted() {
     this.editor = new Quill(this.$refs.editor, {
@@ -161,6 +175,8 @@ export default {
       theme: 'snow',
     });
 
+    this.editor.root.innerHTML = this.content;
+
     this.editor.format('font', 'rubik');
 
     this.editor.on('editor-change', this.selectionUpdate);
@@ -172,20 +188,49 @@ export default {
     // add checkBlur event to window
     window.addEventListener('click', this.onCheckBlur);
   },
+  beforeDestroy() {
+    window.removeEventListener('blur', this.onCheckBlur);
+  },
+  methods: {
+    onCheckBlur() {
+      if (!this.editor.hasFocus()) {
+        this.$socket.emit('onEditorSelectionRemove');
+      }
+    },
+    selectionUpdate(type, range, oldRange, source) {
+      if (type === 'selection-change') {
+        if (source !== Quill.sources.API && range) {
+          // this setTimeout is necessary because
+          // textUpdate is occurring at the same time
+          // causing cursor to update inaccurately
+          setTimeout(() => {
+            this.$socket.emit('onEditorSelectionUpdate', {
+              data: range,
+              name: this.name,
+            });
+          }, 0);
+        }
+      }
+    },
+    textUpdate(delta, oldDelta, source) {
+      if (source === Quill.sources.USER) {
+        this.$socket.emit('onEditorTextUpdate', {
+          data: delta,
+        });
+      }
+    },
+  },
   sockets: {
-    onEditorSelectionUpdate: function({data, name, userId}) {
+    onEditorSelectionUpdate({data, name, userId}) {
       const range = new Range(data.index, data.length);
       this.editor.getModule('cursors').setCursor(userId, range, name, 'red');
     },
-    onEditorSelectionRemove: function({userId}) {
+    onEditorSelectionRemove({userId}) {
       this.editor.getModule('cursors').removeCursor(userId);
     },
-    onEditorTextUpdate: function({data, userId}) {
+    onEditorTextUpdate({data, userId}) {
       this.editor.updateContents(data, userId);
     },
-  },
-  beforeDestroy() {
-    window.removeEventListener('blur', this.onCheckBlur);
   },
 };
 </script>

@@ -13,7 +13,7 @@ module.exports = (dbClient) => {
       id: {
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
     }, {
       freezeTableName: true,

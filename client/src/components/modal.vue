@@ -1,7 +1,15 @@
 <template>
   <div>
-    <div class="bg-overlay" v-on:click="onClose"></div>
-    <div class="content" ref="content"><slot></slot></div>
+    <div
+      class="bg-overlay"
+      @click="onClose"
+    />
+    <div
+      ref="content"
+      class="content"
+    >
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -30,14 +38,14 @@ const leaveTiming = {
 };
 
 export default {
+  props: {
+    onClose: Function,
+  },
   beforeCreate() {
     document.body.classList.add('overflow');
   },
   mounted() {
     this.$refs.content.animate(enterAnim, enterTiming);
-  },
-  props: {
-    onClose: Function,
   },
   beforeDestroy() {
     this.$refs.content.animate(leaveAnim, leaveTiming);

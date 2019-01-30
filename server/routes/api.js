@@ -17,39 +17,39 @@ module.exports = (app) => {
     }
     return res.json({ signinUrl: urlGoogle() });
   });
-  app.post('/api/create/session', (req, res) =>{ //findorcreate
-    //active, content, duration, id, participants,schoolName,sessionName,
-    Sessions.findOrCreate({where: {sessionName: req.body.sessionName,
-       schoolName: req.body.schoolName}, defaults: {
-      "sessionName": req.body.sessionName,
-      "schoolName": req.body.schoolName,
-    }})
-    .spread((user, created) => {
-
-      if(created){
+  app.post('/api/create/session', (req, res) => { // findorcreate
+    // active, content, duration, id, participants,schoolName,sessionName,
+    Sessions.findOrCreate({
+      where: {
+        sessionName: req.body.sessionName,
+        schoolName: req.body.schoolName,
+      },
+      defaults: {
+        sessionName: req.body.sessionName,
+        schoolName: req.body.schoolName,
+      },
+    }).spread((_user, created) => {
+      if (created) {
         return res.json({
           created: true,
           schoolName: req.body.schoolName,
-          sessionName: req.body.sessionName
-        })
+          sessionName: req.body.sessionName,
+        });
       }
-      else{
-        return res.json({
-          created: false,
-          schoolName: req.body.schoolName,
-          sessionName: req.body.sessionName
-        })
-      }
-    })
-   /* Sessions.create({
+
+      return res.json({
+        created: false,
+        schoolName: req.body.schoolName,
+        sessionName: req.body.sessionName,
+      });
+    });
+    /* Sessions.create({
       "sessionName": req.body.sessionName,
       "schoolName": req.body.schoolName,
 
 
     }).then(console.log("wowowowowowowowow")) */
-
-
-  })
+  });
 
   app.get('/api/auth/status', async (req, res) => {
     const { userCookieId } = req.cookies;
@@ -57,7 +57,7 @@ module.exports = (app) => {
       return res.json({ isAuthenticated: false });
     }
 
-    const user = await Users.findOne({where: { cookieId: userCookieId }});
+    const user = await Users.findOne({ where: { cookieId: userCookieId } });
 
     if (!user) {
       res.clearCookie('userCookieId');
@@ -114,10 +114,19 @@ module.exports = (app) => {
       query: searchQuery,
     });
 
-    const filteredSessions = sessions.map(session => {
-      session.password = Boolean(session.password);
-      return session;
-    });
+    const filteredSessions = sessions.map(({
+      createdAt,
+      id,
+      password,
+      schoolName,
+      sessionName,
+    }) => ({
+      createdAt,
+      id,
+      password: Boolean(password),
+      schoolName,
+      sessionName,
+    }));
 
     res.json(filteredSessions);
   });

@@ -1,9 +1,10 @@
 import Quill from 'quill';
+
 const Clipboard = Quill.import('modules/clipboard');
 const Delta = Quill.import('delta');
 
 class PlainClipboard extends Clipboard {
-  onPaste (e) {
+  onPaste(e) {
     e.preventDefault();
     const range = this.quill.getSelection();
     const text = e.clipboardData.getData('text/plain');
@@ -18,9 +19,9 @@ class PlainClipboard extends Clipboard {
       ...current,
     };
 
-    for (let key in attribute) {
+    Object.keys(attribute).forEach((key) => {
       attribute[key] = current[key] || leftSide[key] || rightSide[key];
-    }
+    });
 
     const delta = new Delta()
       .retain(range.index)
@@ -35,4 +36,4 @@ class PlainClipboard extends Clipboard {
   }
 }
 
-export default PlainClipboard
+export default PlainClipboard;

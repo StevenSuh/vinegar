@@ -1,12 +1,15 @@
 const cookie = require('cookie');
 const http = require('http');
 const pathToRegexp = require('path-to-regexp');
+
 const SocketIo = require('socket.io');
 const SocketRedis = require('socket.io-redis');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
+const initSocketEditor = require('./editor');
+const initSocketChat = require('./chat');
 
 const sessionRegex = pathToRegexp('http://localhost:8080/session/:school/:session');
 
@@ -14,7 +17,7 @@ const sessionRegex = pathToRegexp('http://localhost:8080/session/:school/:sessio
 const getSchoolAndSession = (socket) => {
   const url = socket.request.headers.referer;
   const referer = decodeURI(url);
-  const sessionParse = sessionRegex.exec(referer);
+  const sessionParse = sessionRegex.exec(referer) || [];
 
   // TODO
   return {
@@ -32,8 +35,8 @@ const getUserCookieId = (socket) => {
 
 const socketInit = (io, socket, session, user) => {
   socket.join(session.id);
-  require('./editor')(io, socket, session, user);
-  require('./chat')(io, socket, session, user);
+  initSocketChat(io, socket, session, user);
+  initSocketEditor(io, socket, session, user);
 };
 
 // main
@@ -42,7 +45,7 @@ module.exports = (app) => {
   const io = SocketIo(httpServer);
   io.adapter(SocketRedis({ host: 'localhost', port: 6379 }));
 
-  io.on('connection', async function(socket) {
+  io.on('connection', async (socket) => {
     const { schoolName, sessionName } = getSchoolAndSession(socket);
     const userCookieId = getUserCookieId(socket);
 
@@ -58,9 +61,9 @@ module.exports = (app) => {
 
     const [session, user] = await Promise.all([sessionPromise, userPromise]);
 
-    if (!user) {
+    if (!session || !user) {
       socket.emit('exception', {
-        errorMessage: 'Invalid user',
+        errorMessage: 'Invalid session',
       });
       return;
     }
@@ -78,8 +81,8 @@ module.exports = (app) => {
       //     // db update to phone user
       //   }
       //   user.name = name;
-        // db update to name user
-        socketInit(io, socket, session, user);
+      // db update to name user
+      socketInit(io, socket, session, user);
       // });
     }
     socket.emit('exception', { errorMessage: 'There is no such session' });

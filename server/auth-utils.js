@@ -2,7 +2,7 @@ const {
   googleClientId: clientId,
   googleClientSecret: clientSecret,
   googleRedirect: redirectUrl,
-} = require('./config');
+} = require('config');
 const {google} = require('googleapis');
 
 const defaultScope = [
@@ -11,26 +11,23 @@ const defaultScope = [
 ];
 
 // helpers
-let auth = null;
+let authClient = null;
 
 const createConnection = () => {
-  if (!auth) {
-    auth = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
+  if (!authClient) {
+    authClient = new google.auth.OAuth2(clientId, clientSecret, redirectUrl);
   }
-  return auth;
+  return authClient;
 };
 
-const getConnectUrl = auth => {
-  return auth.generateAuthUrl({
+const getConnectUrl = auth =>
+  auth.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     scope: defaultScope,
   });
-};
 
-const getGoogleOAuth2Api = auth => {
-  return google.oauth2({version: 'v2', auth});
-};
+const getGoogleOAuth2Api = auth => google.oauth2({version: 'v2', auth});
 
 module.exports = {
   urlGoogle: () => {

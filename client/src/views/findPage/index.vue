@@ -1,37 +1,50 @@
 <template>
   <transition name="fade">
     <div v-if="show">
-      <div class="find" v-if="!isMobile">
+      <div
+        v-if="!isMobile"
+        class="find"
+      >
         <div class="container paddingTop">
           <nav class="navbar">
             <router-link
+              v-if="isMakingChoice"
               class="back-button-wrapper hover"
               tag="a"
               to="/"
-              v-if="isMakingChoice"
             >
-              <img class="back-button" :src="backImage" alt="back button" />
+              <img
+                class="back-button"
+                :src="backImage"
+                alt="back button"
+              >
             </router-link>
             <button
-              class="back-button-wrapper hover"
               v-else
-              v-on:click="onSetIsMakingChoiceTrue"
+              class="back-button-wrapper hover"
+              @click="onSetIsMakingChoiceTrue"
             >
-              <img class="back-button" :src="backImage" alt="back button" />
+              <img
+                class="back-button"
+                :src="backImage"
+                alt="back button"
+              >
             </button>
-            <h2 class="nav-header">Vinegar</h2>
+            <h2 class="nav-header">
+              Vinegar
+            </h2>
           </nav>
         </div>
         <img
           class="find-left-img"
           :src="leftImage"
           alt="find page left asset"
-        />
+        >
         <img
           class="find-right-img"
           :src="rightImage"
           alt="find page right asset"
-        />
+        >
         <div class="container">
           <transition name="fade">
             <div v-if="loaded">
@@ -40,8 +53,8 @@
                   <transition name="fade">
                     <Decision
                       v-if="isMakingChoice"
-                      :onClickJoin="onClickJoin"
-                      :onClickCreate="onClickCreate"
+                      :on-click-join="onClickJoin"
+                      :on-click-create="onClickCreate"
                     />
                   </transition>
                   <transition name="fade">
@@ -61,14 +74,26 @@
             </div>
           </transition>
           <transition name="fade">
-            <div class="loader-wrapper" v-if="!loaded">
-              <Loader class="loader" color="red" size="large" />
-              <p class="loader-caption marginTop">Loading content</p>
+            <div
+              v-if="!loaded"
+              class="loader-wrapper"
+            >
+              <Loader
+                class="loader"
+                color="red"
+                size="large"
+              />
+              <p class="loader-caption marginTop">
+                Loading content
+              </p>
             </div>
           </transition>
         </div>
       </div>
-      <div class="find" v-else>
+      <div
+        v-else
+        class="find"
+      >
         <!-- TODO -->
         can't do mobile
       </div>
@@ -90,12 +115,6 @@ import leftImage from '@/assets/find_left.png';
 import rightImage from '@/assets/find_right.png';
 
 export default {
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize);
-  },
-  created() {
-    window.addEventListener('resize', this.onResize);
-  },
   components: {
     Create,
     Join,
@@ -119,32 +138,38 @@ export default {
       rightImage,
     };
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
+  },
+  created() {
+    window.addEventListener('resize', this.onResize);
+  },
+  mounted() {
+    this.show = true;
+    this.onInit();
+  },
   methods: {
-    onClickJoin: function() {
+    onClickJoin() {
       this.isMakingChoice = false;
       this.isJoiningSession = true;
     },
-    onClickCreate: function() {
+    onClickCreate() {
       this.isMakingChoice = false;
       this.isCreatingSession = true;
     },
-    onInit: async function() {
+    async onInit() {
       const {isAuthenticated} = await getAuthStatus();
       this.isAuthenticated = isAuthenticated;
       this.loaded = true;
     },
-    onResize: function() {
+    onResize() {
       this.isMobile = window.innerWidth <= MIN_MOBILE_WIDTH;
     },
-    onSetIsMakingChoiceTrue: function() {
+    onSetIsMakingChoiceTrue() {
       this.isMakingChoice = true;
       this.isJoiningSession = false;
       this.isCreatingSession = false;
     },
-  },
-  mounted: function() {
-    this.show = true;
-    this.onInit();
   },
 };
 </script>

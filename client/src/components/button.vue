@@ -1,5 +1,10 @@
 <template>
-  <button class="button" :class="[type, size]"><slot></slot></button>
+  <button
+    class="button"
+    :class="[type, size]"
+  >
+    <slot />
+  </button>
 </template>
 
 <script>
