@@ -10,20 +10,25 @@
       <InputComponent
         autocomplete="off"
         autosearch="on"
-        :class="{'search-expanded': searchResult.length > 0}"
         id="join-input"
         label="Search"
         name="search"
+        placeholder="Type your session name..."
+        suggestion="Try &quot;UCSC&quot;"
+        type="search"
+        v-on:onChange="onInputChange"
+        :class="{'search-expanded': searchResult.length > 0}"
         :onAutosearch="onSearch"
         :onClearSearch="onClearSearch"
-        :onValidate="onValidate"
-        placeholder="Type your session name..."
-        type="search"
         :value="searchQuery"
-        v-on:onChange="onInputChange"
       />
       <transition name="fadeNoDelay">
-        <SearchResult :data="searchResult" :query="searchQuery" v-if="searchResult.length > 0" />
+        <SearchResult
+          class="searchResult"
+          :data="searchResult"
+          :query="searchQuery"
+          v-if="searchResult.length > 0"
+        />
       </transition>
     </div>
   </div>
@@ -33,9 +38,6 @@
 import InputComponent from '@/components/input';
 import SearchResult from '@/views/findPage/searchResult';
 import {getSearchSessionResults} from '@/services/api';
-import {ALLOWED_CHARACTERS} from '@/defs';
-
-const regex = new RegExp('^$|^[' + ALLOWED_CHARACTERS.join('') + ']+$');
 
 export default {
   components: {
@@ -58,10 +60,7 @@ export default {
       this.searchQuery = value;
     },
     onSearch: async function() {
-      this.searchResult = await getSearchSessionResults();
-    },
-    onValidate: function(value) {
-      return Boolean(regex.exec(value));
+      this.searchResult = await getSearchSessionResults(this.searchQuery);
     },
   },
 };
@@ -85,7 +84,7 @@ export default {
 
 .search-wrapper {
   margin: auto;
-  width: 750px;
+  width: 75%;
 }
 
 .search-title {
@@ -94,6 +93,10 @@ export default {
   font-weight: 500;
   margin-bottom: 12px;
   text-transform: uppercase;
+}
+
+.searchResult {
+  top: -24px;
 }
 </style>
 

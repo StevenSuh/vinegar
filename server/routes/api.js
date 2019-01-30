@@ -1,23 +1,18 @@
-const Sequelize = require('sequelize');
 const uuidv4 = require('uuid/v4');
 
 const {
   urlGoogle,
   getGoogleAccountFromCode,
-} = require('../auth-utils');
+} = require('auth-utils');
 
-const dbClient = require('../db')();
-const Users = require('../db/UsersModel')(dbClient);
-const Sessions = require('../db/SessionsModel')(dbClient);
-
-// const {ALLOWED_CHARACTERS} = require('../defs');
-
-// const regex = new RegExp('^$|^[' + ALLOWED_CHARACTERS.join('') + ']+$');
+const dbClient = require('db')();
+const Users = require('db/users/model')(dbClient);
+const Sessions = require('db/sessions/model')(dbClient);
 
 module.exports = (app) => {
   // authentication
   app.get('/api/signin', (req, res) => {
-    if (req.cookies.cookieId) {
+    if (req.cookies.userCookieId) {
       return res.json({ signinUrl: '/find' });
     }
     return res.json({ signinUrl: urlGoogle() });
@@ -57,20 +52,18 @@ module.exports = (app) => {
   })
 
   app.get('/api/auth/status', async (req, res) => {
-    const { cookieId } = req.cookies;
-    if (!cookieId) {
+    const { userCookieId } = req.cookies;
+    if (!userCookieId) {
       return res.json({ isAuthenticated: false });
     }
 
-    const user = await Users.findOne({ where: { cookieId } });
+    const user = await Users.findOne({where: { cookieId: userCookieId }});
+
     if (!user) {
-      res.clearCookie('cookieId');
+      res.clearCookie('userCookieId');
       return res.json({ isAuthenticated: false });
     }
-    return res.json({
-      isAuthenticated: true,
-      uid: user.id,
-    });
+    return res.json({ isAuthenticated: true });
   });
 
   app.get('/api/callback', async (req, res) => {
@@ -79,20 +72,19 @@ module.exports = (app) => {
     const {
       gid,
       email,
-      tokens: { expiry_date },
     } = await getGoogleAccountFromCode(code);
 
-    const cookieId = uuidv4();
+    const userCookieId = uuidv4();
 
     // create or update user on db
     Users.upsert({
       active: false,
       email,
       gid,
-      cookieId,
+      cookieId: userCookieId,
     });
 
-    res.cookie('cookieId', cookieId, {
+    res.cookie('userCookieId', userCookieId, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
       secure: false, // TODO: change to true
@@ -109,74 +101,24 @@ module.exports = (app) => {
     } = req.query;
 
     const searchQuery = query.toLowerCase();
-    const searchCriteria = {
-      [Sequelize.Op.and]: [
-        Sequelize.where(
-          // concat these two columns
-          Sequelize.fn('concat', Sequelize.col('schoolName'), ' ', Sequelize.col('sessionName')),
-          // case insensitive search
-          { [Sequelize.Op.iLike]: `%${searchQuery}%` },
-        ),
-        { active: true },
+    const sessions = await Sessions.findAllByFullName({
+      attributes: [
+        Sessions.CREATED_AT,
+        Sessions.ID,
+        Sessions.PASSWORD,
+        Sessions.SCHOOL_NAME,
+        Sessions.SESSION_NAME,
       ],
-    }
-
-    const sessions = await Sessions.findAll({
       limit,
       offset,
-      where: searchCriteria,
+      query: searchQuery,
     });
 
-    const filteredSessions = sessions.filter(({
-      createdAt,
-      schoolName,
-      sessionName,
-      id,
-    }) => ({
-      createdAt,
-      schoolName,
-      sessionName,
-      sessionId: id,
-    }));
+    const filteredSessions = sessions.map(session => {
+      session.password = Boolean(session.password);
+      return session;
+    });
 
-    res.json([
-      {
-        createdAt: '2019-01-21 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 101',
-        sessionId: '1',
-      },
-      {
-        createdAt: '2019-01-20 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 107',
-        sessionId: '2',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '3',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '4',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '5',
-      },
-      {
-        createdAt: '2019-01-19 23:58:35.425-08',
-        schoolName: 'UCSC',
-        sessionName: 'CMPS 102',
-        sessionId: '6',
-      },
-    ]);
-    // res.json(filteredSessions);
+    res.json(filteredSessions);
   });
 };

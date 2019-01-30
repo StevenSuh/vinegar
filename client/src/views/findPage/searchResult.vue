@@ -1,94 +1,43 @@
 <template>
   <div class="result-wrapper">
-    <div class="result-item" v-for="item in data" :key="item.sessionId">
+    <div
+      class="result-item"
+      v-on:click="onClickItemFactory(item);"
+      v-for="item in data"
+      :key="item.sessionId"
+    >
       <div class="result-name">
         <h6 class="result-school" v-html="highlightSchool(item)" />
         <span class="name-filler" />
         <p class="result-session" v-html="highlightSession(item)" />
       </div>
-      <p>{{ 'Created at ' + formatDate(item.createdAt) }}</p>
+      <p class="detail">
+        {{ 'Created at ' + formatDate(item.createdAt) }}
+        <span class="protected" v-if="item.password">
+          {{ 'Protected' }} <span class="lock" v-html="PasswordIcon" />
+        </span>
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import PasswordIcon from '!raw-loader!@/assets/lock.svg';
+
+import {formatDate, highlightSchool, highlightSession} from './utils';
+
 export default {
+  data() {
+    return {
+      PasswordIcon,
+    };
+  },
   methods: {
-    formatDate(date) {
-      date = new Date(date);
-
-      let hours = date.getHours();
-      let minutes = date.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      minutes = minutes < 10 ? `0${minutes}` : minutes;
-
-      return `${hours}:${minutes} ${ampm}`;
-    },
-    highlightSchool(data) {
-      const query = this.query.toLowerCase();
-      const fullName = `${data.schoolName} ${data.sessionName}`.toLowerCase();
-
-      const indexes = [];
-      let i = 0;
-      while (i < data.schoolName.length) {
-        const index = fullName.indexOf(query, i);
-
-        if (index === -1) {
-          break;
-        }
-
-        i = index + query.length;
-        indexes.push(index);
-      }
-
-      i = 0;
-      const filteredName = indexes.reduce((accumulated, index) => {
-        const result = accumulated + data.schoolName.slice(i, index) + '<span class="highlightSearch">' +
-          data.schoolName.slice(index, index + query.length) + '</span>';
-
-        i = index + query.length;
-        return result;
-      }, '');
-
-      return filteredName + data.schoolName.slice(i);
-    },
-    highlightSession(data) {
-      const query = this.query.toLowerCase();
-      const fullName = `${data.schoolName} ${data.sessionName}`.toLowerCase();
-
-      const indexes = [];
-      let i = 0;
-      while (i < fullName.length) {
-        const index = fullName.indexOf(query, i);
-
-        if (index === -1) {
-          break;
-        }
-
-        i = index + query.length;
-
-        if (i > data.schoolName.length) {
-          indexes.push(index);
-        }
-      }
-
-      i = 0;
-      const filteredName = indexes.reduce((accumulated, index) => {
-        index -= (data.schoolName.length + 1);
-        const queryLen = query.length + Math.min(index, 0);
-        index = Math.max(index, 0);
-
-        const result = accumulated + data.sessionName.slice(i, index) + '<span class="highlightSearch">' +
-          data.sessionName.slice(index, index + queryLen) + '</span>';
-
-        i = index + queryLen;
-        return result;
-      }, '');
-
-      return filteredName + data.sessionName.slice(i);
+    formatDate,
+    highlightSchool,
+    highlightSession,
+    onClickItemFactory: function({schoolName, sessionName}) {
+      this.$router.push(`/session/${schoolName}/${sessionName}`);
     },
   },
   props: {
@@ -108,10 +57,10 @@ export default {
 .result-wrapper {
   background-color: var(--white-bg-color);
   border: 1px solid var(--gray-bg-color-2);
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
   max-height: 340px;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 10px 0;
   top: -1px;
   width: 100%;
@@ -145,11 +94,34 @@ export default {
 .result-session {
   color: var(--dark-gray-font-color);
 }
+
+.detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.protected {
+  right: 30px;
+}
+
+.lock {
+  display: inline-block;
+  height: 24px;
+  right: -30px;
+  position: absolute;
+  top: -4px;
+  width: 24px;
+}
 </style>
 
 <style>
 .highlightSearch {
   color: var(--main-font-color);
   font-weight: 500;
+}
+
+.lock > svg {
+  stroke: var(--main-bg-color);
 }
 </style>

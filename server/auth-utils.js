@@ -6,8 +6,8 @@ const {
 const {google} = require('googleapis');
 
 const defaultScope = [
-  'https://www.googleapis.com/auth/plus.me',
   'https://www.googleapis.com/auth/userinfo.email',
+  'https://www.googleapis.com/auth/userinfo.profile',
 ];
 
 // helpers
@@ -28,8 +28,8 @@ const getConnectUrl = auth => {
   });
 };
 
-const getGooglePlusApi = auth => {
-  return google.plus({version: 'v1', auth});
+const getGoogleOAuth2Api = auth => {
+  return google.oauth2({version: 'v2', auth});
 };
 
 module.exports = {
@@ -44,12 +44,11 @@ module.exports = {
 
     auth.setCredentials(tokens);
 
-    const plus = getGooglePlusApi(auth);
-    const me = await plus.people.get({userId: 'me'});
+    const oauth2 = getGoogleOAuth2Api(auth);
+    const me = await oauth2.userinfo.v2.me.get();
 
     const userGoogleId = me.data.id;
-    const userGoogleEmail =
-      me.data.emails && me.data.emails.length && me.data.emails[0].value;
+    const userGoogleEmail = me.data.verified_email && me.data.email;
 
     return {
       gid: userGoogleId,

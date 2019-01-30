@@ -3,7 +3,7 @@ const {
   pgDbName,
   pgUsername,
   pgPassword,
-} = require('../config');
+} = require('config');
 
 let dbClient = null;
 
@@ -21,37 +21,55 @@ module.exports = async () => {
       },
     );
 
-    const Intervals = require('./IntervalsModel')(dbClient);
-    const Sessions = require('./SessionsModel')(dbClient);
-    const Users = require('./UsersModel')(dbClient);
+    const Intervals = require('./intervals/model')(dbClient);
+    const Sessions = require('./sessions/model')(dbClient);
+    const Users = require('./users/model')(dbClient);
     const Chats = require('./chatModel')(dbClient);
 
     // create tables
-    await Sessions.sync({ alter: true, force: false });
-    await Users.sync({ alter: true, force: false });
-    await Intervals.sync({ alter: true, force: false });
+    await Users.sync({ alter: false, force: false });
+    await Sessions.sync({ alter: false, force: false });
+    await Intervals.sync({ alter: false, force: false });
+    await Chats.sync({ alter: false, force: false });
 
-    // associations
-    Intervals.belongsTo(Users, { foreignKey: 'userId' });
-    Intervals.belongsTo(Sessions, { foreignKey: 'sessionId' });
-    Sessions.hasMany(Intervals, { foreignKey: 'sessionId' });
+    /*
+      associations
 
-    Users.belongsTo(Sessions, { foreignKey: 'sessionId' });
+      as = name for the getter method
+       - as: 'User' -> getUser
+    */
+    Sessions.hasMany(Chats, {
+      as: 'ChatMessages',
+      foreignKey: { allowNull: false, name: 'sessionId' },
+    });
+    Users.hasMany(Chats,{
+      as: 'ChatMessages',
+      foreignKey: { allowNull: false, name: 'userId' },
+    });
 
-    Sessions.belongsTo(Users, { foreignKey: 'ownerId' });
+    Sessions.hasMany(Intervals, {
+      as: 'Intervals',
+      foreignKey: { allowNull: false, name: 'sessionId' },
+    });
+    Users.hasMany(Intervals, {
+      as: 'Intervals',
+      foreignKey: { allowNull: false, name: 'userId' },
+    });
 
-    Chats.belongsTo(Users, {foreignKey: 'userId'})
-    Chats.belongsTo(Sessions, {foreignKey: 'sessionId'})
-    Users.hasMany(Chats, {foreignKey: 'userId'});
-    Users.hasMany(Sessions, {foreignKey: 'sessionId'});
+    Sessions.belongsTo(Users, {
+      as: 'Owner',
+      foreignKey: { allowNull: false, name: 'ownerId' },
+    });
+    Sessions.hasMany(Users, {
+      as: 'Users',
+      foreignKey: { allowNull: true, name: 'sessionId' },
+    });
 
-
-    // add table associations
-    // note: order of operation depends on table associations
-    await Sessions.sync({ alter: true, force: false });
-    await Users.sync({ alter: true, force: false });
+    // order of operation matters
     await Intervals.sync({ alter: true, force: false });
     await Chats.sync({ alter: true, force: false });
+    await Users.sync({ alter: true, force: false });
+    await Sessions.sync({ alter: true, force: false });
   }
 
   return dbClient;

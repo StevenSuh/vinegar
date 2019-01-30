@@ -34,15 +34,28 @@ module.exports = (dbClient) => {
       },
       cookieId: {
         allowNull: true,
-        unique: false,
         type: Sequelize.STRING,
       },
-      // sessionId,
+      sessionCookieId: {
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
     }, {
       indexes: [{ unique: true, fields: ['gid'] }],
       freezeTableName: true,
       timestamps: true,
     });
+
+    // class definitions
+    Users.ACTIVE = 'active';
+    Users.COOKIE_ID = 'cookieId';
+    Users.CREATED_AT = 'createdAt';
+    Users.EMAIL = 'email';
+    Users.GID = 'GID';
+    Users.ID = 'id';
+    Users.NAME = 'name';
+    Users.PHONE = 'phone';
+    Users.UPDATED_AT = 'updatedAt';
   }
   return Users;
 };

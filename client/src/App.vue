@@ -99,6 +99,15 @@ input:focus {
   transition: opacity var(--transition-duration) var(--transition-curve);
 }
 
+.fade-enter,
+.fade-leave-to,
+.fade-enter-active,
+.fade-enter-leave {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
 .fade-enter-active {
   transition-delay: var(--transition-duration);
 }

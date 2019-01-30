@@ -8,7 +8,9 @@ if (process.env.NODE_ENV !== 'production') {
   const fs = require('fs');
 
   if (!fs.existsSync('./config.js')) {
-    throw new Error('Your config.js does not exist. Get the file from owners of this repo else this project will not be able to run');
+    throw new Error(
+      'Your config.js does not exist. Get the file from owners of this repo.'
+    );
   }
 
   const configTemplate = require('./config_template');
@@ -16,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   for (let key in configTemplate) {
     if (!config[key]) {
-      throw new Error(`Your config.js is missing ${key} property`);
+      throw new Error(`Your config.js is missing ${key} property.`);
     }
   }
 }
