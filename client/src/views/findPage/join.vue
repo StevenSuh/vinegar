@@ -1,33 +1,37 @@
 <template>
   <div class="join-wrapper">
-    <h2 class="join-header paddingTop large">Join a Session</h2>
+    <h2 class="join-header paddingTop large">
+      Join a Session
+    </h2>
     <p class="join-message paddingTop small">
       Search for the session you'd like to join.
     </p>
     <div class="paddingTop paddingBottom" />
     <div class="search-wrapper">
-      <h6 class="search-title">Session Name</h6>
+      <h6 class="search-title">
+        Session Name
+      </h6>
       <InputComponent
+        id="join-input"
         autocomplete="off"
         autosearch="on"
-        id="join-input"
         label="Search"
         name="search"
         placeholder="Type your session name..."
         suggestion="Try &quot;UCSC&quot;"
         type="search"
-        v-on:onChange="onInputChange"
         :class="{'search-expanded': searchResult.length > 0}"
-        :onAutosearch="onSearch"
-        :onClearSearch="onClearSearch"
+        :on-autosearch="onSearch"
+        :on-clear-search="onClearSearch"
         :value="searchQuery"
+        @onChange="onInputChange"
       />
       <transition name="fadeNoDelay">
         <SearchResult
+          v-if="searchResult.length > 0"
           class="searchResult"
           :data="searchResult"
           :query="searchQuery"
-          v-if="searchResult.length > 0"
         />
       </transition>
     </div>
@@ -53,13 +57,13 @@ export default {
     };
   },
   methods: {
-    onClearSearch: function() {
+    onClearSearch() {
       this.searchResult = [];
     },
-    onInputChange: function(value) {
+    onInputChange(value) {
       this.searchQuery = value;
     },
-    onSearch: async function() {
+    async onSearch() {
       this.searchResult = await getSearchSessionResults(this.searchQuery);
     },
   },
@@ -96,7 +100,7 @@ export default {
 }
 
 .searchResult {
-  top: -24px;
+  top: -25px;
 }
 </style>
 

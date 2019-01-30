@@ -11,7 +11,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: "landing",
+      name: 'landing',
       component: landingPage,
     },
     {
@@ -27,6 +27,6 @@ export default new Router({
     {
       path: '*',
       redirect: '/',
-    }
+    },
   ],
-})
+});

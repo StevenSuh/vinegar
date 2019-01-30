@@ -13,11 +13,11 @@ const apiTemplate = fn => async (...args) => {
 };
 
 export const postSession = apiTemplate(
-  async (data)=>{
-    const res = await axios.post(BASE_URL + "/api/create/session", data)
-    return res.data
-  }
-)
+  async (data) => {
+    const res = await axios.post(`${BASE_URL}/api/create/session`, data);
+    return res.data;
+  },
+);
 
 export const getAuthStatus = apiTemplate(
   async () => {
@@ -26,7 +26,7 @@ export const getAuthStatus = apiTemplate(
       { withCredentials: true },
     );
     return res.data;
-  }
+  },
 );
 
 export const getSigninUrl = apiTemplate(
@@ -36,7 +36,7 @@ export const getSigninUrl = apiTemplate(
       { withCredentials: true },
     );
     return res.data;
-  }
+  },
 );
 
 export const getSearchSessionResults = apiTemplate(
@@ -46,5 +46,5 @@ export const getSearchSessionResults = apiTemplate(
       { withCredentials: true },
     );
     return res.data;
-  }
+  },
 );

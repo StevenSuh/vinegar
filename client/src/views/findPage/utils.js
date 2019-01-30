@@ -1,18 +1,18 @@
-export const formatDate = function(date) {
-  date = new Date(date);
+export function formatDate(date) {
+  const wrapDate = new Date(date);
 
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
+  let hours = wrapDate.getHours();
+  let minutes = wrapDate.getMinutes();
   const ampm = hours >= 12 ? 'PM' : 'AM';
 
-  hours = hours % 12;
-  hours = hours ? hours : 12;
+  hours %= 12;
+  hours = hours || 12;
   minutes = minutes < 10 ? `0${minutes}` : minutes;
 
   return `${hours}:${minutes} ${ampm}`;
 };
 
-export const highlightSchool = function(data) {
+export function highlightSchool(data) {
   const query = this.query.toLowerCase();
   const fullName = `${data.schoolName} ${data.sessionName}`.toLowerCase();
 
@@ -31,8 +31,8 @@ export const highlightSchool = function(data) {
 
   i = 0;
   const filteredName = indexes.reduce((accumulated, index) => {
-    const result = accumulated + data.schoolName.slice(i, index) + '<span class="highlightSearch">' +
-      data.schoolName.slice(index, index + query.length) + '</span>';
+    const result = `${accumulated + data.schoolName.slice(i, index)}<span class="highlightSearch">${
+      data.schoolName.slice(index, index + query.length)}</span>`;
 
     i = index + query.length;
     return result;
@@ -41,7 +41,7 @@ export const highlightSchool = function(data) {
   return filteredName + data.schoolName.slice(i);
 };
 
-export const highlightSession = function(data) {
+export function highlightSession(data) {
   const query = this.query.toLowerCase();
   const fullName = `${data.schoolName} ${data.sessionName}`.toLowerCase();
 
@@ -62,13 +62,13 @@ export const highlightSession = function(data) {
   }
 
   i = 0;
-  const filteredName = indexes.reduce((accumulated, index) => {
-    index -= (data.schoolName.length + 1);
+  const filteredName = indexes.reduce((accumulated, idx) => {
+    let index = idx - (data.schoolName.length + 1);
     const queryLen = query.length + Math.min(index, 0);
     index = Math.max(index, 0);
 
-    const result = accumulated + data.sessionName.slice(i, index) + '<span class="highlightSearch">' +
-      data.sessionName.slice(index, index + queryLen) + '</span>';
+    const result = `${accumulated + data.sessionName.slice(i, index)}<span class="highlightSearch">${
+      data.sessionName.slice(index, index + queryLen)}</span>`;
 
     i = index + queryLen;
     return result;

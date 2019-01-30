@@ -1,23 +1,36 @@
 <template>
   <div class="input-wrapper">
     <input
+      :id="id"
+      ref="input"
       class="input"
-      v-on:input="onInputChange"
       :autocomplete="autocomplete"
       :class="[errorMessage ? 'error' : '', size]"
-      :id="id"
       :maxlength="maxLen"
       :name="name"
       :placeholder="placeholder"
       :type="type"
       :value="value"
-      ref="input"
-    />
-    <label class="label" :for="id" v-if="label"> {{ label }} </label>
-    <p class="error-message" :class="size" v-if="errorMessage">
+      @input="onInputChange"
+    >
+    <label
+      v-if="label"
+      class="label"
+      :for="id"
+    >
+      {{ label }}
+    </label>
+    <p
+      v-if="errorMessage"
+      class="error-message"
+      :class="size"
+    >
       {{ errorMessage }}
     </p>
-    <p class="suggestion" v-if="suggestion && !errorMessage">
+    <p
+      v-if="suggestion && !errorMessage"
+      class="suggestion"
+    >
       {{ suggestion }}
     </p>
   </div>
@@ -25,43 +38,6 @@
 
 <script>
 export default {
-  beforeDestroy() {
-    clearTimeout(this.searchTimeout);
-  },
-  data() {
-    return {
-      searchDelay: 300,
-      searchTimeout: null,
-    };
-  },
-  methods: {
-    onInputChange(e) {
-      const {value} = e.target;
-      this.$refs.input.value = this.value;
-
-      if (this.onValidate && !this.onValidate(value)) {
-        return;
-      }
-
-      this.$emit('onChange', value);
-
-      if (this.autosearch === 'on' && this.onAutosearch) {
-        clearTimeout(this.searchTimeout);
-        this.onSearchAutosearch(value);
-      }
-    },
-    onSearchAutosearch(value) {
-      if (value.length > 2) {
-        this.searchTimeout = setTimeout(
-          this.onAutosearch,
-          this.searchDelay,
-          value
-        );
-      } else {
-        this.onClearSearch && this.onClearSearch();
-      }
-    },
-  },
   props: {
     autocomplete: {
       type: String,
@@ -110,6 +86,43 @@ export default {
     value: {
       type: String,
       default: '',
+    },
+  },
+  data() {
+    return {
+      searchDelay: 300,
+      searchTimeout: null,
+    };
+  },
+  beforeDestroy() {
+    clearTimeout(this.searchTimeout);
+  },
+  methods: {
+    onInputChange(e) {
+      const {value} = e.target;
+      this.$refs.input.value = this.value;
+
+      if (this.onValidate && !this.onValidate(value)) {
+        return;
+      }
+
+      this.$emit('onChange', value);
+
+      if (this.autosearch === 'on' && this.onAutosearch) {
+        clearTimeout(this.searchTimeout);
+        this.onSearchAutosearch(value);
+      }
+    },
+    onSearchAutosearch(value) {
+      if (value.length > 2) {
+        this.searchTimeout = setTimeout(
+          this.onAutosearch,
+          this.searchDelay,
+          value
+        );
+      } else if (this.onClearSearch) {
+        this.onClearSearch();
+      }
     },
   },
 };

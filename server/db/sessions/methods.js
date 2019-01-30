@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 module.exports = {
   // class methods
-  findAllByFullName: async function({
+  async findAllByFullName({
     attributes,
     limit,
     offset,
@@ -20,19 +20,19 @@ module.exports = {
       ],
     };
 
-    return await this.findAll({
+    return this.findAll({
       attributes,
       limit,
       offset,
       where: searchCriteria,
     });
   },
-  findActiveBySchoolAndSession: async function({
+  async findActiveBySchoolAndSession({
     attributes,
     schoolName,
     sessionName,
   }) {
-    return await this.findOne({
+    return this.findOne({
       attributes,
       where: {
         active: true,
@@ -43,7 +43,7 @@ module.exports = {
   },
 
   // getter methods
-  getFullName: function() {
+  getFullName() {
     return `${this.getDataValue(this.SCHOOL_NAME)} ${this.getDataValue(this.SESSION_NAME)}`;
   },
 };

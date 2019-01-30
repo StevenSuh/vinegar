@@ -20,10 +20,10 @@ export const disconnectErrorMiddleware = (component, callback) => {
     errorMiddleware.splice(index, 1);
     component.$off('onError', callback);
   }
-}
+};
 
 export const handleErrorMiddleware = (err) => {
-  errorMiddleware.forEach(component => {
+  errorMiddleware.forEach((component) => {
     component.$emit('onError', err);
   });
 };

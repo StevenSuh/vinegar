@@ -1,4 +1,5 @@
 import Quill from 'quill';
+
 const Delta = Quill.import('delta');
 
 export function codeBlockIndentHandler(indent) {

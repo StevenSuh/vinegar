@@ -1,42 +1,57 @@
 <template>
   <transition name="fade">
-    <div v-if="show" class="session">
-      <Editor :session="$route.params.session" :school="$route.params.school" />
-      <chatRoom/>
+    <div
+      v-if="show"
+      class="session"
+    >
+      <Editor
+        :session="$route.params.session"
+        :school="$route.params.school"
+      />
+      <Chat />
       <transition name="fadeNoDelay">
-        <ModalComponent v-if="isWelcome" :onClose="onCloseIsWelcome">
+        <ModalComponent
+          v-if="isWelcome"
+          :on-close="onCloseIsWelcome"
+        >
           <div class="modal">
-            <h1 class="welcome-header">Welcome!</h1>
+            <h1 class="welcome-header">
+              Welcome!
+            </h1>
             <form
               class="paddingTop paddingBottom"
-              v-on:submit="onWelcomeFormSubmit"
+              @submit="onWelcomeFormSubmit"
             >
               <div>
-                <h6 class="input-title">Enter your name:</h6>
+                <h6 class="input-title">
+                  Enter your name:
+                </h6>
                 <InputComponent
                   autocomplete="off"
-                  :errorMessage="welcomeNameError"
+                  :error-message="welcomeNameError"
                   label="Name"
                   name="name"
                   placeholder="Your name"
                   size="small"
                   :value="welcomeName"
-                  v-on:onChange="onWelcomeNameChange"
+                  @onChange="onWelcomeNameChange"
                 />
               </div>
               <div class="marginTop small">
-                <h6 class="input-title">Phone (optional):</h6>
+                <h6 class="input-title">
+                  Phone (optional):
+                </h6>
                 <InputComponent
                   autocomplete="off"
-                  :errorMessage="welcomePhoneError"
+                  :error-message="welcomePhoneError"
                   label="Phone"
-                  maxLen="14"
+                  max-len="14"
                   name="phone"
                   placeholder="Your phone"
                   size="small"
-                  :onValidate="onValidatePhone"
+                  :on-validate="onValidatePhone"
                   :value="welcomePhone"
-                  v-on:onChange="onWelcomePhoneChange"
+                  @onChange="onWelcomePhoneChange"
                 />
               </div>
             </form>
@@ -51,23 +66,16 @@
 import Editor from '@/views/sessionPage/editor';
 import Vue from 'vue';
 import VueSocketIO from 'vue-socket.io';
-import chatRoom from '@/views/sessionPage/chatRoom';
+import Chat from '@/views/sessionPage/chat';
 
 import InputComponent from '@/components/input';
 import ModalComponent from '@/components/modal';
 import {onFormatPhone, onValidatePhone} from './utils';
 
 export default {
-  beforeCreate() {
-    Vue.use(
-      new VueSocketIO({
-        connection: 'http://localhost:3000',
-      })
-    );
-  },
   components: {
     Editor,
-    chatRoom,
+    Chat,
     InputComponent,
     ModalComponent,
   },
@@ -82,21 +90,28 @@ export default {
       welcomePhoneError: '',
     };
   },
-  methods: {
-    onCloseIsWelcome: function() {
-      this.isWelcome = false;
-    },
-    onValidatePhone,
-    onWelcomeFormSubmit: function(e) {
-      e.preventDefault();
-    },
-    onWelcomeNameChange: function(value) {
-      this.welcomeName = value;
-    },
-    onWelcomePhoneChange: onFormatPhone,
+  beforeCreate() {
+    Vue.use(
+      new VueSocketIO({
+        connection: 'http://localhost:3000',
+      })
+    );
   },
   mounted() {
     this.show = true;
+  },
+  methods: {
+    onCloseIsWelcome() {
+      this.isWelcome = false;
+    },
+    onValidatePhone,
+    onWelcomeFormSubmit(e) {
+      e.preventDefault();
+    },
+    onWelcomeNameChange(value) {
+      this.welcomeName = value;
+    },
+    onWelcomePhoneChange: onFormatPhone,
   },
   sockets: {},
 };
