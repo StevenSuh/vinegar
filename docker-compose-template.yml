@@ -1,0 +1,39 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:latest'
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
+    logging:
+      driver: none
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      # get these from owner
+      - GOOGLE_CLIENT_ID=
+      - GOOGLE_CLIENT_SECRET=
+      - GOOGLE_REDIRECT_URL=http://localhost:3050/api/callback
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_USERNAME=
+      - POSTGRES_HOST=host.docker.internal # using local postgres
+      - POSTGRES_DATABASE_NAME=
+      - POSTGRES_PASSWORD=
+      - POSTGRES_PORT=5432
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app

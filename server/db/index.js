@@ -1,8 +1,10 @@
 const Sequelize = require('sequelize');
 const {
   pgDbName,
-  pgUsername,
+  pgHost,
   pgPassword,
+  pgPort,
+  pgUsername,
 } = require('config');
 const getChatsModel = require('./chats/model');
 const getIntervalsModel = require('./intervals/model');
@@ -19,9 +21,10 @@ module.exports = async () => {
       pgPassword, // password
       {
         dialect: 'postgres',
-        host: 'localhost',
+        host: pgHost,
+        logging: false,
         operatorsAliases: false,
-        port: 5432,
+        port: pgPort,
       },
     );
 

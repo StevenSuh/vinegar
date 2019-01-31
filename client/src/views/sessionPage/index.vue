@@ -76,11 +76,7 @@ export default {
     };
   },
   beforeCreate() {
-    Vue.use(
-      new VueSocketIO({
-        connection: 'http://localhost:3000',
-      }),
-    );
+    Vue.use(new VueSocketIO({ connection: '/' }));
   },
   mounted() {
     this.show = true;

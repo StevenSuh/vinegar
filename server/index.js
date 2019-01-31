@@ -3,24 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const fs = require('fs');
-
-const config = require('config');
-const configTemplate = require('config_template');
-
-if (process.env.NODE_ENV !== 'production') {
-  if (!fs.existsSync('./config.js')) {
-    throw new Error(
-      'Your config.js does not exist. Get the file from owners of this repo.',
-    );
-  }
-
-  Object.keys(configTemplate).forEach(key => {
-    if (!config[key]) {
-      throw new Error(`Your config.js is missing ${key} property.`);
-    }
-  });
-}
 
 const app = express();
 
@@ -38,8 +20,6 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === 'production') {
   app.use(cors({ credentials: true, origin: true }));
   app.use(express.static(`${__dirname}client/public`));
-} else {
-  app.use(cors({ credentials: true, origin: 'http://localhost:8080' }));
 }
 
 require('./routes/api')(app);

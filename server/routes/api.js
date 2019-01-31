@@ -90,7 +90,7 @@ module.exports = (app) => {
       secure: false, // TODO: change to true
     });
 
-    res.redirect('http://localhost:8080/find');
+    res.redirect('/find');
   });
 
   app.get('/api/search/session', async (req, res) => {
@@ -114,7 +114,7 @@ module.exports = (app) => {
       query: searchQuery,
     });
 
-    const filteredSessions = sessions.map(({
+    res.json(sessions.map(({
       createdAt,
       id,
       password,
@@ -126,8 +126,6 @@ module.exports = (app) => {
       password: Boolean(password),
       schoolName,
       sessionName,
-    }));
-
-    res.json(filteredSessions);
+    })));
   });
 };

@@ -5,24 +5,26 @@ const pathToRegexp = require('path-to-regexp');
 const SocketIo = require('socket.io');
 const SocketRedis = require('socket.io-redis');
 
+const { redisHost, redisPort } = require('config');
+
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 const initSocketEditor = require('./editor');
 const initSocketChat = require('./chat');
 
-const sessionRegex = pathToRegexp('http://localhost:8080/session/:school/:session');
+const sessionRegex = pathToRegexp('/session/:school/:session');
 
 // helpers
 const getSchoolAndSession = (socket) => {
-  const url = socket.request.headers.referer;
-  const referer = decodeURI(url);
-  const sessionParse = sessionRegex.exec(referer) || [];
+  const { host, referer } = socket.request.headers;
+  const decodedUrl = decodeURI(referer);
+  const urlEnding = decodedUrl.slice(decodedUrl.indexOf(host) + host.length)
 
-  // TODO
+  const sessionParse = sessionRegex.exec(urlEnding) || [];
   return {
-    schoolName: sessionParse[2],
-    sessionName: sessionParse[3],
+    schoolName: sessionParse[1],
+    sessionName: sessionParse[2],
   };
 };
 
@@ -43,7 +45,7 @@ const socketInit = (io, socket, session, user) => {
 module.exports = (app) => {
   const httpServer = http.Server(app);
   const io = SocketIo(httpServer);
-  io.adapter(SocketRedis({ host: 'localhost', port: 6379 }));
+  io.adapter(SocketRedis({ host: redisHost, port: redisPort }));
 
   io.on('connection', async (socket) => {
     const { schoolName, sessionName } = getSchoolAndSession(socket);
