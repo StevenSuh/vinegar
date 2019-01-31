@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { handleErrorMiddleware } from '@/services/middleware';
 
-const BASE_URL = 'http://localhost:3000';
-
 const apiTemplate = fn => async (...args) => {
   try {
     return await fn(...args);
@@ -14,7 +12,11 @@ const apiTemplate = fn => async (...args) => {
 
 export const postSession = apiTemplate(
   async (data) => {
-    const res = await axios.post(`${BASE_URL}/api/create/session`, data);
+    const res = await axios.post(
+      '/api/create/session',
+      data,
+      { withCredentials: true },
+    );
     return res.data;
   },
 );
@@ -22,7 +24,7 @@ export const postSession = apiTemplate(
 export const getAuthStatus = apiTemplate(
   async () => {
     const res = await axios.get(
-      `${BASE_URL}/api/auth/status`,
+      '/api/auth/status',
       { withCredentials: true },
     );
     return res.data;
@@ -32,7 +34,7 @@ export const getAuthStatus = apiTemplate(
 export const getSigninUrl = apiTemplate(
   async () => {
     const res = await axios.get(
-      `${BASE_URL}/api/signin`,
+      '/api/signin',
       { withCredentials: true },
     );
     return res.data;
@@ -42,7 +44,7 @@ export const getSigninUrl = apiTemplate(
 export const getSearchSessionResults = apiTemplate(
   async (query) => {
     const res = await axios.get(
-      `${BASE_URL}/api/search/session?query=${query}`,
+      `/api/search/session?query=${query}`,
       { withCredentials: true },
     );
     return res.data;

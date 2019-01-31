@@ -37,7 +37,7 @@
           <div class="content-message">
             <h1 class="content-header">Divide and Conquer.</h1>
             <p class="content-p marginTop marginBottom">
-              Loading balancing meets higher education.
+              Take notes in a collaborative manner.
             </p>
             <ButtonComponent type="primary" size="large">
               <router-link tag="a" to="/find"> Join Your Session </router-link>

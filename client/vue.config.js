@@ -12,4 +12,7 @@ module.exports = {
   //     filename: 'app.html',
   //   },
   // },
+  devServer: {
+    disableHostCheck: true,
+  },
 };
