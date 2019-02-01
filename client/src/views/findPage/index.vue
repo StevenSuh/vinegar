@@ -1,7 +1,10 @@
 <template>
   <transition name="fade">
     <div v-if="show">
-      <div v-if="!isMobile" class="find">
+      <div
+        v-if="!isMobile"
+        class="find"
+      >
         <div class="container paddingTop">
           <nav class="navbar">
             <router-link
@@ -10,28 +13,38 @@
               tag="a"
               to="/"
             >
-              <img class="back-button" :src="backImage" alt="back button" />
+              <img
+                class="back-button"
+                :src="backImage"
+                alt="back button"
+              >
             </router-link>
             <button
               v-else
               class="back-button-wrapper hover"
               @click="onSetIsMakingChoiceTrue"
             >
-              <img class="back-button" :src="backImage" alt="back button" />
+              <img
+                class="back-button"
+                :src="backImage"
+                alt="back button"
+              >
             </button>
-            <h2 class="nav-header">Vinegar</h2>
+            <h2 class="nav-header">
+              Vinegar
+            </h2>
           </nav>
         </div>
         <img
           class="find-left-img"
           :src="leftImage"
           alt="find page left asset"
-        />
+        >
         <img
           class="find-right-img"
           :src="rightImage"
           alt="find page right asset"
-        />
+        >
         <div class="container">
           <transition name="fade">
             <div v-if="loaded">
@@ -61,14 +74,26 @@
             </div>
           </transition>
           <transition name="fade">
-            <div v-if="!loaded" class="loader-wrapper">
-              <Loader class="loader" color="red" size="large" />
-              <p class="loader-caption marginTop">Loading content</p>
+            <div
+              v-if="!loaded"
+              class="loader-wrapper"
+            >
+              <Loader
+                class="loader"
+                color="red"
+                size="large"
+              />
+              <p class="loader-caption marginTop">
+                Loading content
+              </p>
             </div>
           </transition>
         </div>
       </div>
-      <div v-else class="find">
+      <div
+        v-else
+        class="find"
+      >
         <!-- TODO -->
         can't do mobile
       </div>

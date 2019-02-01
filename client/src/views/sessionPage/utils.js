@@ -83,3 +83,51 @@ export function onValidatePhone(value) {
   }
   return Boolean(phoneRegex.exec(last || ''));
 }
+
+export function onResizeCollapse() {
+  /*
+    fakeToolbar is hidden on DOM. However, it maintains DOM properties such as `offsetLeft`.
+    Therefore, this is taking advantage of its DOM position properties to make decision on
+    which items to collapse for the editor's toolbar
+  */
+  const fakeToolbar = this.$refs.fakeToolbar.children[0].children;
+  let prevOffset = fakeToolbar[0].offsetLeft;
+
+  let i = 1;
+  for (; i < fakeToolbar.length; i += 1) {
+    if (fakeToolbar[i].offsetLeft < prevOffset) {
+      i -= 1;
+      break;
+    }
+    prevOffset = fakeToolbar[i].offsetLeft;
+  }
+
+  const open = this.$refs.open.children[0].children;
+  for (let j = 0; j < i; j += 1) {
+    open[j].classList.remove('hide-toolbar');
+  }
+  for (let j = i; j < open.length; j += 1) {
+    open[j].classList.add('hide-toolbar');
+  }
+
+  const collapse = this.$refs.collapse.children[0].children;
+  for (let j = 0; j < i; j += 1) {
+    collapse[j].classList.add('hide-toolbar');
+  }
+  for (let j = i; j < collapse.length; j += 1) {
+    collapse[j].classList.remove('hide-toolbar');
+  }
+
+  const { extend } = this.$refs;
+
+  if (i < collapse.length) {
+    const parent = this.$refs.toolbar;
+    const distance = (parent.offsetWidth - extend.offsetWidth) - (extend.offsetLeft - parent.offsetLeft);
+
+    this.$refs.collapse.style.right = `${distance}px`;
+    extend.classList.remove('hide-toolbar');
+  } else {
+    this.$refs.collapse.removeAttribute('style');
+    extend.classList.add('hide-toolbar');
+  }
+}

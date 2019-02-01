@@ -1,7 +1,15 @@
 <template>
   <div>
-    <div class="bg-overlay" @click="onClose" />
-    <div ref="content" class="content"><slot /></div>
+    <div
+      class="bg-overlay"
+      @click="onClose"
+    />
+    <div
+      ref="content"
+      class="content"
+    >
+      <slot />
+    </div>
   </div>
 </template>
 

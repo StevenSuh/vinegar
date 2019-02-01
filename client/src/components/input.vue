@@ -12,12 +12,25 @@
       :type="type"
       :value="value"
       @input="onInputChange"
-    />
-    <label v-if="label" class="label" :for="id"> {{ label }} </label>
-    <p v-if="errorMessage" class="error-message" :class="size">
+    >
+    <label
+      v-if="label"
+      class="label"
+      :for="id"
+    >
+      {{ label }}
+    </label>
+    <p
+      v-if="errorMessage"
+      class="error-message"
+      :class="size"
+    >
       {{ errorMessage }}
     </p>
-    <p v-if="suggestion && !errorMessage" class="suggestion">
+    <p
+      v-if="suggestion && !errorMessage"
+      class="suggestion"
+    >
       {{ suggestion }}
     </p>
   </div>

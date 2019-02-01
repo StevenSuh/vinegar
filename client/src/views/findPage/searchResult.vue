@@ -7,14 +7,26 @@
       @click="onClickItemFactory(item);"
     >
       <div class="result-name">
-        <h6 class="result-school" v-html="highlightSchool(item)" />
+        <h6
+          class="result-school"
+          v-html="highlightSchool(item)"
+        />
         <span class="name-filler" />
-        <p class="result-session" v-html="highlightSession(item)" />
+        <p
+          class="result-session"
+          v-html="highlightSession(item)"
+        />
       </div>
       <p class="detail">
         {{ 'Created at ' + formatDate(item.createdAt) }}
-        <span v-if="item.password" class="protected">
-          {{ 'Protected' }} <span class="lock" v-html="PasswordIcon" />
+        <span
+          v-if="item.password"
+          class="protected"
+        >
+          {{ 'Protected' }} <span
+            class="lock"
+            v-html="PasswordIcon"
+          />
         </span>
       </p>
     </div>

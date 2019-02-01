@@ -5,7 +5,7 @@ install:
 prettier:
 	prettier --write **/*.js **/*.vue
 lint:
-	cd client && yarn lint --fix && cd ../server && yarn lint --fix && cd .. && make prettier
+	make prettier && cd client && yarn lint --fix && cd ../server && yarn lint --fix
 serve-cache:
 	docker-compose up
 serve:

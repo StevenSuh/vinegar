@@ -2,12 +2,20 @@
   <div>
     <div id="chatRoom">
       <div id="chatMessages">
-        <p v-for="message in messages" :key="messages.indexOf(message)">
+        <p
+          v-for="message in messages"
+          :key="messages.indexOf(message)"
+        >
           {{ message.name }} {{ message.message }}
         </p>
       </div>
       <div id="chatInput">
-        <input id="messageBox" type="text" /> <button id="send">send</button>
+        <input
+          id="messageBox"
+          type="text"
+        > <button id="send">
+          send
+        </button>
       </div>
     </div>
   </div>

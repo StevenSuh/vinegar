@@ -1,12 +1,16 @@
 <template>
   <div class="join-wrapper">
-    <h2 class="join-header paddingTop large">Join a Session</h2>
+    <h2 class="join-header paddingTop large">
+      Join a Session
+    </h2>
     <p class="join-message paddingTop small">
       Search for the session you'd like to join.
     </p>
     <div class="paddingTop paddingBottom" />
     <div class="search-wrapper">
-      <h6 class="search-title">Session Name</h6>
+      <h6 class="search-title">
+        Session Name
+      </h6>
       <InputComponent
         id="join-input"
         autocomplete="off"
