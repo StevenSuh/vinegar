@@ -79,9 +79,11 @@ button {
 a,
 button,
 input,
+textarea,
 a:focus,
 button:focus,
-input:focus {
+input:focus,
+textarea:focus {
   border: none;
   outline: 0;
 }

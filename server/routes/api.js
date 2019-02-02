@@ -57,7 +57,7 @@ module.exports = (app) => {
       return res.json({ isAuthenticated: false });
     }
 
-    const user = await Users.findOne({ where: { cookieId: userCookieId } });
+    const user = await Users.findOne({ where: { userCookieId } });
 
     if (!user) {
       res.clearCookie('userCookieId');
@@ -81,7 +81,7 @@ module.exports = (app) => {
       active: false,
       email,
       gid,
-      cookieId: userCookieId,
+      userCookieId,
     });
 
     res.cookie('userCookieId', userCookieId, {

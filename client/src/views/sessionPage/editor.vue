@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="editor">
     <div ref="toolbar">
       <div class="open" ref="open">
         <ToolbarConfig />
       </div>
-      <span class="ql-formats hide-toolbar" ref="extend">
+      <span class="ql-formats hide-toolbar extend" ref="extend">
         <button class="ql-extend" v-on:blur="onExtendBlur" />
       </span>
       <div class="collapse" ref="collapse" v-on:click="onClickCollapse">
@@ -23,9 +23,6 @@ import Quill from 'quill';
 import { Range } from 'quill/core/selection';
 import QuillCursors from 'quill-cursors';
 import ToolbarConfig from '@/views/sessionPage/toolbarConfig';
-
-import RedoIcon from '!raw-loader!quill/assets/icons/redo.svg';
-import UndoIcon from '!raw-loader!quill/assets/icons/undo.svg';
 
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
@@ -48,6 +45,11 @@ const Block = Quill.import('blots/block');
 Block.tagName = 'DIV';
 Quill.register(Block, true);
 
+const SIZES = ['12px', '14px', '16px', '22px', '28px', '36px'];
+const Size = Quill.import('attributors/style/size');
+Size.whitelist = SIZES;
+Quill.register(Size, true);
+
 export default {
   components: {
     ToolbarConfig,
@@ -65,7 +67,7 @@ export default {
   data() {
     return {
       editor: null,
-      webSocket: null,
+      sizes: SIZES,
     };
   },
   mounted() {
@@ -76,6 +78,20 @@ export default {
         toolbar: {
           container: this.$refs.toolbar,
           handlers: {
+            smaller: () => {
+              const format = this.editor.getFormat();
+              let index = this.sizes.indexOf(format.size);
+
+              index = Math.max(index - 1, 0);
+              this.editor.format('size', this.sizes[index]);
+            },
+            larger: () => {
+              const format = this.editor.getFormat();
+              let index = this.sizes.indexOf(format.size);
+
+              index = Math.min(index + 1, this.sizes.length - 1);
+              this.editor.format('size', this.sizes[index]);
+            },
             extend: () => {
               const { extend } = this.$refs;
               const button = extend.children[0];
@@ -102,16 +118,13 @@ export default {
 
     this.editor.root.innerHTML = this.content;
     this.editor.format('font', 'rubik');
+    this.editor.format('size', '16px');
     this.editor.history.clear();
 
     this.editor.on('editor-change', this.selectionUpdate);
     this.editor.on('text-change', this.textUpdate);
 
     document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
-    document.getElementsByClassName('ql-undo')[0].innerHTML = UndoIcon;
-    document.getElementsByClassName('ql-undo')[1].innerHTML = UndoIcon;
-    document.getElementsByClassName('ql-redo')[0].innerHTML = RedoIcon;
-    document.getElementsByClassName('ql-redo')[1].innerHTML = RedoIcon;
 
     // add checkBlur event to window
     window.addEventListener('click', this.onCheckBlur);
@@ -188,8 +201,29 @@ export default {
 
 <style>
 /* should NOT be scoped */
+.editor {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 100%;
+  min-height: 500px;
+  width: 100%;
+}
+
+.ql-toolbar {
+  height: 40px;
+}
+
+.ql-container {
+  min-height: 458px;
+  max-height: calc(100% - 40px);
+}
+
 .hide-toolbar {
   display: none !important;
+}
+
+.open {
+  padding-right: 28px;
 }
 
 .open,
@@ -207,6 +241,7 @@ export default {
   pointer-events: none;
   position: absolute;
   transition: opacity var(--transition-duration) var(--transition-curve);
+  transform: translateY(2px);
   z-index: 1;
 }
 
@@ -223,9 +258,29 @@ export default {
   margin-right: 0 !important;
 }
 
+.extend {
+  margin-right: 0 !important;
+  right: 8px;
+  position: absolute;
+  top: 8px;
+}
+
+.extend::before {
+  color: #ccc;
+  content: '|';
+  font-size: 12px;
+  left: -2px;
+  line-height: 26px;
+  opacity: 0.75;
+  position: absolute;
+  transform: translateX(-100%);
+  top: 0;
+}
+
 .fake-toolbar {
   opacity: 0;
   pointer-events: none;
+  padding-right: 36px;
   position: absolute;
   top: 8px;
   user-select: none;

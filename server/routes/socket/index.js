@@ -58,7 +58,7 @@ module.exports = (app) => {
     });
     const userPromise = Users.findOne({
       attributes: [Users.ID],
-      where: { cookieId: userCookieId },
+      where: { userCookieId },
     });
 
     const [session, user] = await Promise.all([sessionPromise, userPromise]);

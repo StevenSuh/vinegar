@@ -1,93 +1,69 @@
 <template>
   <transition name="fade">
-    <div
-      v-if="show"
-      class="session"
-    >
-      <Editor
-        :session="$route.params.session"
-        :school="$route.params.school"
-      />
-      <Chat />
+    <div v-if="show" class="session">
+      <router-link
+        class="back-button-wrapper hover"
+        tag="a"
+        to="/find"
+      >
+        <img
+          class="back-button"
+          :src="backImage"
+          alt="back button"
+        />
+      </router-link>
+      <div class="left">
+        <h1 class="school-name">
+          {{ school }}
+          <span class="session-name">
+            {{ ' / ' }}
+            {{ session }}
+          </span>
+        </h1>
+        <div class="editor-wrapper">
+          <Editor
+            :session="$route.params.session"
+            :school="$route.params.school"
+          />
+        </div>
+      </div>
+      <div class="right">
+        <Chat />
+      </div>
       <transition name="fadeNoDelay">
-        <ModalComponent
-          v-if="isWelcome"
-          :on-close="onCloseIsWelcome"
-        >
-          <div class="modal">
-            <h1 class="welcome-header">
-              Welcome!
-            </h1>
-            <form
-              class="paddingTop paddingBottom"
-              @submit="onWelcomeFormSubmit"
-            >
-              <div>
-                <h6 class="input-title">
-                  Enter your name:
-                </h6>
-                <InputComponent
-                  autocomplete="off"
-                  :error-message="welcomeNameError"
-                  label="Name"
-                  name="name"
-                  placeholder="Your name"
-                  size="small"
-                  :value="welcomeName"
-                  @onChange="onWelcomeNameChange"
-                />
-              </div>
-              <div class="marginTop small">
-                <h6 class="input-title">
-                  Phone (optional):
-                </h6>
-                <InputComponent
-                  autocomplete="off"
-                  :error-message="welcomePhoneError"
-                  label="Phone"
-                  max-len="14"
-                  name="phone"
-                  placeholder="Your phone"
-                  size="small"
-                  :on-validate="onValidatePhone"
-                  :value="welcomePhone"
-                  @onChange="onWelcomePhoneChange"
-                />
-              </div>
-            </form>
-          </div>
-        </ModalComponent>
+        <Welcome :onClose="onCloseIsWelcome" v-if="isWelcome" />
       </transition>
     </div>
   </transition>
 </template>
 
 <script>
-import Editor from '@/views/sessionPage/editor';
 import Vue from 'vue';
 import VueSocketIO from 'vue-socket.io';
-import Chat from '@/views/sessionPage/chat';
 
-import InputComponent from '@/components/input';
-import ModalComponent from '@/components/modal';
-import { onFormatPhone, onValidatePhone } from './utils';
+import Chat from '@/views/sessionPage/chat';
+import Editor from '@/views/sessionPage/editor';
+import Welcome from '@/views/sessionPage/welcomeModal';
+
+import backImage from '@/assets/back.png';
 
 export default {
   components: {
     Editor,
     Chat,
-    InputComponent,
-    ModalComponent,
+    Welcome,
   },
   data() {
     return {
       // state
+      school: this.$route.params.school,
+      session: this.$route.params.session,
+
       show: false,
       isWelcome: true,
-      welcomeName: '',
-      welcomeNameError: '',
-      welcomePhone: '',
-      welcomePhoneError: '',
+
+      // assets
+      backImage,
     };
   },
   beforeCreate() {
@@ -100,14 +76,6 @@ export default {
     onCloseIsWelcome() {
       this.isWelcome = false;
     },
-    onValidatePhone,
-    onWelcomeFormSubmit(e) {
-      e.preventDefault();
-    },
-    onWelcomeNameChange(value) {
-      this.welcomeName = value;
-    },
-    onWelcomePhoneChange: onFormatPhone,
   },
   sockets: {},
 };
@@ -115,24 +83,85 @@ export default {
 
 <style scoped>
 .session {
+  display: flex;
+  flex-direction: row;
   height: 100vh;
+  padding: 60px 70px;
 }
 
-.modal {
-  padding: 40px 60px;
-  width: 600px;
-}
-
-.welcome-header {
-  color: var(--main-font-color);
-  font-weight: 500;
+.school-name {
   font-size: 36px;
-  text-align: center;
+  font-weight: 500;
+  line-height: 44px;
+  padding-bottom: 20px;
 }
 
-.input-title {
-  font-size: 15px;
+.session-name {
+  font-size: 22px;
   font-weight: 400;
-  margin-bottom: 8px;
+  opacity: 0.9;
+  line-height: 44px;
+  vertical-align: top;
+}
+
+.back-button-wrapper {
+  cursor: pointer;
+  position: absolute;
+  left: 15px;
+  height: 40px;
+  top: 15px;
+  width: 40px;
+}
+
+.back-button {
+  left: -5px;
+  height: 50px;
+  top: -5px;
+  width: 50px;
+}
+
+.left {
+  padding-right: 20px;
+  min-width: 533px;
+  width: 65%;
+}
+
+.right {
+  padding-left: 20px;
+  min-width: 287px;
+  width: 35%;
+}
+
+.editor-wrapper {
+  height: 70%;
+  width: 100%;
+  min-height: 500px;
+}
+
+@media (max-width: 1000px) {
+  .session {
+    padding: 15px 20px;
+  }
+
+  .back-button-wrapper {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .session {
+    flex-direction: column;
+  }
+
+  .school-name {
+    padding-bottom: 10px;
+  }
+
+  .left,
+  .right {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
 }
 </style>

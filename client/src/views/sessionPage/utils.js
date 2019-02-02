@@ -96,14 +96,13 @@ export function onResizeCollapse() {
   let i = 1;
   for (; i < fakeToolbar.length; i += 1) {
     if (fakeToolbar[i].offsetLeft < prevOffset) {
-      i -= 1;
       break;
     }
     prevOffset = fakeToolbar[i].offsetLeft;
   }
 
   const open = this.$refs.open.children[0].children;
-  for (let j = 0; j < i; j += 1) {
+  for (let j = 1; j < i; j += 1) {
     open[j].classList.remove('hide-toolbar');
   }
   for (let j = i; j < open.length; j += 1) {
@@ -119,15 +118,16 @@ export function onResizeCollapse() {
   }
 
   const { extend } = this.$refs;
+  const collapseEl = this.$refs.collapse;
 
   if (i < collapse.length) {
     const parent = this.$refs.toolbar;
     const distance = (parent.offsetWidth - extend.offsetWidth) - (extend.offsetLeft - parent.offsetLeft);
 
-    this.$refs.collapse.style.right = `${distance}px`;
+    collapseEl.style.right = `${distance}px`;
     extend.classList.remove('hide-toolbar');
   } else {
-    this.$refs.collapse.removeAttribute('style');
+    collapseEl.removeAttribute('style');
     extend.classList.add('hide-toolbar');
   }
 }

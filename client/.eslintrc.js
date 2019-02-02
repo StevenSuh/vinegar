@@ -10,6 +10,7 @@ module.exports = {
     'import/no-webpack-loader-syntax': 'off',
     'vue/require-default-prop': 'off',
     'vue/no-v-html': 'off',
+    'vue/html-self-closing': 'off',
   }
 };
 

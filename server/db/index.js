@@ -54,6 +54,10 @@ module.exports = async () => {
       foreignKey: { allowNull: false, name: 'userId' },
     });
 
+    Sessions.belongsTo(Intervals, {
+      as: 'CurrentInterval',
+      foreignKey: { allowNull: true, name: 'currentIntervalId' },
+    });
     Sessions.hasMany(Intervals, {
       as: 'Intervals',
       foreignKey: { allowNull: false, name: 'sessionId' },

@@ -28,7 +28,7 @@
                 class="back-button"
                 :src="backImage"
                 alt="back button"
-              >
+              />
             </button>
             <h2 class="nav-header">
               Vinegar
