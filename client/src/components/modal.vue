@@ -4,19 +4,38 @@
       class="bg-overlay"
       @click="onClose"
     />
+    <transition name="fadeNoDelay">
+      <div class="loader-wrapper" v-if="isLoading">
+        <Loader color="white" size="large" />
+      </div>
+    </transition>
     <div
       ref="content"
       class="content"
+      v-for="n in steps"
+      :key="n"
     >
-      <slot />
+      <slot :name="`modal-${n}`" />
     </div>
   </div>
 </template>
 
 <script>
+import Loader from '@/components/loader';
+
 const enterAnim = [
-  { opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)' },
-  { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+  {
+    opacity: 0,
+    transform: 'translate(-50%, -50%) scale(0.8)',
+    pointerEvents: 'none',
+    userSelect: 'none',
+  },
+  {
+    opacity: 1,
+    transform: 'translate(-50%, -50%) scale(1)',
+    pointerEvents: 'auto',
+    userSelect: 'auto',
+  },
 ];
 
 const enterTiming = {
@@ -27,8 +46,18 @@ const enterTiming = {
 };
 
 const leaveAnim = [
-  { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-  { opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)' },
+  {
+    opacity: 1,
+    transform: 'translate(-50%, -50%) scale(1)',
+    pointerEvents: 'none',
+    userSelect: 'none',
+  },
+  {
+    opacity: 0,
+    transform: 'translate(-50%, -50%) scale(0.8)',
+    pointerEvents: 'auto',
+    userSelect: 'auto',
+  },
 ];
 
 const leaveTiming = {
@@ -38,18 +67,51 @@ const leaveTiming = {
 };
 
 export default {
+  components: {
+    Loader,
+  },
   props: {
-    onClose: Function,
+    isLoading: {
+      default: false,
+      type: Boolean,
+    },
+    onClose: {
+      default: () => {},
+      type: Function,
+    },
+    currentStep: {
+      default: 0,
+      type: Number,
+    },
+    steps: {
+      default: 1,
+      type: Number,
+    },
   },
   beforeCreate() {
     document.body.classList.add('overflow');
   },
   mounted() {
-    this.$refs.content.animate(enterAnim, enterTiming);
+    if (!this.isLoading) {
+      this.$refs.content[this.currentStep].animate(enterAnim, enterTiming);
+    }
   },
   beforeDestroy() {
-    this.$refs.content.animate(leaveAnim, leaveTiming);
+    this.$refs.content[this.currentStep].animate(leaveAnim, leaveTiming);
     document.body.classList.remove('overflow');
+  },
+  watch: {
+    isLoading(value, oldValue) {
+      if (!value && oldValue) {
+        this.$refs.content[this.currentStep].animate(enterAnim, enterTiming);
+      }
+    },
+    currentStep(value, oldValue) {
+      if (value !== oldValue) {
+        this.$refs.content[oldValue].animate(leaveAnim, leaveTiming);
+        this.$refs.content[value].animate(enterAnim, enterTiming);
+      }
+    }
   },
 };
 </script>
@@ -77,7 +139,17 @@ export default {
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   left: 50%;
   opacity: 0;
+  pointer-events: none;
   position: fixed !important;
+  user-select: none;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.loader-wrapper {
+  left: 50%;
+  padding: 50px;
+  position: fixed;
   top: 50%;
   transform: translate(-50%, -50%);
 }

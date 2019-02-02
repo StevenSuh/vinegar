@@ -2,7 +2,7 @@ const express = require('express');
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -16,9 +16,9 @@ app.use(
   }),
 );
 app.use(cookieParser());
+app.use(morgan('tiny'));
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors({ credentials: true, origin: true }));
   app.use(express.static(`${__dirname}client/public`));
 }
 

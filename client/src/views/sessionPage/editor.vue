@@ -80,14 +80,14 @@ export default {
           handlers: {
             smaller: () => {
               const format = this.editor.getFormat();
-              let index = this.sizes.indexOf(format.size);
+              let index = this.sizes.indexOf(format.size || '16px');
 
               index = Math.max(index - 1, 0);
               this.editor.format('size', this.sizes[index]);
             },
             larger: () => {
               const format = this.editor.getFormat();
-              let index = this.sizes.indexOf(format.size);
+              let index = this.sizes.indexOf(format.size || '16px');
 
               index = Math.min(index + 1, this.sizes.length - 1);
               this.editor.format('size', this.sizes[index]);
@@ -116,9 +116,9 @@ export default {
       theme: 'snow',
     });
 
-    this.editor.root.innerHTML = this.content;
     this.editor.format('font', 'rubik');
     this.editor.format('size', '16px');
+    this.editor.root.innerHTML = this.content;
     this.editor.history.clear();
 
     this.editor.on('editor-change', this.selectionUpdate);
@@ -132,6 +132,7 @@ export default {
     window.addEventListener('resize', this.onResizeCollapse);
 
     setTimeout(() => this.onResizeCollapse(), 0);
+    this.editor.enable(false);
   },
   beforeDestroy() {
     window.removeEventListener('click', this.onCheckBlur);
@@ -141,7 +142,7 @@ export default {
   methods: {
     onCheckBlur() {
       if (!this.editor.hasFocus()) {
-        this.$socket.emit('onEditorSelectionRemove');
+        this.$socket.emit('editor:onEditorSelectionRemove');
       }
     },
     onClickCollapse(e) {
@@ -168,7 +169,7 @@ export default {
           // textUpdate is occurring at the same time
           // causing cursor to update inaccurately
           setTimeout(() => {
-            this.$socket.emit('onEditorSelectionUpdate', {
+            this.$socket.emit('editor:onEditorSelectionUpdate', {
               data: range,
               name: this.name,
             });
@@ -178,21 +179,21 @@ export default {
     },
     textUpdate(delta, oldDelta, source) {
       if (source === Quill.sources.USER) {
-        this.$socket.emit('onEditorTextUpdate', {
+        this.$socket.emit('editor:onEditorTextUpdate', {
           data: delta,
         });
       }
     },
   },
   sockets: {
-    onEditorSelectionUpdate({ data, name, userId }) {
+    'editor:onEditorSelectionUpdate': function({ data, name, userId }) {
       const range = new Range(data.index, data.length);
       this.editor.getModule('cursors').setCursor(userId, range, name, 'red');
     },
-    onEditorSelectionRemove({ userId }) {
+    'editor:onEditorSelectionRemove': function({ userId }) {
       this.editor.getModule('cursors').removeCursor(userId);
     },
-    onEditorTextUpdate({ data, userId }) {
+    'editor:onEditorTextUpdate': function({ data, userId }) {
       this.editor.updateContents(data, userId);
     },
   },
@@ -298,6 +299,10 @@ export default {
 
 .ql-editor strong {
   font-weight: 500;
+}
+
+.ql-editor * {
+  line-height: 1.5em;
 }
 
 .ql-cursors {
@@ -519,5 +524,9 @@ pre strong {
 .ql-snow .ql-picker.ql-expanded .ql-picker-options {
   opacity: 1;
   pointer-events: auto;
+}
+
+.ql-editor ol, .ql-editor ul {
+  padding-left: 0;
 }
 </style>

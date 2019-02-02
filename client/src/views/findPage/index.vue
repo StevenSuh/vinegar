@@ -49,7 +49,7 @@
           <transition name="fade">
             <div v-if="loaded">
               <transition name="fade">
-                <div v-if="isAuthenticated">
+                <div v-if="isAuth">
                   <transition name="fade">
                     <Decision
                       v-if="isMakingChoice"
@@ -66,7 +66,7 @@
                 </div>
               </transition>
               <transition name="fade">
-                <div v-if="!isAuthenticated">
+                <div v-if="!isAuth">
                   <!-- TODO -->
                   Not auth :(
                 </div>
@@ -124,7 +124,7 @@ export default {
   data() {
     return {
       // state
-      isAuthenticated: false,
+      isAuth: false,
       isMobile: window.innerWidth <= MIN_MOBILE_WIDTH,
       isMakingChoice: true,
       isJoiningSession: false,
@@ -158,8 +158,8 @@ export default {
       this.isCreatingSession = true;
     },
     async onInit() {
-      const { isAuthenticated } = await getAuthStatus();
-      this.isAuthenticated = isAuthenticated;
+      const { validUser } = await getAuthStatus();
+      this.isAuth = validUser;
       this.loaded = true;
     },
     onResize() {
@@ -181,9 +181,11 @@ export default {
 
 .loader-wrapper {
   left: 50%;
-  position: fixed;
+  height: auto !important;
+  position: fixed !important;
   top: 50%;
   transform: translate(-50%, -50%);
+  width: auto !important;
 }
 
 .loader {

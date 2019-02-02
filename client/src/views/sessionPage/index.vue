@@ -31,7 +31,10 @@
         <Chat />
       </div>
       <transition name="fadeNoDelay">
-        <Welcome :onClose="onCloseIsWelcome" v-if="isWelcome" />
+        <Welcome
+          :onClose="onCloseIsWelcome"
+          v-if="isWelcome"
+        />
       </transition>
     </div>
   </transition>
@@ -58,7 +61,6 @@ export default {
       // state
       school: this.$route.params.school,
       session: this.$route.params.session,
-
       show: false,
       isWelcome: true,
 
