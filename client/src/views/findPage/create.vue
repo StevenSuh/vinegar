@@ -2,9 +2,21 @@
   <div id="createSession">
     <div>create session</div>
     <form>
-      <input id="schoolName" type="text" value="school name here" />
-      <input id="sessionName" type="text" value="course title here" />
-      <input id="submit" type="submit" value="Submit" />
+      <input
+        id="schoolName"
+        type="text"
+        value="school name here"
+      >
+      <input
+        id="sessionName"
+        type="text"
+        value="course title here"
+      >
+      <input
+        id="submit"
+        type="submit"
+        value="Submit"
+      >
     </form>
   </div>
 </template>

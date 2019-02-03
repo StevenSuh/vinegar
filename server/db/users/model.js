@@ -32,7 +32,7 @@ module.exports = (dbClient) => {
         allowNull: true,
         type: Sequelize.STRING,
       },
-      cookieId: {
+      userCookieId: {
         allowNull: true,
         type: Sequelize.STRING,
       },
@@ -48,13 +48,14 @@ module.exports = (dbClient) => {
 
     // class definitions
     Users.ACTIVE = 'active';
-    Users.COOKIE_ID = 'cookieId';
     Users.CREATED_AT = 'createdAt';
     Users.EMAIL = 'email';
     Users.GID = 'gid';
     Users.ID = 'id';
     Users.NAME = 'name';
     Users.PHONE = 'phone';
+    Users.SESSION_COOKIE_ID = 'sessionCookieId';
+    Users.USER_COOKIE_ID = 'userCookieId';
     Users.UPDATED_AT = 'updatedAt';
   }
   return Users;

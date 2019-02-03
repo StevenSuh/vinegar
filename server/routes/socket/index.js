@@ -17,9 +17,9 @@ const sessionRegex = pathToRegexp('/session/:school/:session');
 
 // helpers
 const getSchoolAndSession = (socket) => {
-  const { host, referer } = socket.request.headers;
+  const { referer } = socket.request.headers;
   const decodedUrl = decodeURI(referer);
-  const urlEnding = decodedUrl.slice(decodedUrl.indexOf(host) + host.length)
+  const urlEnding = decodedUrl.slice(decodedUrl.split('/', 3).join('/').length);
 
   const sessionParse = sessionRegex.exec(urlEnding) || [];
   return {
@@ -58,7 +58,7 @@ module.exports = (app) => {
     });
     const userPromise = Users.findOne({
       attributes: [Users.ID],
-      where: { cookieId: userCookieId },
+      where: { userCookieId },
     });
 
     const [session, user] = await Promise.all([sessionPromise, userPromise]);
@@ -71,7 +71,7 @@ module.exports = (app) => {
     }
 
     if (session.schoolName === schoolName && session.sessionName === sessionName) {
-      // socket.on('onJoinSession', function({ name, phone, password }) {
+      // socket.on('socket:onEnter', function({ name, phone, password }) {
       //   if (session.password && password !== session.password) {
       //     socket.emit('exception', { errorMessage: 'Invalid password' });
       //     return;

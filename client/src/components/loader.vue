@@ -1,5 +1,9 @@
 <template>
-  <span ref="loader" class="loader" :class="[color, size]" />
+  <span
+    ref="loader"
+    class="loader"
+    :class="[color, size]"
+  />
 </template>
 
 <script>

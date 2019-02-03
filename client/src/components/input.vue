@@ -12,12 +12,26 @@
       :type="type"
       :value="value"
       @input="onInputChange"
-    />
-    <label v-if="label" class="label" :for="id"> {{ label }} </label>
-    <p v-if="errorMessage" class="error-message" :class="size">
+    >
+    <label
+      v-if="label"
+      class="label"
+      :for="id"
+    >
+      {{ label }}
+    </label>
+    <p
+      v-if="errorMessage"
+      class="error-message"
+      :class="size"
+    >
       {{ errorMessage }}
     </p>
-    <p v-if="suggestion && !errorMessage" class="suggestion">
+    <p
+      v-if="suggestion && !errorMessage"
+      class="suggestion"
+      :class="size"
+    >
       {{ suggestion }}
     </p>
   </div>
@@ -144,12 +158,13 @@ export default {
   color: var(--main-font-color);
   font-size: 15px;
   margin-top: 6px;
-  padding-left: 15px;
+  padding-left: 26px;
 }
 
 .error-message.small {
   font-size: 13px;
-  padding-left: 5px;
+  margin-top: 4px;
+  padding-left: 10px;
 }
 
 .input.small {
@@ -206,5 +221,11 @@ export default {
   margin-top: 6px;
   opacity: 0.3;
   padding-left: 26px;
+}
+
+.suggestion.small {
+  font-size: 13px;
+  margin-top: 4px;
+  padding-left: 10px;
 }
 </style>

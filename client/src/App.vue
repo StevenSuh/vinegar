@@ -1,5 +1,7 @@
 <template>
-  <div id="app"><router-view /></div>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script>
@@ -77,9 +79,11 @@ button {
 a,
 button,
 input,
+textarea,
 a:focus,
 button:focus,
-input:focus {
+input:focus,
+textarea:focus {
   border: none;
   outline: 0;
 }

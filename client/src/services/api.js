@@ -6,16 +6,14 @@ const apiTemplate = fn => async (...args) => {
     return await fn(...args);
   } catch (err) {
     handleErrorMiddleware(err);
-    return {};
+    throw new Error(`Error has occurred making an API call`);
   }
 };
 
-export const postSession = apiTemplate(
-  async (data) => {
-    const res = await axios.post(
-      '/api/create/session',
-      data,
-      { withCredentials: true },
+export const getSigninUrl = apiTemplate(
+  async () => {
+    const res = await axios.get(
+      '/api/signin',
     );
     return res.data;
   },
@@ -25,17 +23,26 @@ export const getAuthStatus = apiTemplate(
   async () => {
     const res = await axios.get(
       '/api/auth/status',
-      { withCredentials: true },
     );
     return res.data;
   },
 );
 
-export const getSigninUrl = apiTemplate(
-  async () => {
-    const res = await axios.get(
-      '/api/signin',
-      { withCredentials: true },
+export const postSession = apiTemplate(
+  async (data) => {
+    const res = await axios.post(
+      '/api/session/create',
+      data,
+    );
+    return res.data;
+  },
+);
+
+export const enterSession = apiTemplate(
+  async (data) => {
+    const res = await axios.post(
+      '/api/session/enter',
+      data,
     );
     return res.data;
   },
@@ -44,8 +51,7 @@ export const getSigninUrl = apiTemplate(
 export const getSearchSessionResults = apiTemplate(
   async (query) => {
     const res = await axios.get(
-      `/api/search/session?query=${query}`,
-      { withCredentials: true },
+      `/api/session/search?query=${query}`,
     );
     return res.data;
   },
