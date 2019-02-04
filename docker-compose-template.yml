@@ -25,6 +25,7 @@ services:
       - GOOGLE_REDIRECT_URL=http://localhost:3050/api/callback
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - PASSWORD_SALT=
       - POSTGRES_USERNAME=
       - POSTGRES_HOST=host.docker.internal # using local postgres
       - POSTGRES_DATABASE_NAME=

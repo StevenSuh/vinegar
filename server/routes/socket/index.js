@@ -1,15 +1,17 @@
+const { redisHost, redisPort } = require('config');
+
 const cookie = require('cookie');
 const http = require('http');
 const pathToRegexp = require('path-to-regexp');
-
 const SocketIo = require('socket.io');
 const SocketRedis = require('socket.io-redis');
-
-const { redisHost, redisPort } = require('config');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
+
+const redisClient = require('services/redis')();
+
 const initSocketEditor = require('./editor');
 const initSocketChat = require('./chat');
 
@@ -28,17 +30,22 @@ const getSchoolAndSession = (socket) => {
   };
 };
 
-const getUserCookieId = (socket) => {
+const getCookieId = (socket) => {
   const reqCookie = socket.request.headers.cookie;
   const cookies = cookie.parse(reqCookie);
 
-  return cookies.userCookieId;
+  return cookies.cookieId;
 };
 
 const socketInit = (io, socket, session, user) => {
   socket.join(session.id);
   initSocketChat(io, socket, session, user);
   initSocketEditor(io, socket, session, user);
+
+  io.in(session.id).emit('socket:onEnter', {
+    color: user.color,
+    name: user.name,
+  });
 };
 
 // main
@@ -49,7 +56,8 @@ module.exports = (app) => {
 
   io.on('connection', async (socket) => {
     const { schoolName, sessionName } = getSchoolAndSession(socket);
-    const userCookieId = getUserCookieId(socket);
+    const cookieId = getCookieId(socket);
+    const userId = await redisClient.hgetAsync(cookieId, 'user');
 
     const sessionPromise = Sessions.findActiveBySchoolAndSession({
       attributes: [Sessions.ID, Sessions.PASSWORD, Sessions.SCHOOL_NAME, Sessions.SESSION_NAME],
@@ -58,7 +66,7 @@ module.exports = (app) => {
     });
     const userPromise = Users.findOne({
       attributes: [Users.ID],
-      where: { userCookieId },
+      where: { id: userId },
     });
 
     const [session, user] = await Promise.all([sessionPromise, userPromise]);
@@ -71,21 +79,11 @@ module.exports = (app) => {
     }
 
     if (session.schoolName === schoolName && session.sessionName === sessionName) {
-      // socket.on('socket:onEnter', function({ name, phone, password }) {
-      //   if (session.password && password !== session.password) {
-      //     socket.emit('exception', { errorMessage: 'Invalid password' });
-      //     return;
-      //   }
-      //   if (!name) {
-      //     socket.emit('exception', { errorMessage: 'Invalid name' });
-      //   }
-      //   if (phone) {
-      //     // db update to phone user
-      //   }
-      //   user.name = name;
-      // db update to name user
-      socketInit(io, socket, session, user);
-      // });
+      socket.on('socket:onEnter', ({ color, name }) => {
+        user.color = color;
+        user.name = name;
+        socketInit(io, socket, session, user);
+      });
     }
     socket.emit('exception', { errorMessage: 'There is no such session' });
   });

@@ -75,8 +75,9 @@ export default {
     this.show = true;
   },
   methods: {
-    onCloseIsWelcome() {
+    onCloseIsWelcome(data) {
       this.isWelcome = false;
+      this.$socket.emit('socket:onEnter', data);
     },
   },
   sockets: {},

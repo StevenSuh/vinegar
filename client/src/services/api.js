@@ -28,6 +28,42 @@ export const getAuthStatus = apiTemplate(
   },
 );
 
+export const getSessionPasswordStatus = apiTemplate(
+  async () => {
+    const res = await axios.get(
+      '/api/session/password',
+    );
+    return res.data;
+  },
+);
+
+export const getUserSessionInfo = apiTemplate(
+  async () => {
+    const res = await axios.get(
+      '/api/user/session',
+    );
+    return res.data;
+  },
+);
+
+export const getSessionInfo = apiTemplate(
+  async () => {
+    const res = await axios.get(
+      '/api/session',
+    );
+    return res.data;
+  },
+);
+
+export const getSearchSessionResults = apiTemplate(
+  async (query) => {
+    const res = await axios.get(
+      `/api/session/search?query=${query}`,
+    );
+    return res.data;
+  },
+);
+
 export const postSession = apiTemplate(
   async (data) => {
     const res = await axios.post(
@@ -38,20 +74,21 @@ export const postSession = apiTemplate(
   },
 );
 
-export const enterSession = apiTemplate(
-  async (data) => {
+export const validateSessionPassword = apiTemplate(
+  async (password) => {
     const res = await axios.post(
-      '/api/session/enter',
-      data,
+      '/api/session/password',
+      { password },
     );
     return res.data;
   },
 );
 
-export const getSearchSessionResults = apiTemplate(
-  async (query) => {
-    const res = await axios.get(
-      `/api/session/search?query=${query}`,
+export const enterSession = apiTemplate(
+  async (data) => {
+    const res = await axios.post(
+      '/api/session/enter',
+      data,
     );
     return res.data;
   },
