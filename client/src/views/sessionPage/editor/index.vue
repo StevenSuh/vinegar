@@ -22,14 +22,19 @@
 import Quill from 'quill';
 import { Range } from 'quill/core/selection';
 import QuillCursors from 'quill-cursors';
-import ToolbarConfig from '@/views/sessionPage/toolbarConfig';
+import ToolbarConfig from './toolbarConfig';
 
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 
 import 'quill-cursors/dist/quill-cursors.css';
 
-import { codeBlockIndentHandler, onResizeCollapse } from './utils';
+import {
+  codeBlockIndentHandler,
+  onResizeCollapse,
+  onSmallerFontHandler,
+  onLargerFontHandler,
+} from './utils';
 import PlainClipboard from './PlainClipboard';
 
 // setup editor
@@ -61,7 +66,7 @@ export default {
     },
     content: {
       type: String,
-      default: 'Hello world!',
+      default: '<strong>Hello world!</strong>',
     },
   },
   data() {
@@ -78,20 +83,8 @@ export default {
         toolbar: {
           container: this.$refs.toolbar,
           handlers: {
-            smaller: () => {
-              const format = this.editor.getFormat();
-              let index = this.sizes.indexOf(format.size || '16px');
-
-              index = Math.max(index - 1, 0);
-              this.editor.format('size', this.sizes[index]);
-            },
-            larger: () => {
-              const format = this.editor.getFormat();
-              let index = this.sizes.indexOf(format.size || '16px');
-
-              index = Math.min(index + 1, this.sizes.length - 1);
-              this.editor.format('size', this.sizes[index]);
-            },
+            smallerFont: onSmallerFontHandler,
+            largerFont: onLargerFontHandler,
             extend: () => {
               const { extend } = this.$refs;
               const button = extend.children[0];
@@ -118,8 +111,6 @@ export default {
 
     this.editor.format('font', 'rubik');
     this.editor.format('size', '16px');
-    this.editor.root.innerHTML = this.content;
-    this.editor.history.clear();
 
     this.editor.on('editor-change', this.selectionUpdate);
     this.editor.on('text-change', this.textUpdate);
@@ -186,6 +177,13 @@ export default {
     },
   },
   sockets: {
+    'socket:onEnter': function() {
+      this.editor.root.innerHTML = this.content;
+      this.editor.history.clear();
+      this.editor.enable();
+
+      setTimeout(() => this.$socket.emit('editor:onEnter'), 0);
+    },
     'editor:onEditorSelectionUpdate': function({ data, name, userId }) {
       const range = new Range(data.index, data.length);
       this.editor.getModule('cursors').setCursor(userId, range, name, 'red');

@@ -5,6 +5,7 @@ module.exports = {
     'plugin:vue/recommended',
   ],
   rules: {
+    'consistent-return': 'off',
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
     'import/no-webpack-loader-syntax': 'off',

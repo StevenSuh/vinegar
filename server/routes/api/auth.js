@@ -3,39 +3,31 @@ const {
   urlGoogle,
   getGoogleAccountFromCode,
 } = require('auth-utils');
-// const pathToRegexp = require('path-to-regexp');
+const redisClient = require('services/redis')();
 
 const dbClient = require('db')();
 const Users = require('db/users/model')(dbClient);
 
-// const sessionRegex = pathToRegexp('/session/:school/:session');
-
 module.exports = (app) => {
   app.get('/api/signin', (req, res) => {
-    if (req.cookies.userCookieId) {
+    if (req.cookies.cookieId) {
       return res.json({ signinUrl: '/find' });
     }
     return res.json({ signinUrl: urlGoogle() });
   });
 
   app.get('/api/auth/status', async (req, res) => {
-    // const { referer } = req.headers;
-    // const urlEnding = referer.slice(referer.split('/', 3).join('/').length);
-
-    // const isSession = Boolean(sessionRegex.exec(urlEnding));
-
-    const { userCookieId } = req.cookies;
-    if (!userCookieId) {
-      return res.json({ validUser: false });
+    const { cookieId } = req.cookies;
+    if (!cookieId) {
+      return res.json({ validSession: false, validUser: false });
     }
 
-    const user = await Users.findOne({ where: { userCookieId } });
+    const userIdPromise = redisClient.hexistsAsync(cookieId, redisClient.USER);
+    const sessionIdPromise = redisClient.hexistsAsync(cookieId, redisClient.SESSION);
 
-    if (!user) {
-      res.clearCookie('userCookieId');
-      return res.json({ validUser: false });
-    }
-    return res.json({ validUser: true });
+    const [userId, sessionId] = await Promise.all([userIdPromise, sessionIdPromise]);
+
+    return res.json({ validUser: Boolean(userId), validSession: Boolean(sessionId) });
   });
 
   app.get('/api/callback', async (req, res) => {
@@ -46,21 +38,22 @@ module.exports = (app) => {
       email,
     } = await getGoogleAccountFromCode(code);
 
-    const userCookieId = uuidv4();
-
-    // create or update user on db
-    Users.upsert({
-      active: false,
-      email,
-      gid,
-      userCookieId,
+    const [user] = await Users.findOrCreate({
+      where: { gid },
+      defaults: {
+        active: false,
+        email,
+        gid,
+      },
     });
 
-    res.cookie('userCookieId', userCookieId, {
+    const cookieId = uuidv4();
+    res.cookie('cookieId', cookieId, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
       secure: false, // TODO: change to true
     });
+    await redisClient.hsetAsync(cookieId, redisClient.USER, user.get(Users.ID));
 
     res.redirect('/find');
   });

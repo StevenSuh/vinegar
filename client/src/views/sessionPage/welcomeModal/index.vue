@@ -2,6 +2,7 @@
   <ModalComponent
     :currentStep="welcomeStep"
     :isLoading="initial"
+    :on-close="onValidateWelcomeForm"
     :steps="2"
   >
     <div class="modal" slot="modal-1">
@@ -9,20 +10,21 @@
         class="paddingTop"
         v-on:submit="onWelcomeFormSubmit"
       >
-        <h1 class="welcome-header">
-          Welcome!
-        </h1>
-        <div class="marginTop small">
+        <h2 class="password-header">
+          {{'This session is '}}<span>password-protected</span>{{'.'}}
+        </h2>
+        <div class="marginTop">
           <h6 class="input-title">
-            Password:
+            Enter the password:
           </h6>
           <InputComponent
             autocomplete="off"
             :error-message="passwordError"
+            id="password"
             label="Password"
             max-len="14"
             name="password"
-            placeholder="Password"
+            placeholder="Session password"
             size="small"
             type="password"
             :value="password"
@@ -54,6 +56,7 @@
           <InputComponent
             autocomplete="off"
             :error-message="nameError"
+            id="name"
             label="Name"
             name="name"
             placeholder="Your name"
@@ -69,6 +72,7 @@
           <InputComponent
             autocomplete="off"
             :error-message="phoneError"
+            id="phone"
             label="Phone"
             max-len="14"
             name="phone"
@@ -122,11 +126,11 @@ import Loader from '@/components/loader';
 import ModalComponent from '@/components/modal';
 import {
   onFormatPhone,
+  onInit,
   onValidatePhone,
   onValidateWelcomeForm,
   onWelcomeFormSubmit,
 } from './utils';
-import { getAuthStatus } from '@/services/api';
 
 import StepOneImg from '@/assets/step1.png';
 import StepTwoImg from '@/assets/step2.png';
@@ -140,26 +144,7 @@ export default {
     ModalComponent,
   },
   methods: {
-    async onInit() {
-      const {
-        validSession,
-        validUser,
-      } = await getAuthStatus();
-
-      if (validSession) {
-        // call api again to get data
-        this.$socket.emit('socket:onEnter', { color, name });
-        return;
-      }
-
-      if (!validUser) {
-        this.$router.push('/');
-        return;
-      }
-
-      // call api to see if room is password protected
-      this.initial = false;
-    },
+    onInit,
     onNameChange(value) {
       this.name = value;
     },
@@ -197,7 +182,8 @@ export default {
     };
   },
   sockets: {
-    'socket:onEnter': function() {
+    'socket:onEnter': function({ color, name }) {
+      console.log(color, name);
       this.onClose();
     },
   },
@@ -216,6 +202,17 @@ export default {
   font-weight: 500;
   font-size: 36px;
   text-align: center;
+}
+
+.password-header {
+  font-weight: 400;
+  font-size: 24px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.password-header > span {
+  font-weight: 500;
 }
 
 .input-title {

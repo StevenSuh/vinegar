@@ -10,6 +10,10 @@ module.exports = (dbClient) => {
         defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
+      color: {
+        allowNull: true,
+        type: Sequelize.STRING,
+      },
       email: {
         allowNull: true,
         type: Sequelize.STRING,
@@ -32,14 +36,6 @@ module.exports = (dbClient) => {
         allowNull: true,
         type: Sequelize.STRING,
       },
-      userCookieId: {
-        allowNull: true,
-        type: Sequelize.STRING,
-      },
-      sessionCookieId: {
-        allowNull: true,
-        type: Sequelize.STRING,
-      },
     }, {
       indexes: [{ unique: true, fields: ['gid'] }],
       freezeTableName: true,
@@ -48,14 +44,13 @@ module.exports = (dbClient) => {
 
     // class definitions
     Users.ACTIVE = 'active';
+    Users.COLOR = 'color';
     Users.CREATED_AT = 'createdAt';
     Users.EMAIL = 'email';
     Users.GID = 'gid';
     Users.ID = 'id';
     Users.NAME = 'name';
     Users.PHONE = 'phone';
-    Users.SESSION_COOKIE_ID = 'sessionCookieId';
-    Users.USER_COOKIE_ID = 'userCookieId';
     Users.UPDATED_AT = 'updatedAt';
   }
   return Users;

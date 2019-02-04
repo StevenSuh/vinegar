@@ -1,8 +1,8 @@
 <template>
   <div class="result-wrapper">
     <div
-      v-for="item in data"
-      :key="item.sessionId"
+      v-for="(item, index) in data"
+      :key="index"
       class="result-item"
       @click="onClickItemFactory(item);"
     >
@@ -69,8 +69,8 @@ export default {
 .result-wrapper {
   background-color: var(--white-bg-color);
   border: 1px solid var(--gray-bg-color-2);
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
   max-height: 340px;
   overflow-y: auto;
   padding: 10px 0;
@@ -80,7 +80,7 @@ export default {
 
 .result-item {
   cursor: pointer;
-  padding: 15px 20px;
+  padding: 15px 24px;
 }
 
 .result-item:hover {

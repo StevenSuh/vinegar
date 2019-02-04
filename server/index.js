@@ -24,6 +24,7 @@ if (process.env.NODE_ENV === 'production') {
 
 require('./routes/api')(app);
 require('./db')();
+require('./services/redis')();
 
 const httpServer = require('./routes/socket')(app);
 

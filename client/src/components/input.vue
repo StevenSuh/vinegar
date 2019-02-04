@@ -138,7 +138,7 @@ export default {
 
 .input {
   border: 1px solid var(--gray-bg-color-2);
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 17px;
   font-weight: 300;
   padding: 18px 25px;
@@ -148,10 +148,6 @@ export default {
 
 .input.error {
   border-color: var(--main-bg-color);
-}
-
-.input.error::placeholder {
-  color: var(--main-font-color);
 }
 
 .error-message {
@@ -169,11 +165,16 @@ export default {
 
 .input.small {
   font-size: 15px;
-  padding: 14px 20px;
+  padding: 14px 17px;
 }
 
 .input::placeholder {
   color: var(--gray-font-color);
+  transition: color var(--transition-duration) var(--transition-curve);
+}
+
+.input.error::placeholder {
+  color: var(--main-font-color);
 }
 
 .input:focus {
@@ -212,7 +213,7 @@ export default {
 
 .input.small + .label {
   font-size: 13px;
-  left: 21px;
+  left: 18px;
 }
 
 .suggestion {

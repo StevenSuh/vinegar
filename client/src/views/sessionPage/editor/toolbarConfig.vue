@@ -6,8 +6,8 @@
       <button class="ql-code" />
     </span>
     <span class="ql-formats">
-      <button class="ql-smaller" v-html="SizeDecIcon" />
-      <button class="ql-larger" v-html="SizeIncIcon" />
+      <button class="ql-smallerFont" v-html="SizeDecIcon" />
+      <button class="ql-largerFont" v-html="SizeIncIcon" />
     </span>
     <span class="ql-formats">
       <button class="ql-list" value="ordered" />

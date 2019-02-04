@@ -44,6 +44,6 @@ module.exports = {
 
   // getter methods
   getFullName() {
-    return `${this.getDataValue(this.SCHOOL_NAME)} ${this.getDataValue(this.SESSION_NAME)}`;
+    return `${this.get(this.SCHOOL_NAME)} ${this.get(this.SESSION_NAME)}`;
   },
 };
