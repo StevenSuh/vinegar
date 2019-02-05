@@ -1,16 +1,32 @@
 <template>
   <div class="editor">
     <div ref="toolbar">
-      <div class="open" ref="open">
+      <div
+        ref="open"
+        class="open"
+      >
         <ToolbarConfig />
       </div>
-      <span class="ql-formats hide-toolbar extend" ref="extend">
-        <button class="ql-extend" v-on:blur="onExtendBlur" />
+      <span
+        ref="extend"
+        class="ql-formats hide-toolbar extend"
+      >
+        <button
+          class="ql-extend"
+          @blur="onExtendBlur"
+        />
       </span>
-      <div class="collapse" ref="collapse" v-on:click="onClickCollapse">
+      <div
+        ref="collapse"
+        class="collapse"
+        @click="onClickCollapse"
+      >
         <ToolbarConfig />
       </div>
-      <div class="fake-toolbar" ref="fakeToolbar">
+      <div
+        ref="fakeToolbar"
+        class="fake-toolbar"
+      >
         <ToolbarConfig />
       </div>
     </div>
@@ -22,20 +38,20 @@
 import Quill from 'quill';
 import { Range } from 'quill/core/selection';
 import QuillCursors from 'quill-cursors';
-import ToolbarConfig from './toolbarConfig';
-
-import 'quill/dist/quill.core.css';
-import 'quill/dist/quill.snow.css';
-
-import 'quill-cursors/dist/quill-cursors.css';
 
 import {
   codeBlockIndentHandler,
   onResizeCollapse,
+  onExtendHandler,
   onSmallerFontHandler,
   onLargerFontHandler,
 } from './utils';
+import ToolbarConfig from './toolbarConfig';
 import PlainClipboard from './PlainClipboard';
+
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill-cursors/dist/quill-cursors.css';
 
 // setup editor
 Quill.register('modules/clipboard', PlainClipboard, true);
@@ -60,17 +76,11 @@ export default {
     ToolbarConfig,
   },
   props: {
-    name: {
-      type: String,
-      default: 'Name',
-    },
-    content: {
-      type: String,
-      default: '<strong>Hello world!</strong>',
-    },
+    name: String,
   },
   data() {
     return {
+      content: '',
       editor: null,
       sizes: SIZES,
     };
@@ -79,28 +89,15 @@ export default {
     this.editor = new Quill(this.$refs.editor, {
       modules: {
         cursors: { autoRegisterListener: false },
-        keyboard: { bindings: { 'indent code-block': codeBlockIndentHandler(true) } },
+        keyboard: {
+          bindings: { 'indent code-block': codeBlockIndentHandler(true) },
+        },
         toolbar: {
           container: this.$refs.toolbar,
           handlers: {
             smallerFont: onSmallerFontHandler,
             largerFont: onLargerFontHandler,
-            extend: () => {
-              const { extend } = this.$refs;
-              const button = extend.children[0];
-              const { collapse } = this.$refs;
-              const isActive = button.classList.contains('active');
-
-              if (!isActive) {
-                const parent = this.$refs.toolbar;
-                const distance = (parent.offsetWidth - extend.offsetWidth) - (extend.offsetLeft - parent.offsetLeft);
-
-                this.$refs.collapse.style.right = `${distance}px`;
-              }
-
-              button.classList.toggle('active', !isActive);
-              collapse.classList.toggle('show', !isActive);
-            },
+            extend: onExtendHandler,
             undo: () => this.editor.history.undo(),
             redo: () => this.editor.history.redo(),
           },
@@ -144,7 +141,9 @@ export default {
       const { collapse } = this.$refs;
 
       if (e.target !== button && e.target !== collapse) {
-        const isActive = button.classList.contains('active') && collapse.classList.contains('show');
+        const isActive =
+          button.classList.contains('active') &&
+          collapse.classList.contains('show');
 
         if (isActive) {
           button.classList.remove('active');
@@ -162,7 +161,6 @@ export default {
           setTimeout(() => {
             this.$socket.emit('editor:onEditorSelectionUpdate', {
               data: range,
-              name: this.name,
             });
           }, 0);
         }
@@ -172,13 +170,14 @@ export default {
       if (source === Quill.sources.USER) {
         this.$socket.emit('editor:onEditorTextUpdate', {
           data: delta,
+          content: this.editor.root.innerHTML,
         });
       }
     },
   },
   sockets: {
-    'socket:onEnter': function() {
-      this.editor.root.innerHTML = this.content;
+    'socket:onEnter': function({ content }) {
+      this.editor.root.innerHTML = content;
       this.editor.history.clear();
       this.editor.enable();
 
@@ -193,6 +192,7 @@ export default {
     },
     'editor:onEditorTextUpdate': function({ data, userId }) {
       this.editor.updateContents(data, userId);
+      this.editor.getModule('cursors').update();
     },
   },
 };
@@ -234,7 +234,7 @@ export default {
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-shadow: rgba(0,0,0,0.2) 0 2px 8px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px;
   opacity: 0;
   padding: 3px 5px;
   pointer-events: none;
@@ -524,7 +524,8 @@ pre strong {
   pointer-events: auto;
 }
 
-.ql-editor ol, .ql-editor ul {
+.ql-editor ol,
+.ql-editor ul {
   padding-left: 0;
 }
 </style>

@@ -3,66 +3,49 @@ const pathToRegexp = require('path-to-regexp');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
 
 const sessionRegex = pathToRegexp('/session/:school/:session');
 
 const requireUserAuth = async (req, res, next = Function) => {
   const { cookieId } = req.cookies;
   if (!cookieId) {
-    res.status(400).send('Invalid user.');
+    res.status(400).send('Invalid cookie.');
     return false;
   }
 
-  const userId = await redisClient.hgetAsync(cookieId, redisClient.USER);
-
+  const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
   if (!userId) {
     res.status(400).send('Invalid user.');
     return false;
   }
+
   req.userId = userId;
   return next();
 };
 
-const requireUserAuthWithData = async (req, res, next = Function) => {
-  const middle = await requireUserAuth(req, res);
-  if (!middle) {
-    return null;
-  }
+const getNamesByReferer = (referer) => {
+  const decodedUrl = decodeURI(referer);
+  const urlEnding = decodedUrl.slice(decodedUrl.split('/', 3).join('/').length);
+  const sessionParse = sessionRegex.exec(urlEnding) || [];
 
-  const user = await Users.findOne({ where: { id: req.userId }});
-
-  if (!user) {
-    res.clearCookie('cookieId');
-    await redisClient.hdelAsync(req.cookies.cookieId, redisClient.USER);
-    res.status(400).send('User does not exist.');
-    return false;
-  }
-
-  req.user = user;
-  return next();
+  return {
+    schoolName: sessionParse[1],
+    sessionName: sessionParse[2],
+  };
 };
 
 const requireSessionByReferer = async (req, res, next = Function) => {
-  const { referer } = req.headers;
-  const decodedUrl = decodeURI(referer);
-  const urlEnding = decodedUrl.slice(decodedUrl.split('/', 3).join('/').length);
+  const { schoolName, sessionName } = getNamesByReferer(req.headers.referer);
 
-  const sessionParse = sessionRegex.exec(urlEnding);
-
-  if (!sessionParse) {
+  if (!schoolName || !sessionName) {
     res.status(400).send('Session name is invalid.');
     return false;
   }
-
-  const schoolName = sessionParse[1];
-  const sessionName = sessionParse[2];
 
   const session = await Sessions.findActiveBySchoolAndSession({
     schoolName,
     sessionName,
   });
-
   if (!session) {
     return res.status(400).send('Session does not exist.');
   }
@@ -71,37 +54,39 @@ const requireSessionByReferer = async (req, res, next = Function) => {
   return next();
 };
 
-const requireSessionAuthWithData = async (req, res, next = Function) => {
-  const middle = await requireSessionByReferer(req, res);
-  if (!middle) {
-    return null;
-  }
-
+const requireSessionAuth = async (req, res, next = Function) => {
   const { cookieId } = req.cookies;
   if (!cookieId) {
-    res.json({ validSession: false });
+    res.status(400).send('Invalid cookie.');
     return false;
   }
 
-  const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION);
-  if (!sessionId) {
+  const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
+  const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+  const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
+  if (!sessionId || !schoolName || !sessionName) {
     res.status(400).send('Invalid session.');
     return false;
   }
 
-  if (sessionId !== req.session.get(Sessions.ID)) {
-    await redisClient.hdelAsync(cookieId, redisClient.SESSION );
-    res.status(400).send('Invalid session.');
+  const names = getNamesByReferer(req.headers.referer);
+  if (
+    schoolName !== names.schoolName ||
+    sessionName !== names.sessionName
+  ) {
+    res.status(400).send('User is authenticated with different session.');
     return false;
   }
 
+  req.sessionId = sessionId;
+  req.schoolName = schoolName;
+  req.sessionName = sessionName;
   return next();
 };
 
 
 module.exports = {
   requireUserAuth,
-  requireUserAuthWithData,
-  requireSessionAuthWithData,
+  requireSessionAuth,
   requireSessionByReferer,
 };

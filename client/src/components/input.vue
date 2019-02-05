@@ -12,7 +12,7 @@
       :type="type"
       :value="value"
       @input="onInputChange"
-    >
+    />
     <label
       v-if="label"
       class="label"

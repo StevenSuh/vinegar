@@ -1,6 +1,10 @@
 <template>
   <transition name="fade">
-    <div v-if="show" class="session">
+    <div
+      v-if="show"
+      class="session"
+      :class="hide ? 'hide' : ''"
+    >
       <router-link
         class="back-button-wrapper hover"
         tag="a"
@@ -16,8 +20,7 @@
         <h1 class="school-name">
           {{ school }}
           <span class="session-name">
-            {{ ' / ' }}
-            {{ session }}
+            {{ ' / ' }} {{ session }}
           </span>
         </h1>
         <div class="editor-wrapper">
@@ -32,8 +35,9 @@
       </div>
       <transition name="fadeNoDelay">
         <Welcome
-          :onClose="onCloseIsWelcome"
           v-if="isWelcome"
+          :on-close="onCloseIsWelcome"
+          :on-show="onShow"
         />
       </transition>
     </div>
@@ -59,10 +63,12 @@ export default {
   data() {
     return {
       // state
+      hide: true,
       school: this.$route.params.school,
       session: this.$route.params.session,
       show: false,
       isWelcome: true,
+      name: null,
 
       // assets
       backImage,
@@ -76,8 +82,13 @@ export default {
   },
   methods: {
     onCloseIsWelcome(data) {
+      this.hide = false;
       this.isWelcome = false;
+      this.name = data.name;
       this.$socket.emit('socket:onEnter', data);
+    },
+    onShow() {
+      this.hide = false;
     },
   },
   sockets: {},
@@ -90,6 +101,12 @@ export default {
   flex-direction: row;
   height: 100vh;
   padding: 60px 70px;
+  transition: opacity var(--transition-duration) var(--transition-curve);
+  transition-delay: 0.3s;
+}
+
+.session.hide {
+  opacity: 0;
 }
 
 .school-name {

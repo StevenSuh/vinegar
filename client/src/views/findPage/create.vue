@@ -6,17 +6,17 @@
         id="schoolName"
         type="text"
         value="school name here"
-      >
+      />
       <input
         id="sessionName"
         type="text"
         value="course title here"
-      >
+      />
       <input
         id="submit"
         type="submit"
         value="Submit"
-      >
+      />
     </form>
   </div>
 </template>

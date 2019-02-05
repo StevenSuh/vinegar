@@ -1,13 +1,19 @@
 const dbClient = require('db')();
 const Users = require('db/users/model')(dbClient);
 
-const { requireUserAuthWithData } = require('routes/api/middleware');
+const { requireSessionAuth, requireUserAuth } = require('routes/api/middleware');
 
 module.exports = (app) => {
-  app.get('/api/user/session', requireUserAuthWithData, async (req, res) => {
-    return res.json({
-      color: req.user.get(Users.COLOR),
-      name: req.user.get(Users.NAME),
-    });
-  });
+  app.get(
+    '/api/user/session',
+    requireUserAuth,
+    requireSessionAuth,
+    async (req, res) => {
+      const user = await Users.findOne({ where: { id: req.userId }});
+      return res.json({
+        color: user.get(Users.COLOR),
+        name: user.get(Users.NAME),
+      });
+    },
+  );
 };

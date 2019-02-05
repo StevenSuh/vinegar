@@ -23,16 +23,15 @@ export async function onInit() {
   }
 
   if (validSession) {
-    // already went through the session welcome flow
-    // call api again to get data: { color, name }
+    // this means that user already went through the session welcome flow
+    // (potentially revisiting from different device/browser)
     const { color, name } = await getUserSessionInfo();
-
     if (!color || !name) {
       this.welcomeStep += 1;
+      this.onShow();
       return;
     }
 
-    // TODO: get session info
     return this.onClose({ color, name });
   }
 
@@ -41,26 +40,40 @@ export async function onInit() {
     this.welcomeStep += 1;
   }
 
-  this.initial = false;
+  this.onShow();
 }
 
 export function onValidateWelcomeForm() {
   let hasError = false;
 
-  if (!this.name) {
-    this.nameError = 'This field is required.';
-    hasError = true;
-  } else {
-    this.nameError = '';
-  }
+  switch (this.welcomeStep) {
+    case 0: {
+      if (!this.password) {
+        this.passwordError = 'This field is required.';
+        hasError = true;
+      } else {
+        this.passwordError = '';
+      }
+      break;
+    }
+    case 1:
+    default: {
+      if (!this.name) {
+        this.nameError = 'This field is required.';
+        hasError = true;
+      } else {
+        this.nameError = '';
+      }
 
-  if (this.phone && !/[(]\d{3}[)][ ]\d{3}[-]\d{4}/.test(this.phone)) {
-    this.phoneError = 'Phone number must be in format: (XXX) XXX-XXXX.';
-    hasError = true;
-  } else {
-    this.phoneError = '';
+      if (this.phone && !/[(]\d{3}[)][ ]\d{3}[-]\d{4}/.test(this.phone)) {
+        this.phoneError = 'Phone number must be in format: (XXX) XXX-XXXX.';
+        hasError = true;
+      } else {
+        this.phoneError = '';
+      }
+      break;
+    }
   }
-
   return hasError;
 }
 
@@ -71,21 +84,27 @@ export async function onWelcomeFormSubmit(e) {
     return;
   }
 
+  const hasError = this.onValidateWelcomeForm();
+  if (hasError) {
+    return;
+  }
+
   switch (this.welcomeStep) {
     // first modal step
     case 0: {
-      if (!this.password) {
-        this.passwordError = 'This field is required.';
-        return;
-      }
-
       this.isLoading = true;
-
       const { validPassword } = await validateSessionPassword(this.password);
       this.isLoading = false;
 
       if (!validPassword) {
         this.passwordError = 'The password is incorrect. Try again?';
+        break;
+      }
+
+      // check to see if user already has a color/name
+      const { color, name } = await getUserSessionInfo();
+      if (color && name) {
+        this.onClose({ color, name });
         break;
       }
 
@@ -97,25 +116,16 @@ export async function onWelcomeFormSubmit(e) {
     // second modal step
     case 1:
     default: {
-      const hasError = this.onValidateWelcomeForm();
+      this.isLoading = true;
+      const { color } = await enterSession({
+        name: this.name,
+        phone: this.phone,
+      });
 
-      if (!hasError) {
-        this.nameError = '';
-        this.phoneError = '';
+      // TODO: get session info
 
-        this.isLoading = true;
-
-        const { color } = await enterSession({
-          name: this.name,
-          phone: this.phone,
-        });
-
-        // TODO: get session info
-
-        this.isLoading = false;
-        return this.onClose({ color, name: this.name });
-      }
-      break;
+      this.isLoading = false;
+      return this.onClose({ color, name: this.name });
     }
   }
 }

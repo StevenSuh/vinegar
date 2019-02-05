@@ -4,6 +4,7 @@
       v-for="(item, index) in data"
       :key="index"
       class="result-item"
+      :class="index === resultIndex ? 'selected' : ''"
       @click="onClickItemFactory(item);"
     >
       <div class="result-name">
@@ -48,18 +49,53 @@ export default {
       type: String,
       default: '',
     },
+    inputId: String,
   },
   data() {
     return {
+      // data
+      resultIndex: -1,
+
+      // assets
       PasswordIcon,
     };
+  },
+  created() {
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('click', this.onBlur);
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('click', this.onBlur);
   },
   methods: {
     formatDate,
     highlightSchool,
     highlightSession,
+    onBlur(e) {
+      if (e.target.id !== this.inputId) {
+        this.resultIndex = -1;
+      }
+    },
     onClickItemFactory({ schoolName, sessionName }) {
       this.$router.push(`/session/${schoolName}/${sessionName}`);
+    },
+    onKeyDown(e) {
+      if (e.target.id === this.inputId) {
+        if (e.keyCode === 13) {
+          const { schoolName, sessionName } = this.data[this.resultIndex];
+          this.$router.push(`/session/${schoolName}/${sessionName}`);
+        }
+        if (e.keyCode === 38) {
+          this.resultIndex = Math.max(this.resultIndex - 1, 0);
+        }
+        if (e.keyCode === 40) {
+          this.resultIndex = Math.min(
+            this.resultIndex + 1,
+            this.data.length - 1,
+          );
+        }
+      }
     },
   },
 };
@@ -83,7 +119,8 @@ export default {
   padding: 15px 24px;
 }
 
-.result-item:hover {
+.result-item:hover,
+.result-item.selected {
   background-color: var(--gray-bg-color-hover);
 }
 

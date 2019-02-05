@@ -2,6 +2,8 @@ version: '3'
 services:
   redis:
     image: 'redis:latest'
+    logging:
+      driver: none
   nginx:
     restart: always
     build:
@@ -9,6 +11,9 @@ services:
       context: ./nginx
     ports:
       - '3050:80'
+    depends_on:
+      - client
+      - api
     logging:
       driver: none
   api:
