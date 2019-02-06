@@ -14,3 +14,13 @@ serve-no-cache:
 	docker-compose down && make serve 
 serve-reset:
 	docker-compose down && docker-compose rm --all && docker-compose pull && docker-compose up --build
+reset-redis:
+	docker exec -it $(shell docker ps -qf "name=redis") redis-cli FLUSHALL
+delete-psql:
+	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "DROP DATABASE vinegar"
+create-psql:
+	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "CREATE DATABASE vinegar"
+reset-psql:
+	make delete-psql && make create-psql
+reset-db:
+	make reset-redis && make reset-psql

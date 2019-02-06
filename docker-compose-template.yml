@@ -1,5 +1,9 @@
 version: '3'
 services:
+  postgres:
+    image: 'postgres:latest'
+    logging:
+      driver: none
   redis:
     image: 'redis:latest'
     logging:
@@ -32,8 +36,8 @@ services:
       - REDIS_PORT=6379
       - PASSWORD_SALT=
       - POSTGRES_USERNAME=
-      - POSTGRES_HOST=host.docker.internal # using local postgres
-      - POSTGRES_DATABASE_NAME=
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DATABASE_NAME=vinegar
       - POSTGRES_PASSWORD=
       - POSTGRES_PORT=5432
   client:
