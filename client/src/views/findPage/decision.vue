@@ -15,7 +15,7 @@
           class="action-box join-box"
           :src="joinBoxImage"
           alt="join box"
-        >
+        />
         <p class="action-title">
           Join a Session
         </p>
@@ -34,7 +34,7 @@
           class="action-box create-box"
           :src="createBoxImage"
           alt="create box"
-        >
+        />
         <p class="action-title">
           Create a Session
         </p>

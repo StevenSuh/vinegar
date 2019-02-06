@@ -5,15 +5,21 @@
       @click="onClose"
     />
     <transition name="fadeNoDelay">
-      <div class="loader-wrapper" v-if="isLoading">
-        <Loader color="white" size="large" />
+      <div
+        v-if="isLoading"
+        class="loader-wrapper"
+      >
+        <Loader
+          color="white"
+          size="large"
+        />
       </div>
     </transition>
     <div
-      ref="content"
-      class="content"
       v-for="n in steps"
+      ref="content"
       :key="n"
+      class="content"
     >
       <slot :name="`modal-${n}`" />
     </div>
@@ -26,7 +32,7 @@ import Loader from '@/components/loader';
 const enterAnim = [
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.8)',
+    transform: 'translate(-50%, -50%) scale(0.9)',
     pointerEvents: 'none',
     userSelect: 'none',
   },
@@ -54,7 +60,7 @@ const leaveAnim = [
   },
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.8)',
+    transform: 'translate(-50%, -50%) scale(0.9)',
     pointerEvents: 'auto',
     userSelect: 'auto',
   },
@@ -88,18 +94,6 @@ export default {
       type: Number,
     },
   },
-  beforeCreate() {
-    document.body.classList.add('overflow');
-  },
-  mounted() {
-    if (!this.isLoading) {
-      this.$refs.content[this.currentStep].animate(enterAnim, enterTiming);
-    }
-  },
-  beforeDestroy() {
-    this.$refs.content[this.currentStep].animate(leaveAnim, leaveTiming);
-    document.body.classList.remove('overflow');
-  },
   watch: {
     isLoading(value, oldValue) {
       if (!value && oldValue) {
@@ -111,7 +105,19 @@ export default {
         this.$refs.content[oldValue].animate(leaveAnim, leaveTiming);
         this.$refs.content[value].animate(enterAnim, enterTiming);
       }
+    },
+  },
+  beforeCreate() {
+    document.body.classList.add('overflow');
+  },
+  mounted() {
+    if (!this.isLoading) {
+      this.$refs.content[this.currentStep].animate(enterAnim, enterTiming);
     }
+  },
+  beforeDestroy() {
+    this.$refs.content[this.currentStep].animate(leaveAnim, leaveTiming);
+    document.body.classList.remove('overflow');
   },
 };
 </script>

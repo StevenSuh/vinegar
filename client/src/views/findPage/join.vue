@@ -12,13 +12,13 @@
         Session Name
       </h6>
       <InputComponent
-        id="join-input"
+        :id="searchInputId"
         autocomplete="off"
         autosearch="on"
         label="Search"
         name="search"
         placeholder="Type your session name..."
-        suggestion='Try "UCSC"'
+        suggestion="Try &quot;UCSC&quot;"
         type="search"
         :class="{ 'search-expanded': searchResult.length > 0 }"
         :on-autosearch="onSearch"
@@ -31,6 +31,7 @@
           v-if="searchResult.length > 0"
           class="searchResult"
           :data="searchResult"
+          :input-id="searchInputId"
           :query="searchQuery"
         />
       </transition>
@@ -51,6 +52,7 @@ export default {
   data() {
     return {
       // state
+      searchInputId: 'join-input',
       searchQuery: '',
       searchOffset: 0,
       searchResult: [],

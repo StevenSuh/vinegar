@@ -17,7 +17,7 @@
                 class="back-button"
                 :src="backImage"
                 alt="back button"
-              >
+              />
             </router-link>
             <button
               v-else
@@ -39,12 +39,12 @@
           class="find-left-img"
           :src="leftImage"
           alt="find page left asset"
-        >
+        />
         <img
           class="find-right-img"
           :src="rightImage"
           alt="find page right asset"
-        >
+        />
         <div class="container">
           <transition name="fade">
             <div v-if="loaded">

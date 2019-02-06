@@ -4,7 +4,7 @@
   "description": "todo",
   "main": "index.js",
   "scripts": {
-    "serve": "NODE_PATH=. DEBUG=* nodemon index.js",
+    "serve": "NODE_PATH=. nodemon index.js",
     "start": "NODE_PATH=. node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ignore-path .gitignore ."

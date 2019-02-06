@@ -18,6 +18,23 @@ export function onLargerFontHandler() {
   this.editor.format('size', this.sizes[index]);
 }
 
+export function onExtendHandler() {
+  const { extend } = this.$refs;
+  const button = extend.children[0];
+  const { collapse } = this.$refs;
+  const isActive = button.classList.contains('active');
+
+  if (!isActive) {
+    const parent = this.$refs.toolbar;
+    const distance = (parent.offsetWidth - extend.offsetWidth) - (extend.offsetLeft - parent.offsetLeft);
+
+    this.$refs.collapse.style.right = `${distance}px`;
+  }
+
+  button.classList.toggle('active', !isActive);
+  collapse.classList.toggle('show', !isActive);
+}
+
 export function codeBlockIndentHandler(indent) {
   return {
     key: 9,

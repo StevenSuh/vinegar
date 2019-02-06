@@ -1,26 +1,28 @@
 <template>
   <ModalComponent
-    :currentStep="welcomeStep"
-    :isLoading="initial"
+    :current-step="welcomeStep"
     :on-close="onValidateWelcomeForm"
     :steps="2"
   >
-    <div class="modal" slot="modal-1">
+    <div
+      slot="modal-1"
+      class="modal"
+    >
       <form
         class="paddingTop"
-        v-on:submit="onWelcomeFormSubmit"
+        @submit="onWelcomeFormSubmit"
       >
         <h2 class="password-header">
-          {{'This session is '}}<span>password-protected</span>{{'.'}}
+          {{ 'This session is ' }}<span>password-protected</span>{{ '.' }}
         </h2>
         <div class="marginTop">
           <h6 class="input-title">
             Enter the password:
           </h6>
           <InputComponent
+            id="password"
             autocomplete="off"
             :error-message="passwordError"
-            id="password"
             label="Password"
             max-len="14"
             name="password"
@@ -28,41 +30,50 @@
             size="small"
             type="password"
             :value="password"
-            v-on:onChange="onPasswordChange"
+            @onChange="onPasswordChange"
           />
         </div>
         <div class="button-wrapper marginTop">
           <ButtonComponent type="primary">
             <div class="button">
-              <p :class="isLoading ? 'hide' : ''">Submit</p>
-              <Loader class="loader" color="white" v-if="isLoading" />
+              <p :class="isLoading ? 'hide' : ''">
+                Submit
+              </p>
+              <Loader
+                v-if="isLoading"
+                class="loader"
+                color="white"
+              />
             </div>
           </ButtonComponent>
         </div>
       </form>
     </div>
-    <div class="modal" slot="modal-2">
+    <div
+      slot="modal-2"
+      class="modal"
+    >
       <h1 class="welcome-header">
         Welcome!
       </h1>
       <form
         class="paddingTop"
-        v-on:submit="onWelcomeFormSubmit"
+        @submit="onWelcomeFormSubmit"
       >
         <div>
           <h6 class="input-title">
             Enter your name:
           </h6>
           <InputComponent
+            id="name"
             autocomplete="off"
             :error-message="nameError"
-            id="name"
             label="Name"
             name="name"
             placeholder="Your name"
             size="small"
             :value="name"
-            v-on:onChange="onNameChange"
+            @onChange="onNameChange"
           />
         </div>
         <div class="marginTop small">
@@ -70,9 +81,9 @@
             Phone (optional):
           </h6>
           <InputComponent
+            id="phone"
             autocomplete="off"
             :error-message="phoneError"
-            id="phone"
             label="Phone"
             max-len="14"
             name="phone"
@@ -81,36 +92,55 @@
             suggestion="We will send you a text to remind you of your turn."
             :on-validate="onValidatePhone"
             :value="phone"
-            v-on:onChange="onPhoneChange"
+            @onChange="onPhoneChange"
           />
         </div>
         <p class="how-works paddingTop">
           How this works:
         </p>
         <div class="step-wrapper marginTop marginBottom">
-          <img class="step-img" :src="StepOneImg" alt="step 1" />
+          <img
+            class="step-img"
+            :src="StepOneImg"
+            alt="step 1"
+          />
           <p class="step-msg">
             Timer will starts once begins and everyone joins.
           </p>
         </div>
         <div class="step-wrapper marginBottom">
-          <img class="step-img" :src="StepTwoImg" alt="step 2" />
+          <img
+            class="step-img"
+            :src="StepTwoImg"
+            alt="step 2"
+          />
           <p class="step-msg">
             Only begin taking notes if it's your turn! You will also be notified
             through email and/or phone.
           </p>
         </div>
         <div class="step-wrapper">
-          <img class="step-img" :src="StepThreeImg" alt="step 3" />
+          <img
+            class="step-img"
+            :src="StepThreeImg"
+            alt="step 3"
+          />
           <p class="step-msg">
-            Meanwhile, enjoy your class time...by doing anything else you'd like!
+            Meanwhile, enjoy your class time...by doing anything else you'd
+            like!
           </p>
         </div>
         <div class="button-wrapper marginTop">
           <ButtonComponent type="primary">
             <div class="button">
-              <p :class="isLoading ? 'hide' : ''">Continue</p>
-              <Loader class="loader" color="white" v-if="isLoading" />
+              <p :class="isLoading ? 'hide' : ''">
+                Continue
+              </p>
+              <Loader
+                v-if="isLoading"
+                class="loader"
+                color="white"
+              />
             </div>
           </ButtonComponent>
         </div>
@@ -143,29 +173,13 @@ export default {
     Loader,
     ModalComponent,
   },
-  methods: {
-    onInit,
-    onNameChange(value) {
-      this.name = value;
-    },
-    onPasswordChange(value) {
-      this.password = value;
-    },
-    onValidatePhone,
-    onValidateWelcomeForm,
-    onWelcomeFormSubmit,
-    onPhoneChange: onFormatPhone,
-  },
-  mounted() {
-    this.onInit();
-  },
   props: {
     onClose: Function,
+    onShow: Function,
   },
   data() {
     return {
       // state
-      initial: true,
       isLoading: false,
       name: '',
       nameError: '',
@@ -181,13 +195,29 @@ export default {
       StepThreeImg,
     };
   },
+  mounted() {
+    this.onInit();
+  },
+  methods: {
+    onInit,
+    onNameChange(value) {
+      this.name = value;
+    },
+    onPasswordChange(value) {
+      this.password = value;
+    },
+    onValidatePhone,
+    onValidateWelcomeForm,
+    onWelcomeFormSubmit,
+    onPhoneChange: onFormatPhone,
+  },
   sockets: {
     'socket:onEnter': function({ color, name }) {
       console.log(color, name);
       this.onClose();
     },
   },
-}
+};
 </script>
 
 <style scoped>

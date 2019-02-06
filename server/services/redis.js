@@ -17,8 +17,11 @@ module.exports = () => {
       }),
     );
 
-    redisClient.SESSION = 'session';
-    redisClient.USER = 'user';
+    // definitions
+    redisClient.SESSION_ID = 'sessionId';
+    redisClient.SESSION_SCHOOL = 'schoolName';
+    redisClient.SESSION_NAME = 'sessionName';
+    redisClient.USER_ID = 'userId';
   }
   return redisClient;
 };

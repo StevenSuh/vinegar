@@ -47,7 +47,7 @@
             class="left"
             :src="leftImage"
             alt="landing asset left"
-          >
+          />
           <div class="content-message">
             <h1 class="content-header">
               Divide and Conquer.
@@ -71,7 +71,7 @@
             class="right"
             :src="rightImage"
             alt="landing asset right"
-          >
+          />
         </div>
       </div>
       <div
@@ -89,7 +89,7 @@
                   class="how-item-icon"
                   :src="findSessionImage"
                   alt="find session asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Create or join a session
@@ -101,7 +101,7 @@
                   class="how-item-icon"
                   :src="alarmClockImage"
                   alt="alarm clock asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Timer starts when everyone joins
@@ -113,7 +113,7 @@
                   class="how-item-icon"
                   :src="exclamationImage"
                   alt="exclamation asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Begin taking notes when notified
@@ -125,7 +125,7 @@
                   class="how-item-icon"
                   :src="mugImage"
                   alt="mug asset"
-                >
+                />
               </div>
               <p class="how-item-caption marginTop small">
                 Meanwhile, enjoy doing something else!
@@ -157,7 +157,7 @@
                 class="team-item-icon"
                 :src="jeffreImage"
                 alt="jeffre asset"
-              >
+              />
               <p class="team-item-name">
                 Jeffre
               </p>
@@ -173,7 +173,7 @@
                     class="team-item-links-img hover"
                     :src="linkedinImage"
                     alt="linkedin square"
-                  >
+                  />
                 </a>
                 <a
                   href="https://github.com/jeffreyyang3"
@@ -183,7 +183,7 @@
                     class="team-item-links-img hover"
                     :src="githubImage"
                     alt="github"
-                  >
+                  />
                 </a>
                 <a
                   href="https://jeffreyyang3.github.io"
@@ -193,7 +193,7 @@
                     class="team-item-links-img hover"
                     :src="heartImage"
                     alt="heart"
-                  >
+                  />
                 </a>
               </div>
             </div>
@@ -202,7 +202,7 @@
                 class="team-item-icon"
                 :src="lyanaImage"
                 alt="lyana asset"
-              >
+              />
               <p class="team-item-name">
                 Lyana
               </p>
@@ -218,7 +218,7 @@
                     class="team-item-links-img hover"
                     :src="linkedinImage"
                     alt="linkedin square"
-                  >
+                  />
                 </a>
                 <a
                   href="https://github.com/lyannerz"
@@ -228,7 +228,7 @@
                     class="team-item-links-img hover"
                     :src="githubImage"
                     alt="github"
-                  >
+                  />
                 </a>
                 <a
                   href="https://lyannerz.github.io"
@@ -238,7 +238,7 @@
                     class="team-item-links-img hover"
                     :src="heartImage"
                     alt="heart"
-                  >
+                  />
                 </a>
               </div>
             </div>
@@ -247,7 +247,7 @@
                 class="team-item-icon"
                 :src="steveImage"
                 alt="steve asset"
-              >
+              />
               <p class="team-item-name">
                 Steve
               </p>
@@ -263,7 +263,7 @@
                     class="team-item-links-img hover"
                     :src="linkedinImage"
                     alt="linkedin square"
-                  >
+                  />
                 </a>
                 <a
                   href="https://github.com/stevensuh"
@@ -273,7 +273,7 @@
                     class="team-item-links-img hover"
                     :src="githubImage"
                     alt="github"
-                  >
+                  />
                 </a>
                 <a
                   href="https://stevensuh.me"
@@ -283,7 +283,7 @@
                     class="team-item-links-img hover"
                     :src="heartImage"
                     alt="heart"
-                  >
+                  />
                 </a>
               </div>
             </div>
@@ -292,7 +292,7 @@
             class="snoo paddingTop large"
             :src="snooImage"
             alt="snoo"
-          >
+          />
           <ButtonComponent
             class="team-start marginTop small"
             size="large"
@@ -310,12 +310,12 @@
           class="squiggles"
           :src="squigglesImage"
           alt="squiggles"
-        >
+        />
         <img
           class="dots"
           :src="dotsImage"
           alt="dots"
-        >
+        />
         <div class="paddingBottom small" />
       </div>
       <div class="footer paddingTop paddingBottom large">
@@ -334,7 +334,7 @@
                 class="footer-heart"
                 :src="heartImage"
                 alt="heart"
-              >
+              />
             </span>
             {{ ' at Westside, Santa Cruz' }}
           </p>

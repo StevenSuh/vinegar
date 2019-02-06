@@ -42,9 +42,8 @@ const socketInit = (io, socket, session, user) => {
   initSocketChat(io, socket, session, user);
   initSocketEditor(io, socket, session, user);
 
-  io.in(session.id).emit('socket:onEnter', {
-    color: user.color,
-    name: user.name,
+  socket.emit('socket:onEnter', {
+    content: session.get(Sessions.CONTENT),
   });
 };
 
@@ -55,37 +54,37 @@ module.exports = (app) => {
   io.adapter(SocketRedis({ host: redisHost, port: redisPort }));
 
   io.on('connection', async (socket) => {
-    const { schoolName, sessionName } = getSchoolAndSession(socket);
+    const names = getSchoolAndSession(socket);
     const cookieId = getCookieId(socket);
-    const userId = await redisClient.hgetAsync(cookieId, 'user');
 
-    const sessionPromise = Sessions.findActiveBySchoolAndSession({
-      attributes: [Sessions.ID, Sessions.PASSWORD, Sessions.SCHOOL_NAME, Sessions.SESSION_NAME],
-      schoolName,
-      sessionName,
-    });
-    const userPromise = Users.findOne({
-      attributes: [Users.ID],
-      where: { id: userId },
-    });
-
-    const [session, user] = await Promise.all([sessionPromise, userPromise]);
-
-    if (!session || !user) {
-      socket.emit('exception', {
-        errorMessage: 'Invalid session',
-      });
-      return;
+    if (!cookieId || !names.schoolName || !names.sessionName) {
+      return socket.emit('exception', { errorMessage: 'Invalid authentication.' });
     }
 
-    if (session.schoolName === schoolName && session.sessionName === sessionName) {
-      socket.on('socket:onEnter', ({ color, name }) => {
+    const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+    const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
+
+    if (names.schoolName === schoolName && names.sessionName === sessionName) {
+      socket.on('socket:onEnter', async ({ color, name }) => {
+        const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
+        const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
+
+        const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
+        const userPromise = Users.findOne({ where: { id: userId }});
+        const [session, user] = await Promise.all([sessionPromise, userPromise]);
+
+        if (!session || !user) {
+          return socket.emit('exception', { errorMessage: 'Invalid session' });
+        }
+
         user.color = color;
         user.name = name;
-        socketInit(io, socket, session, user);
+        return socketInit(io, socket, session, user);
       });
+    } else {
+      return socket.emit('exception', { errorMessage: 'There is no such session' });
     }
-    socket.emit('exception', { errorMessage: 'There is no such session' });
+    return null;
   });
 
   return httpServer;
