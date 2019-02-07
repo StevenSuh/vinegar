@@ -10,6 +10,15 @@ const apiTemplate = fn => async (...args) => {
   }
 };
 
+export const signOut = apiTemplate(
+  async () => {
+    const res = await axios.get(
+      '/api/signout',
+    );
+    return res.data;
+  },
+);
+
 export const getSigninUrl = apiTemplate(
   async () => {
     const res = await axios.get(
@@ -64,7 +73,7 @@ export const getSearchSessionResults = apiTemplate(
   },
 );
 
-export const postSession = apiTemplate(
+export const createSession = apiTemplate(
   async (data) => {
     const res = await axios.post(
       '/api/session/create',

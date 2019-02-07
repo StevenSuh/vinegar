@@ -2,7 +2,7 @@ const uuidv4 = require('uuid/v4');
 const {
   urlGoogle,
   getGoogleAccountFromCode,
-} = require('auth-utils');
+} = require('utils');
 const redisClient = require('services/redis')();
 
 const dbClient = require('db')();
@@ -61,7 +61,17 @@ module.exports = (app) => {
       secure: false, // TODO: change to true
     });
     await redisClient.hsetAsync(cookieId, redisClient.USER_ID, user.get(Users.ID));
+    redisClient.expireAsync(cookieId, redisClient.USER_ID, 60 * 24 * 7);
 
     res.redirect('/find');
+  });
+
+  app.get('/api/signout', (req, res) => {
+    const { cookieId } = req.cookies;
+
+    res.clearCookie('cookieId');
+    redisClient.hdelAsync(cookieId);
+
+    res.json({});
   });
 };

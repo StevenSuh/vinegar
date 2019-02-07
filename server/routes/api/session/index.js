@@ -67,6 +67,7 @@ module.exports = (app) => {
     '/api/session/create',
     requireUserAuth,
     (req, res) => { // findorcreate
+      res.end();
       // active, content, duration, id, participants,schoolName,sessionName,
       Sessions.findOrCreate({
         where: {
@@ -150,6 +151,10 @@ module.exports = (app) => {
         await redisClient.hsetAsync(cookieId, redisClient.SESSION_SCHOOL, schoolName);
         await redisClient.hsetAsync(cookieId, redisClient.SESSION_NAME, sessionName);
 
+        redisClient.expireAsync(cookieId, redisClient.SESSION_ID, 60 * 24);
+        redisClient.expireAsync(cookieId, redisClient.SESSION_SCHOOL, 60 * 24);
+        redisClient.expireAsync(cookieId, redisClient.SESSION_NAME, 60 * 24);
+
         const [result] = await Users.update({ sessionId }, { where: { id: req.userId }});
         if (!result) {
           res.clearCookie('cookieId');
@@ -198,6 +203,10 @@ module.exports = (app) => {
         await redisClient.hsetAsync(cookieId, redisClient.SESSION_ID, sessionId);
         await redisClient.hsetAsync(cookieId, redisClient.SESSION_SCHOOL, schoolName);
         await redisClient.hsetAsync(cookieId, redisClient.SESSION_NAME, sessionName);
+
+        redisClient.expireAsync(cookieId, redisClient.SESSION_ID, 60 * 24);
+        redisClient.expireAsync(cookieId, redisClient.SESSION_SCHOOL, 60 * 24);
+        redisClient.expireAsync(cookieId, redisClient.SESSION_NAME, 60 * 24);
 
         updateItem.sessionId = sessionId;
       }

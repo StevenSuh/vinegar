@@ -49,6 +49,8 @@ import {
 import ToolbarConfig from './toolbarConfig';
 import PlainClipboard from './PlainClipboard';
 
+import { CONTENT_UPDATE_DUR } from '@/defs';
+
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill-cursors/dist/quill-cursors.css';
@@ -83,6 +85,7 @@ export default {
       content: '',
       editor: null,
       sizes: SIZES,
+      updateTimeout: null,
     };
   },
   mounted() {
@@ -153,7 +156,6 @@ export default {
     },
     onResizeCollapse,
     onScrollEditor() {
-      console.log('ddd');
       this.editor.getModule('cursors').update();
     },
     selectionUpdate(type, range, oldRange, source) {
@@ -176,6 +178,14 @@ export default {
           data: delta,
           content: this.editor.root.innerHTML,
         });
+
+        clearTimeout(this.updateTimeout);
+        this.updateTimeout = setTimeout(
+          this.$socket.emit,
+          CONTENT_UPDATE_DUR,
+          'editor:onEditorContentUpdate',
+          this.editor.root.innerHTML,
+        );
       }
     },
   },
