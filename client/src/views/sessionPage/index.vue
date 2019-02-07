@@ -82,10 +82,12 @@ export default {
   },
   methods: {
     onCloseIsWelcome(data) {
-      this.hide = false;
       this.isWelcome = false;
-      this.name = data.name;
-      this.$socket.emit('socket:onEnter', data);
+      setTimeout(() => {
+        this.hide = false;
+        this.name = data.name;
+        this.$socket.emit('socket:onEnter', data);
+      }, 200);
     },
     onShow() {
       this.hide = false;
