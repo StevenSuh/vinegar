@@ -1,5 +1,5 @@
 <template>
-  <div class="editor">
+  <div class="editor" v-on:scroll="onScrollEditor">
     <div ref="toolbar">
       <div
         ref="open"
@@ -152,6 +152,10 @@ export default {
       }
     },
     onResizeCollapse,
+    onScrollEditor() {
+      console.log('ddd');
+      this.editor.getModule('cursors').update();
+    },
     selectionUpdate(type, range, oldRange, source) {
       if (type === 'selection-change') {
         if (source !== Quill.sources.API && range) {
@@ -205,6 +209,7 @@ export default {
   border-radius: 5px;
   height: 100%;
   min-height: 500px;
+  overflow-y: auto;
   width: 100%;
 }
 
@@ -527,5 +532,11 @@ pre strong {
 .ql-editor ol,
 .ql-editor ul {
   padding-left: 0;
+}
+
+@media (max-width: 700px) {
+  .editor {
+    max-height: 800px;
+  }
 }
 </style>

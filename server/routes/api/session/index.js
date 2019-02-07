@@ -166,8 +166,8 @@ module.exports = (app) => {
     '/api/session/enter',
     requireUserAuth,
     async (req, res) => {
-      const hasPassword = req.session.get(Sessions.PASSWORD);
-      if (hasPassword) {
+      const sessionValidated = await redisClient.hexistsAsync(req.cookies.cookieId, redisClient.SESSION_ID);
+      if (sessionValidated) {
         const middle = await requireSessionAuth(req, res);
         if (!middle) {
           return null;
@@ -190,7 +190,7 @@ module.exports = (app) => {
         updateItem.phone = phone;
       }
 
-      if (!hasPassword) {
+      if (!sessionValidated) {
         const { cookieId } = req.cookies;
         const schoolName = req.session.get(Sessions.SCHOOL_NAME);
         const sessionName = req.session.get(Sessions.SESSION_NAME);

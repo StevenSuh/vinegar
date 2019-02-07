@@ -61,29 +61,29 @@ module.exports = (app) => {
       return socket.emit('exception', { errorMessage: 'Invalid authentication.' });
     }
 
-    const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
-    const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
+    socket.on('socket:onEnter', async ({ color, name }) => {
+      const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
+      const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
 
-    if (names.schoolName === schoolName && names.sessionName === sessionName) {
-      socket.on('socket:onEnter', async ({ color, name }) => {
-        const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
-        const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
+      const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+      const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
 
-        const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
-        const userPromise = Users.findOne({ where: { id: userId }});
-        const [session, user] = await Promise.all([sessionPromise, userPromise]);
+      const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
+      const userPromise = Users.findOne({ where: { id: userId }});
+      const [session, user] = await Promise.all([sessionPromise, userPromise]);
 
-        if (!session || !user) {
-          return socket.emit('exception', { errorMessage: 'Invalid session' });
-        }
+      if (!session || !user) {
+        return socket.emit('exception', { errorMessage: 'Invalid session' });
+      }
 
-        user.color = color;
-        user.name = name;
-        return socketInit(io, socket, session, user);
-      });
-    } else {
-      return socket.emit('exception', { errorMessage: 'There is no such session' });
-    }
+      if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
+        return socket.emit('exception', { errorMessage: 'You are not authenticated with the right session.' });
+      }
+
+      user.color = color;
+      user.name = name;
+      return socketInit(io, socket, session, user);
+    });
     return null;
   });
 

@@ -20,6 +20,8 @@ delete-psql:
 	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "DROP DATABASE vinegar"
 create-psql:
 	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "CREATE DATABASE vinegar"
+create-user:
+	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "CREATE USER random WITH CREATEDB LOGIN PASSWORD 'somepw'"
 reset-psql:
 	make delete-psql && make create-psql
 reset-db:
