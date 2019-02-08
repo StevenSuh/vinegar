@@ -33,6 +33,14 @@
             <h2 class="nav-header">
               Vinegar
             </h2>
+            <ButtonComponent
+              class="sign-out hover"
+              type="minimal"
+            >
+              <p @click="onSignOut">
+                Sign Out
+              </p>
+            </ButtonComponent>
           </nav>
         </div>
         <img
@@ -45,7 +53,7 @@
           :src="rightImage"
           alt="find page right asset"
         />
-        <div class="container">
+        <div class="container tight">
           <transition name="fade">
             <div v-if="loaded">
               <transition name="fade">
@@ -102,11 +110,12 @@
 </template>
 
 <script>
-import { getAuthStatus } from '@/services/api';
+import { getAuthStatus, signOut } from '@/services/api';
 import Loader from '@/components/loader';
 import Decision from '@/views/findPage/decision';
 import Join from '@/views/findPage/join';
 import Create from '@/views/findPage/create';
+import ButtonComponent from '@/components/button';
 
 import { MIN_MOBILE_WIDTH } from '@/defs';
 
@@ -116,6 +125,7 @@ import rightImage from '@/assets/find_right.png';
 
 export default {
   components: {
+    ButtonComponent,
     Create,
     Join,
     Loader,
@@ -170,6 +180,10 @@ export default {
       this.isJoiningSession = false;
       this.isCreatingSession = false;
     },
+    async onSignOut() {
+      await signOut();
+      this.$router.push('/');
+    },
   },
 };
 </script>
@@ -198,8 +212,13 @@ export default {
 }
 
 .navbar {
-  align-items: baseline;
+  align-items: flex-end;
   display: flex;
+  justify-content: space-between;
+}
+
+.sign-out > p {
+  font-size: 16px;
 }
 
 .nav-header {

@@ -9,7 +9,7 @@
             </h2>
             <div class="nav-items">
               <ButtonComponent
-                class="marginRight small"
+                class="marginRight small hover"
                 type="minimal"
               >
                 <p @click="onClickAbout">
@@ -425,6 +425,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 96vh;
+  min-height: 750px;
   overflow: hidden;
   width: 100%;
 }
@@ -636,6 +637,7 @@ export default {
 @media (max-width: 416px) {
   .landing {
     height: 73vh;
+    min-height: 650px;
   }
 
   .nav-header {

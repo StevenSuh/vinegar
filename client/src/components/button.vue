@@ -57,14 +57,6 @@ export default {
   background-color: var(--main-bg-color-hover);
 }
 
-.minimal > * {
-  transition: color var(--transition-duration) var(--transition-curve);
-}
-
-.minimal:hover > * {
-  color: var(--main-font-color);
-}
-
 @media (max-width: 416px) {
   .button.medium > * {
     font-size: 16px;

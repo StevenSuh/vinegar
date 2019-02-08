@@ -6,9 +6,18 @@ const apiTemplate = fn => async (...args) => {
     return await fn(...args);
   } catch (err) {
     handleErrorMiddleware(err);
-    throw new Error(`Error has occurred making an API call`);
+    throw new Error(err.response.data);
   }
 };
+
+export const signOut = apiTemplate(
+  async () => {
+    const res = await axios.get(
+      '/api/signout',
+    );
+    return res.data;
+  },
+);
 
 export const getSigninUrl = apiTemplate(
   async () => {
@@ -64,7 +73,7 @@ export const getSearchSessionResults = apiTemplate(
   },
 );
 
-export const postSession = apiTemplate(
+export const createSession = apiTemplate(
   async (data) => {
     const res = await axios.post(
       '/api/session/create',

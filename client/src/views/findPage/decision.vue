@@ -11,36 +11,37 @@
         class="find-action join"
         @click="onClickJoin"
       >
-        <img
-          class="action-box join-box"
-          :src="joinBoxImage"
-          alt="join box"
-        />
-        <p class="action-title">
-          Join a Session
-        </p>
-        <p class="action-message">
-          Looking for a session to join?
-        </p>
+        <div class="find-action-inner-wrapper">
+          <img
+            class="action-box join-box"
+            :src="joinBoxImage"
+            alt="join box"
+          />
+          <p class="action-title">
+            Join a Session
+          </p>
+          <p class="action-message">
+            Looking for a session to join?
+          </p>
+        </div>
       </div>
-      <p class="find-action-p">
-        or
-      </p>
       <div
         class="find-action create"
         @click="onClickCreate"
       >
-        <img
-          class="action-box create-box"
-          :src="createBoxImage"
-          alt="create box"
-        />
-        <p class="action-title">
-          Create a Session
-        </p>
-        <p class="action-message">
-          Want to create a session?
-        </p>
+        <div class="find-action-inner-wrapper">
+          <img
+            class="action-box create-box"
+            :src="createBoxImage"
+            alt="create box"
+          />
+          <p class="action-title">
+            Create a Session
+          </p>
+          <p class="action-message">
+            Want to create a session?
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -80,8 +81,16 @@ export default {
 
 .find-action {
   cursor: pointer;
-  height: 400px;
-  width: 400px;
+  padding-top: 45%;
+  width: 45%;
+}
+
+.find-action-inner-wrapper {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .find-action-header {
@@ -93,13 +102,8 @@ export default {
   color: var(--main-font-color);
 }
 
-.find-action-message,
-.find-action-p {
+.find-action-message {
   font-size: 18px;
-}
-
-.find-action-p {
-  user-select: none;
 }
 
 .action-box {
@@ -120,7 +124,7 @@ export default {
 .action-title {
   font-size: 20px;
   font-weight: 500;
-  margin-top: 272px;
+  margin-top: 68%;
   margin-bottom: 5px;
   user-select: none;
 }
@@ -133,5 +137,12 @@ export default {
 .find-action:hover .action-title,
 .find-action:hover .action-message {
   color: var(--main-font-color);
+}
+
+@media (min-width: 1200px) {
+  .find-action {
+    padding-top: 35%;
+    width: 35%;
+  }
 }
 </style>

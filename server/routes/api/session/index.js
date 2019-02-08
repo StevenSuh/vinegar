@@ -1,11 +1,3 @@
-const {
-  passwordDigest,
-  passwordIteration,
-  passwordKeyLen,
-  passwordSalt,
-} = require('config');
-
-const crypto = require('crypto');
 const redisClient = require('services/redis')();
 
 const dbClient = require('db')();
@@ -18,7 +10,12 @@ const {
   requireSessionByReferer,
 } = require('routes/api/middleware');
 
-const { generateColor } = require('./utils');
+const { MIN_PASSWORD_LENGTH, MIN_SEARCH_LEN } = require('defs');
+const {
+  createPassword,
+  generateColor,
+  setSessionCookie,
+} = require('./utils');
 
 module.exports = (app) => {
   app.get('/api/session', async (req, res) => {
@@ -36,6 +33,11 @@ module.exports = (app) => {
       } = req.query;
 
       const searchQuery = query.toLowerCase();
+
+      if (searchQuery.length < MIN_SEARCH_LEN) {
+        return res.status(400).send('Search query is too short.');
+      }
+
       const sessions = await Sessions.findAllByFullName({
         attributes: [
           Sessions.CREATED_AT,
@@ -66,38 +68,37 @@ module.exports = (app) => {
   app.post(
     '/api/session/create',
     requireUserAuth,
-    (req, res) => { // findorcreate
-      // active, content, duration, id, participants,schoolName,sessionName,
-      Sessions.findOrCreate({
-        where: {
-          sessionName: req.body.sessionName,
-          schoolName: req.body.schoolName,
-        },
-        defaults: {
-          sessionName: req.body.sessionName,
-          schoolName: req.body.schoolName,
-        },
-      }).spread((_user, created) => {
-        if (created) {
-          return res.json({
-            created: true,
-            schoolName: req.body.schoolName,
-            sessionName: req.body.sessionName,
-          });
-        }
+    async (req, res) => {
+      const {
+        duration,
+        password,
+        schoolName,
+        sessionName,
+      } = req.body;
 
-        return res.json({
-          created: false,
-          schoolName: req.body.schoolName,
-          sessionName: req.body.sessionName,
-        });
+      const validForm = (duration > 0) &&
+        (!password || password.length >= MIN_PASSWORD_LENGTH) &&
+        schoolName && sessionName;
+
+      if (!validForm) {
+        return res.status(400).send('Form has an error.');
+      }
+
+      const encryptedPw = await createPassword(password);
+
+      const session = await Sessions.create({
+        active: true,
+        duration,
+        ownerId: req.userId,
+        password: encryptedPw,
+        schoolName,
+        sessionName,
       });
-      /* Sessions.create({
-        "sessionName": req.body.sessionName,
-        "schoolName": req.body.schoolName,
 
-
-      }).then(console.log("wowowowowowowowow")) */
+      if (!session) {
+        return res.status(400).send('Session failed to create.');
+      }
+      return res.end();
     },
   );
 
@@ -117,43 +118,31 @@ module.exports = (app) => {
     requireUserAuth,
     requireSessionByReferer,
     async (req, res) => {
-      const sessionId = req.session.get(Sessions.ID);
       const sessionPassword = req.session.get(Sessions.PASSWORD);
 
       const { password } = req.body;
 
-      const hash = await new Promise((resolve, reject) => {
-        crypto.pbkdf2(
-          password,
-          passwordSalt,
-          passwordIteration,
-          passwordKeyLen,
-          passwordDigest,
-          (err, derivedKey) => {
-            if (err) {
-              throw reject(err);
-            } else {
-              resolve(derivedKey.toString('hex'));
-            }
-          },
-        );
-      });
-
+      const hash = await createPassword(password);
       const validPassword = (sessionPassword === hash);
 
       if (validPassword) {
-        const { cookieId } = req.cookies;
+        const sessionId = req.session.get(Sessions.ID);
         const schoolName = req.session.get(Sessions.SCHOOL_NAME);
         const sessionName = req.session.get(Sessions.SESSION_NAME);
 
-        await redisClient.hsetAsync(cookieId, redisClient.SESSION_ID, sessionId);
-        await redisClient.hsetAsync(cookieId, redisClient.SESSION_SCHOOL, schoolName);
-        await redisClient.hsetAsync(cookieId, redisClient.SESSION_NAME, sessionName);
+        setSessionCookie(res, { sessionId, schoolName, sessionName });
 
-        const [result] = await Users.update({ sessionId }, { where: { id: req.userId }});
+        const [result] = await Users.update({
+          color: '',
+          name: '',
+          sessionId,
+        }, { where: { id: req.userId }});
+
         if (!result) {
-          res.clearCookie('cookieId');
-          await redisClient.hdelAsync(req.cookies.cookieId);
+          res.clearCookie('sessionCookieId');
+          res.clearCookie('userCookieId');
+          await redisClient.delAsync(req.cookies.sessionCookieId);
+          await redisClient.delAsync(req.cookies.userCookieId);
           return res.status(400).send('Invalid user.');
         }
       }
@@ -166,8 +155,8 @@ module.exports = (app) => {
     '/api/session/enter',
     requireUserAuth,
     async (req, res) => {
-      const sessionValidated = await redisClient.hexistsAsync(req.cookies.cookieId, redisClient.SESSION_ID);
-      if (sessionValidated) {
+      const { sessionCookieId } = req.cookies;
+      if (sessionCookieId) {
         const middle = await requireSessionAuth(req, res);
         if (!middle) {
           return null;
@@ -190,22 +179,20 @@ module.exports = (app) => {
         updateItem.phone = phone;
       }
 
-      if (!sessionValidated) {
-        const { cookieId } = req.cookies;
-        const schoolName = req.session.get(Sessions.SCHOOL_NAME);
-        const sessionName = req.session.get(Sessions.SESSION_NAME);
+      if (!sessionCookieId) {
+        const schoolName = session.get(Sessions.SCHOOL_NAME);
+        const sessionName = session.get(Sessions.SESSION_NAME);
 
-        await redisClient.hsetAsync(cookieId, redisClient.SESSION_ID, sessionId);
-        await redisClient.hsetAsync(cookieId, redisClient.SESSION_SCHOOL, schoolName);
-        await redisClient.hsetAsync(cookieId, redisClient.SESSION_NAME, sessionName);
-
+        setSessionCookie(res, { sessionId, schoolName, sessionName });
         updateItem.sessionId = sessionId;
       }
 
       const [result] = await Users.update(updateItem, { where: { id: req.userId }});
       if (!result) {
-        res.clearCookie('cookieId');
-        await redisClient.hdelAsync(req.cookies.cookieId);
+        res.clearCookie('sessionCookieId');
+        res.clearCookie('userCookieId');
+        await redisClient.delAsync(req.cookies.sessionCookieId);
+        await redisClient.delAsync(req.cookies.userCookieId);
         return res.status(400).send('Invalid user.');
       }
 

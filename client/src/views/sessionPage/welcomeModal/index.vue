@@ -24,7 +24,6 @@
             autocomplete="off"
             :error-message="passwordError"
             label="Password"
-            max-len="14"
             name="password"
             placeholder="Session password"
             size="small"
@@ -154,6 +153,13 @@ import ButtonComponent from '@/components/button';
 import InputComponent from '@/components/input';
 import Loader from '@/components/loader';
 import ModalComponent from '@/components/modal';
+
+import StepOneImg from '@/assets/step1.png';
+import StepTwoImg from '@/assets/step2.png';
+import StepThreeImg from '@/assets/step3.png';
+
+import { connectErrorMiddlewareWithCallback } from '@/services/middleware';
+
 import {
   onFormatPhone,
   onInit,
@@ -161,10 +167,6 @@ import {
   onValidateWelcomeForm,
   onWelcomeFormSubmit,
 } from './utils';
-
-import StepOneImg from '@/assets/step1.png';
-import StepTwoImg from '@/assets/step2.png';
-import StepThreeImg from '@/assets/step3.png';
 
 export default {
   components: {
@@ -195,6 +197,11 @@ export default {
       StepThreeImg,
     };
   },
+  created() {
+    connectErrorMiddlewareWithCallback(this, () => {
+      this.isLoading = false;
+    });
+  },
   mounted() {
     this.onInit();
   },
@@ -213,7 +220,6 @@ export default {
   },
   sockets: {
     'socket:onEnter': function({ color, name }) {
-      console.log(color, name);
       this.onClose();
     },
   },
@@ -257,12 +263,6 @@ export default {
 
 .button-wrapper {
   text-align: center;
-}
-
-.hide {
-  opacity: 0;
-  pointer-events: none;
-  user-select: none;
 }
 
 .loader {

@@ -52,6 +52,8 @@ import Chat from '@/views/sessionPage/chat';
 import Editor from '@/views/sessionPage/editor';
 import Welcome from '@/views/sessionPage/welcomeModal';
 
+import { connectErrorMiddlewareWithCallback } from '@/services/middleware';
+
 import backImage from '@/assets/back.png';
 
 export default {
@@ -63,6 +65,7 @@ export default {
   data() {
     return {
       // state
+      errorModal: false,
       hide: true,
       school: this.$route.params.school,
       session: this.$route.params.session,
@@ -76,6 +79,12 @@ export default {
   },
   beforeCreate() {
     Vue.use(new VueSocketIO({ connection: '/' }));
+  },
+  created() {
+    connectErrorMiddlewareWithCallback(this, () => {
+      this.$router.push('/find');
+      // this.errorModal = true;
+    });
   },
   mounted() {
     this.show = true;

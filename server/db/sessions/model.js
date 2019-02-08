@@ -22,7 +22,7 @@ module.exports = (dbClient) => {
       },
       // minutes
       duration: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.INTEGER,
       },
       id: {

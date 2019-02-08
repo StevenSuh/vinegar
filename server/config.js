@@ -5,7 +5,7 @@ module.exports = {
   passwordSalt: process.env.PASSWORD_SALT,
   passwordIteration: 100000,
   passwordKeyLen: 32,
-  passwordDigest: 'sha512',
+  passwordDigest: 'sha256',
   pgDbName: process.env.POSTGRES_DATABASE_NAME,
   pgHost: process.env.POSTGRES_HOST,
   pgUsername: process.env.POSTGRES_USERNAME,

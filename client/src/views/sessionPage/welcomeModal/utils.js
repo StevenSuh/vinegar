@@ -6,6 +6,8 @@ import {
   validateSessionPassword,
 } from '@/services/api';
 
+import { MIN_PASSWORD_LENGTH } from '@/defs';
+
 export async function onInit() {
   /**
    * Check user's cookies to validate its sign-in + session check-in status
@@ -50,6 +52,9 @@ export function onValidateWelcomeForm() {
     case 0: {
       if (!this.password) {
         this.passwordError = 'This field is required.';
+        hasError = true;
+      } else if (this.password.length < MIN_PASSWORD_LENGTH) {
+        this.passwordError = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`;
         hasError = true;
       } else {
         this.passwordError = '';

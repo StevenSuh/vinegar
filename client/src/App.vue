@@ -116,6 +116,10 @@ textarea:focus {
   transition-delay: var(--transition-duration);
 }
 
+.fade-leave-active {
+  transition-delay: 0s !important;
+}
+
 .fade-enter,
 .fade-leave-to,
 .fadeNoDelay-enter,
@@ -129,10 +133,22 @@ textarea:focus {
   width: 80%;
 }
 
+@media (max-width: 1000px) {
+  .container.tight {
+    width: 100%;
+  }
+}
+
 @media (max-width: 416px) {
   .container {
     width: 90%;
   }
+}
+
+.hide {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
 .hover {
@@ -148,6 +164,10 @@ textarea:focus {
   margin-top: 40px;
 }
 
+.marginTop.smaller {
+  margin-top: 10px;
+}
+
 .marginTop.small {
   margin-top: 20px;
 }
@@ -158,6 +178,10 @@ textarea:focus {
 
 .marginBottom {
   margin-bottom: 40px;
+}
+
+.marginBottom.smaller {
+  margin-bottom: 10px;
 }
 
 .marginBottom.small {
@@ -172,6 +196,10 @@ textarea:focus {
   margin-right: 40px;
 }
 
+.marginRight.smaller {
+  margin-right: 10px;
+}
+
 .marginRight.small {
   margin-right: 20px;
 }
@@ -182,6 +210,10 @@ textarea:focus {
 
 .marginLeft {
   margin-left: 40px;
+}
+
+.marginLeft.smaller {
+  margin-left: 10px;
 }
 
 .marginLeft.small {
@@ -197,6 +229,10 @@ textarea:focus {
   padding-top: 40px;
 }
 
+.paddingTop.smaller {
+  padding-top: 10px;
+}
+
 .paddingTop.small {
   padding-top: 20px;
 }
@@ -207,6 +243,10 @@ textarea:focus {
 
 .paddingBottom {
   padding-bottom: 40px;
+}
+
+.paddingBottom.smaller {
+  padding-bottom: 10px;
 }
 
 .paddingBottom.small {
@@ -221,6 +261,10 @@ textarea:focus {
   padding-right: 40px;
 }
 
+.paddingRight.smaller {
+  padding-right: 10px;
+}
+
 .paddingRight.small {
   padding-right: 20px;
 }
@@ -231,6 +275,10 @@ textarea:focus {
 
 .paddingLeft {
   padding-left: 40px;
+}
+
+.paddingLeft.smaller {
+  padding-left: 10px;
 }
 
 .paddingLeft.small {
