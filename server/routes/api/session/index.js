@@ -10,12 +10,19 @@ const {
   requireSessionByReferer,
 } = require('routes/api/middleware');
 
-const { MIN_PASSWORD_LENGTH, MIN_SEARCH_LEN } = require('defs');
+const {
+  ALLOWED_CHARACTERS,
+  MIN_PASSWORD_LENGTH,
+  MIN_SEARCH_LEN,
+  ERR_SESSION_CREATE,
+} = require('defs');
 const {
   createPassword,
   generateColor,
   setSessionCookie,
 } = require('./utils');
+
+const nameRegex = new RegExp(`^[${ALLOWED_CHARACTERS.join('')}]+$`);
 
 module.exports = (app) => {
   app.get('/api/session', async (req, res) => {
@@ -78,7 +85,7 @@ module.exports = (app) => {
 
       const validForm = (duration > 0) &&
         (!password || password.length >= MIN_PASSWORD_LENGTH) &&
-        schoolName && sessionName;
+        nameRegex.test(schoolName) && nameRegex.test(sessionName);
 
       if (!validForm) {
         return res.status(400).send('Form has an error.');
@@ -86,17 +93,27 @@ module.exports = (app) => {
 
       const encryptedPw = await createPassword(password);
 
-      const session = await Sessions.create({
-        active: true,
-        duration,
-        ownerId: req.userId,
-        password: encryptedPw,
-        schoolName,
-        sessionName,
+      const [session, created] = await Sessions.findOrCreate({
+        where: {
+          active: true,
+          schoolName,
+          sessionName,
+        },
+        defaults: {
+          active: true,
+          duration,
+          ownerId: req.userId,
+          password: encryptedPw,
+          schoolName,
+          sessionName,
+        },
       });
 
-      if (!session) {
-        return res.status(400).send('Session failed to create.');
+      if (!session || !created) {
+        return res.status(400).json({
+          msg: 'Session failed to create.',
+          type: ERR_SESSION_CREATE,
+        });
       }
       return res.end();
     },
@@ -121,7 +138,6 @@ module.exports = (app) => {
       const sessionPassword = req.session.get(Sessions.PASSWORD);
 
       const { password } = req.body;
-
       const hash = await createPassword(password);
       const validPassword = (sessionPassword === hash);
 
@@ -130,7 +146,12 @@ module.exports = (app) => {
         const schoolName = req.session.get(Sessions.SCHOOL_NAME);
         const sessionName = req.session.get(Sessions.SESSION_NAME);
 
-        setSessionCookie(res, { sessionId, schoolName, sessionName });
+        setSessionCookie({
+          cookieId: req.cookies.cookieId,
+          sessionId,
+          schoolName,
+          sessionName,
+        });
 
         const [result] = await Users.update({
           color: '',
@@ -139,10 +160,8 @@ module.exports = (app) => {
         }, { where: { id: req.userId }});
 
         if (!result) {
-          res.clearCookie('sessionCookieId');
-          res.clearCookie('userCookieId');
-          await redisClient.delAsync(req.cookies.sessionCookieId);
-          await redisClient.delAsync(req.cookies.userCookieId);
+          res.clearCookie('cookieId');
+          await redisClient.delAsync(req.cookies.cookieId);
           return res.status(400).send('Invalid user.');
         }
       }
@@ -155,8 +174,10 @@ module.exports = (app) => {
     '/api/session/enter',
     requireUserAuth,
     async (req, res) => {
-      const { sessionCookieId } = req.cookies;
-      if (sessionCookieId) {
+      const { cookieId } = req.cookies;
+      const sessionExists = await redisClient.hexistsAsync(cookieId, redisClient.SESSION_ID);
+
+      if (sessionExists) {
         const middle = await requireSessionAuth(req, res);
         if (!middle) {
           return null;
@@ -179,20 +200,20 @@ module.exports = (app) => {
         updateItem.phone = phone;
       }
 
-      if (!sessionCookieId) {
-        const schoolName = session.get(Sessions.SCHOOL_NAME);
-        const sessionName = session.get(Sessions.SESSION_NAME);
-
-        setSessionCookie(res, { sessionId, schoolName, sessionName });
+      if (!sessionExists) {
+        setSessionCookie({
+          cookieId,
+          sessionId,
+          schoolName: session.get(Sessions.SCHOOL_NAME),
+          sessionName: session.get(Sessions.SESSION_NAME),
+        });
         updateItem.sessionId = sessionId;
       }
 
       const [result] = await Users.update(updateItem, { where: { id: req.userId }});
       if (!result) {
-        res.clearCookie('sessionCookieId');
-        res.clearCookie('userCookieId');
-        await redisClient.delAsync(req.cookies.sessionCookieId);
-        await redisClient.delAsync(req.cookies.userCookieId);
+        res.clearCookie('cookieId');
+        await redisClient.delAsync(cookieId);
         return res.status(400).send('Invalid user.');
       }
 

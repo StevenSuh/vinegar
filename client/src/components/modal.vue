@@ -32,13 +32,13 @@ import Loader from '@/components/loader';
 const enterAnim = [
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.8) translateZ(0)',
+    transform: 'translate(-50%, -50%) scale(0.8)',
     pointerEvents: 'none',
     userSelect: 'none',
   },
   {
     opacity: 1,
-    transform: 'translate(-50%, -50%) scale(1) translateZ(0)',
+    transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'auto',
     userSelect: 'auto',
   },
@@ -54,13 +54,13 @@ const enterTiming = {
 const leaveAnim = [
   {
     opacity: 1,
-    transform: 'translate(-50%, -50%) scale(1) translateZ(0)',
+    transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'none',
     userSelect: 'none',
   },
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.8) translateZ(0)',
+    transform: 'translate(-50%, -50%) scale(0.8)',
     pointerEvents: 'auto',
     userSelect: 'auto',
   },
@@ -150,6 +150,7 @@ export default {
   user-select: none;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.8);
+  will-change: transform, opacity;
 }
 
 .loader-wrapper {

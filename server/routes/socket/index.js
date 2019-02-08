@@ -35,8 +35,7 @@ const getCookieIds = (socket) => {
   const cookies = cookie.parse(reqCookie);
 
   return {
-    sessionCookieId: cookies.sessionCookieId,
-    userCookieId: cookies.userCookieId,
+    cookieId: cookies.cookieId,
   };
 };
 
@@ -58,22 +57,17 @@ module.exports = (app) => {
 
   io.on('connection', async (socket) => {
     const names = getSchoolAndSession(socket);
-    const { userCookieId } = getCookieIds(socket);
+    const { cookieId } = getCookieIds(socket);
 
-    if (!userCookieId || !names.schoolName || !names.sessionName) {
+    if (!cookieId || !names.schoolName || !names.sessionName) {
       return socket.emit('exception', { errorMessage: 'Invalid authentication.' });
     }
 
     socket.on('socket:onEnter', async ({ color, name }) => {
-      const { sessionCookieId } = getCookieIds(socket);
-      if (!sessionCookieId) {
-        return socket.emit('exception', { errorMessage: 'Invalid authentication.' });
-      }
-
-      const userId = await redisClient.hgetAsync(userCookieId, redisClient.USER_ID);
-      const sessionId = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_ID);
-      const schoolName = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_SCHOOL);
-      const sessionName = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_NAME);
+      const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
+      const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
+      const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+      const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
 
       const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
       const userPromise = Users.findOne({ where: { id: userId }});

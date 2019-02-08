@@ -7,13 +7,13 @@ const Sessions = require('db/sessions/model')(dbClient);
 const sessionRegex = pathToRegexp('/session/:school/:session');
 
 const requireUserAuth = async (req, res, next = Function) => {
-  const { userCookieId } = req.cookies;
-  if (!userCookieId) {
+  const { cookieId } = req.cookies;
+  if (!cookieId) {
     res.status(400).send('Invalid cookie.');
     return false;
   }
 
-  const userId = await redisClient.hgetAsync(userCookieId, redisClient.USER_ID);
+  const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
   if (!userId) {
     res.status(400).send('Invalid user.');
     return false;
@@ -55,15 +55,15 @@ const requireSessionByReferer = async (req, res, next = Function) => {
 };
 
 const requireSessionAuth = async (req, res, next = Function) => {
-  const { sessionCookieId } = req.cookies;
-  if (!sessionCookieId) {
+  const { cookieId } = req.cookies;
+  if (!cookieId) {
     res.status(400).send('Invalid cookie.');
     return false;
   }
 
-  const sessionId = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_ID);
-  const schoolName = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_SCHOOL);
-  const sessionName = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_NAME);
+  const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
+  const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+  const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
   if (!sessionId || !schoolName || !sessionName) {
     res.status(400).send('Invalid session.');
     return false;

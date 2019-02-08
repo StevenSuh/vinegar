@@ -12,11 +12,11 @@ const { getNamesByReferer } = require('routes/api/middleware');
 
 module.exports = (app) => {
   app.get('/api/signin', async (req, res) => {
-    const { userCookieId } = req.cookies;
-    if (!userCookieId) {
+    const { cookieId } = req.cookies;
+    if (!cookieId) {
       return res.json({ signinUrl: urlGoogle() });
     }
-    const exists = await redisClient.hexistsAsync(userCookieId, redisClient.USER_ID);
+    const exists = await redisClient.hexistsAsync(cookieId, redisClient.USER_ID);
     if (!exists) {
       return res.json({ signinUrl: urlGoogle() });
     }
@@ -24,15 +24,17 @@ module.exports = (app) => {
   });
 
   app.get('/api/auth/status', async (req, res) => {
-    const { sessionCookieId, userCookieId } = req.cookies;
-    if (!userCookieId) {
+    const { cookieId } = req.cookies;
+    if (!cookieId) {
       return res.json({ validSession: false, validUser: false });
     }
 
     let validSession = false;
-    if (sessionCookieId) {
-      const schoolName = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_SCHOOL);
-      const sessionName = await redisClient.hgetAsync(sessionCookieId, redisClient.SESSION_NAME);
+    const sessionExists = await redisClient.hexistsAsync(cookieId, redisClient.SESSION_ID);
+
+    if (sessionExists) {
+      const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+      const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
 
       const names = getNamesByReferer(req.headers.referer);
       const sessionsPage = names.schoolName && names.sessionName;
@@ -40,15 +42,16 @@ module.exports = (app) => {
       if (sessionsPage) {
         const sameSession = (names.schoolName === schoolName) && (names.sessionName === sessionName);
         if (!sameSession) {
-          res.clearCookie('sessionCookieId');
-          redisClient.delAsync(sessionCookieId);
+          redisClient.hdelAsync(cookieId, redisClient.SESSION_ID);
+          redisClient.hdelAsync(cookieId, redisClient.SESSION_SCHOOL);
+          redisClient.hdelAsync(cookieId, redisClient.SESSION_NAME);
         } else {
           validSession = true;
         }
       }
     }
 
-    const userIdExists = await redisClient.hexistsAsync(userCookieId, redisClient.USER_ID);
+    const userIdExists = await redisClient.hexistsAsync(cookieId, redisClient.USER_ID);
 
     return res.json({ validUser: Boolean(userIdExists), validSession });
   });
@@ -70,23 +73,23 @@ module.exports = (app) => {
       },
     });
 
-    const userCookieId = uuidv4();
-    res.cookie('userCookieId', userCookieId, {
+    const cookieId = uuidv4();
+    res.cookie('cookieId', cookieId, {
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 7,
       secure: false, // TODO: change to true
     });
-    await redisClient.hsetAsync(userCookieId, redisClient.USER_ID, user.get(Users.ID));
-    redisClient.expireAsync(userCookieId, 60 * 60 * 24 * 7);
+    await redisClient.hsetAsync(cookieId, redisClient.USER_ID, user.get(Users.ID));
+    redisClient.expireAsync(cookieId, 60 * 60 * 24 * 7);
 
     res.redirect('/find');
   });
 
   app.get('/api/signout', (req, res) => {
-    const { userCookieId } = req.cookies;
+    const { cookieId } = req.cookies;
 
-    res.clearCookie('userCookieId');
-    redisClient.delAsync(userCookieId);
+    res.clearCookie('cookieId');
+    redisClient.delAsync(cookieId);
 
     res.end();
   });
