@@ -37,7 +37,7 @@
               class="sign-out hover"
               type="minimal"
             >
-              <p v-on:click="onSignOut">
+              <p @click="onSignOut">
                 Sign Out
               </p>
             </ButtonComponent>

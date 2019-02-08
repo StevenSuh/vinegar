@@ -32,21 +32,21 @@ import Loader from '@/components/loader';
 const enterAnim = [
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.9)',
+    transform: 'translate(-50%, -50%) scale(0.8) translateZ(0)',
     pointerEvents: 'none',
     userSelect: 'none',
   },
   {
     opacity: 1,
-    transform: 'translate(-50%, -50%) scale(1)',
+    transform: 'translate(-50%, -50%) scale(1) translateZ(0)',
     pointerEvents: 'auto',
     userSelect: 'auto',
   },
 ];
 
 const enterTiming = {
-  delay: 300,
-  duration: 250,
+  delay: 400,
+  duration: 300,
   easing: 'cubic-bezier(0.8, 0, 0.2, 1.5)',
   fill: 'forwards',
 };
@@ -54,13 +54,13 @@ const enterTiming = {
 const leaveAnim = [
   {
     opacity: 1,
-    transform: 'translate(-50%, -50%) scale(1)',
+    transform: 'translate(-50%, -50%) scale(1) translateZ(0)',
     pointerEvents: 'none',
     userSelect: 'none',
   },
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.9)',
+    transform: 'translate(-50%, -50%) scale(0.8) translateZ(0)',
     pointerEvents: 'auto',
     userSelect: 'auto',
   },

@@ -1,5 +1,8 @@
 <template>
-  <div class="editor" v-on:scroll="onScrollEditor">
+  <div
+    class="editor"
+    @scroll="onScrollEditor"
+  >
     <div ref="toolbar">
       <div
         ref="open"

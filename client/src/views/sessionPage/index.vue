@@ -82,7 +82,8 @@ export default {
   },
   created() {
     connectErrorMiddlewareWithCallback(this, () => {
-      this.errorModal = true;
+      this.$router.push('/find');
+      // this.errorModal = true;
     });
   },
   mounted() {

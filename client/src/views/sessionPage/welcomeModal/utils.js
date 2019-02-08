@@ -50,8 +50,11 @@ export function onValidateWelcomeForm() {
 
   switch (this.welcomeStep) {
     case 0: {
-      if (!this.password || this.password.length < MIN_PASSWORD_LENGTH) {
+      if (!this.password) {
         this.passwordError = 'This field is required.';
+        hasError = true;
+      } else if (this.password.length < MIN_PASSWORD_LENGTH) {
+        this.passwordError = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`;
         hasError = true;
       } else {
         this.passwordError = '';

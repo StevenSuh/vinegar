@@ -73,7 +73,9 @@ module.exports = {
       }
 
       try {
-        const body = JSON.parse(Buffer.concat(chunks).toString('ascii') || '{}');
+        const body = JSON.parse(
+          Buffer.concat(chunks).toString('ascii') || '{}',
+        );
         res.body = body;
       } catch (e) {
         res.body = {};

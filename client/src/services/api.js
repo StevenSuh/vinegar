@@ -6,7 +6,7 @@ const apiTemplate = fn => async (...args) => {
     return await fn(...args);
   } catch (err) {
     handleErrorMiddleware(err);
-    throw new Error(`Error has occurred making an API call`);
+    throw new Error(err.response.data);
   }
 };
 

@@ -8,96 +8,99 @@
     </p>
     <div class="paddingBottom smaller" />
     <form @submit="onCreateFormSubmit">
-    <div class="form-wrapper paddingBottom smaller">
-      <h6 class="form-title">
-        Names
-      </h6>
-      <InputComponent
-        :error-message="schoolNameError"
-        id="school-name"
-        label="School"
-        name="schoolName"
-        placeholder="School Name"
-        type="text"
-        :value="schoolName"
-        @onChange="onSchoolNameChange"
-      />
-      <InputComponent
-        class="marginTop smaller"
-        :error-message="sessionNameError"
-        id="session-name"
-        label="Session"
-        name="sessionName"
-        placeholder="Session Name"
-        suggestion='Example: "CMPS 101"'
-        type="text"
-        :value="sessionName"
-        @onChange="onSessionNameChange"
-      />
-    </div>
-    <div class="form-wrapper paddingBottom paddingTop small">
-      <h6 class="form-title">
-        Duration
-      </h6>
-      <div class="input-divider">
+      <div class="form-wrapper paddingBottom smaller">
+        <h6 class="form-title">
+          Names
+        </h6>
         <InputComponent
-          autocomplete="off"
-          :error-message="hourError"
-          id="hour"
-          label="Hour"
-          maxLen="2"
-          name="hour"
-          placeholder="Hour"
+          id="school-name"
+          :error-message="schoolNameError"
+          label="School"
+          name="schoolName"
+          placeholder="School Name"
           type="text"
-          :value="hour"
-          :on-validate="onNumberValidate"
-          @onChange="onHourChange"
+          :value="schoolName"
+          @onChange="onSchoolNameChange"
         />
         <InputComponent
-          autocomplete="off"
-          :error-message="minuteError"
-          id="minute"
-          label="Minute"
-          maxLen="2"
-          name="minute"
-          placeholder="Minute"
+          id="session-name"
+          class="marginTop smaller"
+          :error-message="sessionNameError"
+          label="Session"
+          name="sessionName"
+          placeholder="Session Name"
+          suggestion="Example: &quot;CMPS 101&quot;"
           type="text"
-          :value="minute"
-          :on-validate="onNumberValidate"
-          @onChange="onMinuteChange"
+          :value="sessionName"
+          @onChange="onSessionNameChange"
         />
       </div>
-    </div>
-    <div class="form-wrapper paddingBottom paddingTop smaller">
-      <h6 class="form-title">
-        Password (Optional)
-      </h6>
-      <InputComponent
-        autocomplete="off"
-        :error-message="passwordError"
-        id="password"
-        label="Password"
-        name="password"
-        placeholder="Password"
-        type="password"
-        :value="password"
-        @onChange="onPasswordChange"
-      />
-    </div>
-    <div class="button-wrapper marginTop small">
-      <ButtonComponent type="primary" size="small">
-        <div class="create-button">
-          <p :class="isLoading ? 'hide' : ''">
-            Create
-          </p>
-          <Loader
-            v-if="isLoading"
-            class="loader"
-            color="white"
+      <div class="form-wrapper paddingBottom paddingTop small">
+        <h6 class="form-title">
+          Duration
+        </h6>
+        <div class="input-divider">
+          <InputComponent
+            id="hour"
+            autocomplete="off"
+            :error-message="hourError"
+            label="Hour"
+            max-len="2"
+            name="hour"
+            placeholder="Hour"
+            type="text"
+            :value="hour"
+            :on-validate="onNumberValidate"
+            @onChange="onHourChange"
+          />
+          <InputComponent
+            id="minute"
+            autocomplete="off"
+            :error-message="minuteError"
+            label="Minute"
+            max-len="2"
+            name="minute"
+            placeholder="Minute"
+            type="text"
+            :value="minute"
+            :on-validate="onNumberValidate"
+            @onChange="onMinuteChange"
           />
         </div>
-      </ButtonComponent>
-    </div>
+      </div>
+      <div class="form-wrapper paddingBottom paddingTop smaller">
+        <h6 class="form-title">
+          Password (Optional)
+        </h6>
+        <InputComponent
+          id="password"
+          autocomplete="off"
+          :error-message="passwordError"
+          label="Password"
+          name="password"
+          placeholder="Password"
+          type="password"
+          :value="password"
+          @onChange="onPasswordChange"
+        />
+      </div>
+      <div class="button-wrapper marginTop small">
+        <ButtonComponent
+          type="primary"
+          size="small"
+        >
+          <div class="create-button">
+            <p :class="isLoading ? 'hide' : ''">
+              Create
+            </p>
+            <Loader
+              v-if="isLoading"
+              class="loader"
+              color="white"
+            />
+          </div>
+        </ButtonComponent>
+      </div>
     </form>
   </div>
 </template>
@@ -107,6 +110,7 @@ import ButtonComponent from '@/components/button';
 import InputComponent from '@/components/input';
 import Loader from '@/components/loader';
 import { createSession } from '@/services/api';
+import { connectErrorMiddlewareWithCallback } from '@/services/middleware';
 
 import { MIN_PASSWORD_LENGTH } from '@/defs';
 
@@ -132,6 +136,11 @@ export default {
       sessionNameError: '',
     };
   },
+  created() {
+    connectErrorMiddlewareWithCallback(this, () => {
+      this.isLoading = false;
+    });
+  },
   methods: {
     async onCreateFormSubmit(e) {
       e.preventDefault();
@@ -144,7 +153,7 @@ export default {
       this.isLoading = true;
       const hour = parseInt(this.hour, 10);
       const minute = parseInt(this.minute, 10);
-      const duration = (hour * 60) + minute;
+      const duration = hour * 60 + minute;
 
       await createSession({
         duration,
@@ -157,31 +166,34 @@ export default {
       this.$router.push(`/session/${this.schoolName}/${this.sessionName}`);
     },
     onFormValidate() {
-      this.schoolNameError = !this.schoolName ?
-        'This field is required.' : '';
+      this.schoolNameError = !this.schoolName ? 'This field is required.' : '';
+      this.sessionNameError = !this.sessionName
+        ? 'This field is required.'
+        : '';
 
-      this.sessionNameError = !this.sessionName ?
-        'This field is required.' : '';
+      this.hourError = !Number.isNaN(this.hour)
+        ? ''
+        : 'This field must be a number.';
+      this.hourError = !this.hour ? 'This field is required' : '';
 
-      this.hourError = !this.hour ?
-        'This field is required.' :
-        !isNaN(this.hour) ? '' :
-          'This field must be a number.';
+      this.minuteError = !Number.isNaN(this.minute)
+        ? ''
+        : 'This field must be a number.';
+      this.minuteError = !this.minute ? 'This field is required.' : '';
 
-      this.minuteError = !this.minute ?
-        'This field is required.' :
-        !isNaN(this.minute) ? '' :
-          'This field must be a number.';
+      this.passwordError =
+        this.password.length < MIN_PASSWORD_LENGTH
+          ? `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`
+          : '';
+      this.passwordError = !this.password ? '' : this.passwordError;
 
-      this.passwordError = !this.password ?
-        '' : this.password.length < MIN_PASSWORD_LENGTH ?
-          `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.` : '';
-
-      return this.schoolNameError ||
+      return (
+        this.schoolNameError ||
         this.sessionNameError ||
         this.hourError ||
         this.minuteError ||
-        this.passwordError;
+        this.passwordError
+      );
     },
     onHourChange(value) {
       this.hour = value;
