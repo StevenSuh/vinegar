@@ -151,6 +151,9 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize);
   },
+  beforeCreate() {
+    document.title = 'Vinegar - App';
+  },
   created() {
     window.addEventListener('resize', this.onResize);
   },

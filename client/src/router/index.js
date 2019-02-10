@@ -6,23 +6,31 @@ import findPage from '@/views/findPage';
 import sessionPage from '@/views/sessionPage';
 
 Vue.use(Router);
-export default new Router({
+
+const router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/',
       name: 'landing',
       component: landingPage,
+      meta: { title: 'Vinegar' },
     },
     {
-      path: '/find',
+      path: '/app/find',
       name: 'find',
       component: findPage,
+      meta: { title: 'Vinegar - App' },
     },
     {
-      path: '/session/:school/:session',
+      path: '/app/session/:school/:session',
       name: 'session',
       component: sessionPage,
+      meta: { title: 'Vinegar - :school/:session'},
+    },
+    {
+      path: '/app',
+      redirect: '/app/find',
     },
     {
       path: '*',
@@ -30,3 +38,5 @@ export default new Router({
     },
   ],
 });
+
+export default router;

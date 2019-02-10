@@ -78,13 +78,13 @@ export default {
       }
     },
     onClickItemFactory({ schoolName, sessionName }) {
-      this.$router.push(`/session/${schoolName}/${sessionName}`);
+      this.$router.push(`/app/session/${schoolName}/${sessionName}`);
     },
     onKeyDown(e) {
       if (e.target.id === this.inputId) {
         if (e.keyCode === 13) {
           const { schoolName, sessionName } = this.data[this.resultIndex];
-          this.$router.push(`/session/${schoolName}/${sessionName}`);
+          this.$router.push(`/app/session/${schoolName}/${sessionName}`);
         }
         if (e.keyCode === 38) {
           this.resultIndex = Math.max(this.resultIndex - 1, 0);

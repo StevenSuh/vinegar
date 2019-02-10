@@ -23,12 +23,319 @@
     <meta name="msapplication-TileImage" content="<%= BASE_URL %>icons/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <title>Vinegar</title>
+    <meta name="description" content="Take notes in a collaborative manner.">
+    <meta name="keywords" content="note-taking, note, productivity, vinegar, divide, web, web app, session, student, school">
+    <!-- facebook -->
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="Vinegar">
+    <!-- <meta property="og:url" content="https://vinegar/"> -->
+    <meta property="og:image" content="<%= BASE_URL %>icons/icon.png">
+    <meta property="og:site_name" content="Vinegar">
+    <meta property="og:description" content="Take notes in a collaborative manner.">
   </head>
   <body>
-    <noscript>
-      <strong>We're sorry but Vinegar doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <div id="content" style="opacity: 0;">
+      <div id="landing" class="landing">
+        <div class="container paddingTop">
+          <nav class="navbar">
+            <h2 class="nav-header">
+              Vinegar
+            </h2>
+            <div class="nav-items">
+              <button class="button minimal marginRight small hover">
+                <p id="about">
+                  About
+                </p>
+              </button>
+              <button class="button primary">
+                <span>
+                  <a id="login" href="/app/find" style="opacity: 0; pointer-events: none;">
+                    Login
+                  </a>
+                  <span class="loader-absolute">
+                      <span id="loader" class="loader white"></span>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </nav>
+        </div>
+        <div class="content marginTop small">
+          <img
+            class="left"
+            id="leftImage"
+            alt="landing asset left"
+          >
+          <div class="content-message">
+            <h1 class="content-header">
+              Divide and Conquer.
+            </h1>
+            <p class="content-p marginTop marginBottom">
+              Take notes in a collaborative manner.
+            </p>
+            <button class="button primary large">
+              <a href="/app/find">
+                Join Your Session
+              </a>
+            </button>
+          </div>
+          <img
+            class="right"
+            id="rightImage"
+            alt="landing asset right"
+          >
+        </div>
+      </div>
+      <div id="how" class="section-how paddingTop paddingBottom small">
+        <div class="container paddingTop paddingBottom">
+          <h2 class="how-header">
+            How to Use
+          </h2>
+          <div class="how-items marginTop marginBottom large">
+            <div class="how-item">
+              <div class="how-item-icon-wrapper">
+                <img
+                  class="how-item-icon"
+                  id="findSessionImage"
+                  alt="find session asset"
+                >
+              </div>
+              <p class="how-item-caption marginTop small">
+                Create or join a session
+              </p>
+            </div>
+            <div class="how-item">
+              <div class="how-item-icon-wrapper">
+                <img
+                  class="how-item-icon"
+                  id="alarmClockImage"
+                  alt="alarm clock asset"
+                >
+              </div>
+              <p class="how-item-caption marginTop small">
+                Timer starts when everyone joins
+              </p>
+            </div>
+            <div class="how-item">
+              <div class="how-item-icon-wrapper">
+                <img
+                  class="how-item-icon"
+                  id="exclamationImage"
+                  alt="exclamation asset"
+                >
+              </div>
+              <p class="how-item-caption marginTop small">
+                Begin taking notes when notified
+              </p>
+            </div>
+            <div class="how-item">
+              <div class="how-item-icon-wrapper">
+                <img
+                  class="how-item-icon"
+                  id="mugImage"
+                  alt="mug asset"
+                >
+              </div>
+              <p class="how-item-caption marginTop small">
+                Meanwhile, enjoy doing something else!
+              </p>
+            </div>
+          </div>
+          <button class="how-start button primary medium">
+            <a href="/app/find">
+              Get Started
+            </a>
+          </button>
+        </div>
+      </div>
+      <div class="section-team paddingTop paddingBottom">
+        <div class="container paddingTop paddingBottom">
+          <h2 class="team-header marginBottom">
+            The Team
+          </h2>
+          <div class="team-items marginBottom large">
+            <div class="team-item">
+              <img
+                class="team-item-icon"
+                id="jeffreImage"
+                alt="jeffre asset"
+              >
+              <p class="team-item-name">
+                Jeffre
+              </p>
+              <p class="team-item-caption">
+                Skater &#38; Bass Player
+              </p>
+              <div class="team-item-links">
+                <a
+                  href="https://www.linkedin.com/in/jeffreyyang3"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="linkedinImage"
+                    alt="linkedin square"
+                  >
+                </a>
+                <a
+                  href="https://github.com/jeffreyyang3"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="githubImage"
+                    alt="github"
+                  >
+                </a>
+                <a
+                  href="https://jeffreyyang3.github.io"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="heartImage"
+                    alt="heart"
+                  >
+                </a>
+              </div>
+            </div>
+            <div class="team-item">
+              <img
+                class="team-item-icon"
+                id="lyanaImage"
+                alt="lyana asset"
+              >
+              <p class="team-item-name">
+                Lyana
+              </p>
+              <p class="team-item-caption">
+                Dog &#38; Roomba Lover
+              </p>
+              <div class="team-item-links">
+                <a
+                  href="https://www.linkedin.com/in/lyanna-ho"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="linkedinImage1"
+                    alt="linkedin square"
+                  >
+                </a>
+                <a
+                  href="https://github.com/lyannerz"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="githubImage1"
+                    alt="github"
+                  >
+                </a>
+                <a
+                  href="https://lyannerz.github.io"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="heartImage1"
+                    alt="heart"
+                  >
+                </a>
+              </div>
+            </div>
+            <div class="team-item">
+              <img
+                class="team-item-icon"
+                id="steveImage"
+                alt="steve asset"
+              >
+              <p class="team-item-name">
+                Steve
+              </p>
+              <p class="team-item-caption">
+                Code Monkey &#38; GTA Gamer
+              </p>
+              <div class="team-item-links">
+                <a
+                  href="https://www.linkedin.com/in/steven-suh"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="linkedinImage2"
+                    alt="linkedin square"
+                  >
+                </a>
+                <a
+                  href="https://github.com/stevensuh"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="githubImage2"
+                    alt="github"
+                  >
+                </a>
+                <a
+                  href="https://stevensuh.me"
+                  target="_blank"
+                >
+                  <img
+                    class="team-item-links-img hover"
+                    id="heartImage2"
+                    alt="heart"
+                  >
+                </a>
+              </div>
+            </div>
+          </div>
+          <img
+            class="snoo paddingTop large"
+            id="snooImage"
+            alt="snoo"
+          >
+          <button class="team-start marginTop small button large primary">
+            <a href="/app/find">
+              Get Started
+            </a>
+          </button>
+        </div>
+        <img
+          class="squiggles"
+          id="squigglesImage"
+          alt="squiggles"
+        >
+        <img
+          class="dots"
+          id="dotsImage"
+          alt="dots"
+        >
+        <div class="paddingBottom small"></div>
+      </div>
+      <div class="footer paddingTop paddingBottom large">
+        <div class="footer-items container">
+          <a
+            class="hover"
+            href="https://github.com/stevensuh/vinegar"
+            target="_blank"
+          >
+            GitHub Repo
+          </a>
+          <p>
+            Made with
+            <span>
+              <img
+                class="footer-heart"
+                id="heartImage3"
+                alt="heart"
+              >
+            </span>
+            at Westside, Santa Cruz
+          </p>
+        </div>
+      </div>
+    </div>
+  <!-- built files will be auto injected -->
   </body>
 </html>

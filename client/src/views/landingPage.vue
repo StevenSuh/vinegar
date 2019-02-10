@@ -18,15 +18,15 @@
               </ButtonComponent>
               <ButtonComponent type="primary">
                 <a
-                  v-if="signinUrlLoaded && signinUrl !== '/find'"
+                  v-if="signinUrlLoaded && signinUrl !== '/app/find'"
                   :href="signinUrl"
                 >
                   Login
                 </a>
                 <router-link
-                  v-else-if="signinUrlLoaded && signinUrl === '/find'"
+                  v-else-if="signinUrlLoaded && signinUrl === '/app/find'"
                   tag="a"
-                  to="/find"
+                  to="/app/find"
                 >
                   Login
                 </router-link>
@@ -61,7 +61,7 @@
             >
               <router-link
                 tag="a"
-                to="/find"
+                to="/app/find"
               >
                 Join Your Session
               </router-link>
@@ -139,7 +139,7 @@
           >
             <router-link
               tag="a"
-              to="/find"
+              to="/app/find"
             >
               Get Started
             </router-link>
@@ -300,7 +300,7 @@
           >
             <router-link
               tag="a"
-              to="/find"
+              to="/app/find"
             >
               Get Started
             </router-link>
@@ -365,6 +365,8 @@ import snooImage from '@/assets/snoo.png';
 import squigglesImage from '@/assets/squiggles.png';
 import steveImage from '@/assets/steve.png';
 
+import '@/landing/style.css';
+
 export default {
   name: 'IntroPage',
   components: {
@@ -396,6 +398,9 @@ export default {
       steveImage,
     };
   },
+  beforeCreate() {
+    document.title = 'Vinegar';
+  },
   async mounted() {
     await this.onInit();
     this.show = true;
@@ -419,324 +424,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.landing {
-  display: flex;
-  flex-direction: column;
-  height: 96vh;
-  min-height: 750px;
-  overflow: hidden;
-  width: 100%;
-}
-
-.navbar {
-  align-items: baseline;
-  display: flex;
-  justify-content: space-between;
-}
-
-.nav-header {
-  color: var(--main-font-color);
-  font-size: 38px;
-  font-weight: 500;
-}
-
-.oauth-placeholder::before {
-  content: 'Login';
-  opacity: 0;
-}
-
-.loader-absolute {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  top: 50%;
-}
-
-.content {
-  align-items: flex-start;
-  display: flex;
-  flex: 1;
-  justify-content: space-between;
-}
-
-.content > .left,
-.content > .right {
-  flex: 0;
-  height: 100%;
-  object-fit: contain;
-  position: absolute;
-  width: auto;
-}
-
-.content > .left {
-  left: 0;
-  object-position: left;
-}
-
-.content > .right {
-  object-position: right;
-  right: 0;
-  z-index: -1;
-}
-
-.content-message {
-  margin: 0 auto;
-  padding-top: 12%;
-  text-align: center;
-}
-
-.content-header {
-  font-size: 68px;
-  font-weight: 500;
-}
-
-.content-p {
-  font-size: 18px;
-}
-
-.section-how {
-  background-color: var(--gray-bg-color);
-}
-
-.how-header {
-  color: var(--main-font-color);
-  font-size: 36px;
-  font-weight: 500;
-  text-align: center;
-}
-
-.how-items {
-  align-items: flex-start;
-  display: flex;
-  justify-content: space-between;
-}
-
-.how-item {
-  width: 200px;
-}
-
-.how-item-icon-wrapper {
-  background-color: var(--white-bg-color);
-  border-radius: 50%;
-  height: 150px;
-  margin: auto;
-  width: 150px;
-}
-
-.how-item-icon {
-  object-fit: contain;
-  height: 60%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: auto;
-}
-
-.how-item-caption,
-.team-item-caption,
-.team-item-name {
-  font-size: 18px;
-  line-height: 1.4em;
-  text-align: center;
-}
-
-.how-start,
-.team-start {
-  display: block;
-  margin: auto;
-}
-
-.team-header {
-  font-size: 36px;
-  font-weight: 500;
-  text-align: center;
-}
-
-.team-items {
-  align-items: flex-start;
-  display: flex;
-  justify-content: space-around;
-}
-
-.team-item {
-  width: 230px;
-}
-
-.team-item-icon {
-  object-fit: contain;
-  width: 100%;
-}
-
-.team-item-name {
-  color: var(--main-font-color);
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.team-item-links {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
-.team-item-links-img {
-  height: 30px;
-  margin: 8px 6px;
-  object-fit: contain;
-  width: 30px;
-}
-
-.snoo {
-  display: block;
-  margin: auto;
-  transform: translateX(16px);
-  width: 203px;
-}
-
-.squiggles,
-.dots {
-  position: absolute;
-}
-
-.squiggles {
-  left: 0;
-  top: 0;
-  transform: scale(0.4) translateY(-180px);
-  transform-origin: 0 0;
-}
-
-.dots {
-  bottom: 0;
-  right: 0;
-  transform: scale(0.35) translateY(-100px);
-  transform-origin: 100% 100%;
-}
-
-.footer {
-  background-color: var(--gray-bg-color);
-  color: var(--gray-font-color);
-  font-size: 16px;
-}
-
-.footer-items {
-  align-content: center;
-  display: flex;
-  justify-content: space-between;
-}
-
-.footer-heart {
-  height: 22px;
-  object-fit: contain;
-  vertical-align: bottom;
-  width: 22px;
-}
-
-@media (max-width: 416px) {
-  .landing {
-    height: 73vh;
-    min-height: 650px;
-  }
-
-  .nav-header {
-    font-size: 32px;
-  }
-
-  .nav-header,
-  .how-item {
-    margin: auto;
-  }
-
-  .nav-items {
-    display: none;
-  }
-
-  .content > .left {
-    transform: scale(0.75) translateX(-20px);
-    transform-origin: 0 100%;
-  }
-
-  .content > .right {
-    transform: scale(0.75) translateX(30px);
-    transform-origin: 100% 100%;
-  }
-
-  .content-header {
-    font-size: 48px;
-  }
-
-  .content-p,
-  .how-item-caption,
-  .team-item-caption,
-  .footer {
-    font-size: 14px;
-  }
-
-  .how-header,
-  .team-header {
-    font-size: 28px;
-  }
-
-  .how-items,
-  .team-items,
-  .footer-items {
-    flex-direction: column;
-  }
-
-  .how-items {
-    margin-bottom: 30px;
-    margin-top: 30px;
-  }
-
-  .how-item {
-    width: 180px;
-    margin: 30px auto;
-  }
-
-  .how-item-icon-wrapper {
-    height: 120px;
-    width: 120px;
-  }
-
-  .team-header {
-    margin-bottom: 0;
-  }
-
-  .team-items {
-    margin-top: 0;
-  }
-
-  .team-item {
-    width: 200px;
-    margin: 10px auto;
-  }
-
-  .team-item-name {
-    font-size: 18px;
-  }
-
-  .squiggles,
-  .dots {
-    display: none;
-  }
-
-  .snoo {
-    padding-top: 20px;
-  }
-
-  .footer-items {
-    text-align: center;
-  }
-
-  .footer-items > p {
-    margin-top: 20px;
-  }
-
-  .footer-heart {
-    height: 20px;
-    width: 20px;
-  }
-}
-</style>

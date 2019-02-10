@@ -4,7 +4,7 @@ const pathToRegexp = require('path-to-regexp');
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 
-const sessionRegex = pathToRegexp('/session/:school/:session');
+const sessionRegex = pathToRegexp('/app/session/:school/:session');
 
 const requireUserAuth = async (req, res, next = Function) => {
   const { cookieId } = req.cookies;

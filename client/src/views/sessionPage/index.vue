@@ -14,6 +14,10 @@ export default {
   },
   beforeCreate() {
     Vue.use(new VueSocketIO({ connection: '/' }));
+
+    const school = this.$route.params.school;
+    const session = this.$route.params.session;
+    document.title = `Vinegar - ${school}/${session}`;
   },
 }
 </script>

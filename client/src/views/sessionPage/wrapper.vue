@@ -8,7 +8,7 @@
       <router-link
         class="back-button-wrapper hover"
         tag="a"
-        to="/find"
+        to="/app/find"
       >
         <img
           class="back-button"
@@ -49,10 +49,7 @@ import Chat from '@/views/sessionPage/chat';
 import Editor from '@/views/sessionPage/editor';
 import Welcome from '@/views/sessionPage/welcomeModal';
 
-import {
-  connectErrorMiddlewareWithCallback,
-  handleErrorMiddleware,
-} from '@/services/middleware';
+import { handleErrorMiddleware } from '@/services/middleware';
 
 import backImage from '@/assets/back.png';
 

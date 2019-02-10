@@ -168,7 +168,7 @@ export default {
       });
       this.isLoading = false;
 
-      this.$router.push(`/session/${this.schoolName}/${this.sessionName}`);
+      this.$router.push(`/app/session/${this.schoolName}/${this.sessionName}`);
     },
     onFormValidate() {
       if (this.schoolName) {

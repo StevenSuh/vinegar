@@ -43,6 +43,7 @@ export default {
   display: block;
   height: 24px;
   width: 24px;
+  will-change: transform;
 }
 
 .loader.medium {

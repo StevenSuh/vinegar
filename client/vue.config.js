@@ -1,18 +1,22 @@
-// reference: https://cli.vuejs.org/config/#baseurl
 module.exports = {
-  /**
-   * This app should be a multi-page because:
-   *  - landing page ('thevinegar.com') should be SEO friendly
-   *    (vue is not SEO friendly since it creates HTML/CSS after vue.js is loaded)
-   */
-  // pages: {
-  //   index: {
-  //     entry: 'src/main.js',
-  //     template: 'public/app.html',
-  //     filename: 'app.html',
-  //   },
-  // },
+  pages: {
+    app: {
+      entry: 'src/main.js',
+      template: 'public/app.html',
+      filename: './app/index.html',
+    },
+    index: {
+      entry: 'src/landing/main.js',
+      template: 'public/index.html',
+      filename: 'index.html',
+    },
+  },
   devServer: {
     disableHostCheck: true,
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/app/, to: '/app/index.html' },
+      ],
+    },
   },
 };

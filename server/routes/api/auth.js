@@ -20,7 +20,7 @@ module.exports = (app) => {
     if (!exists) {
       return res.json({ signinUrl: urlGoogle() });
     }
-    return res.json({ signinUrl: '/find' });
+    return res.json({ signinUrl: '/app/find' });
   });
 
   app.get('/api/auth/status', async (req, res) => {
@@ -82,7 +82,7 @@ module.exports = (app) => {
     await redisClient.hsetAsync(cookieId, redisClient.USER_ID, user.get(Users.ID));
     redisClient.expireAsync(cookieId, 60 * 60 * 24 * 7);
 
-    res.redirect('/find');
+    res.redirect('/app/find');
   });
 
   app.get('/api/signout', (req, res) => {

@@ -15,7 +15,7 @@ const redisClient = require('services/redis')();
 const initSocketEditor = require('./editor');
 const initSocketChat = require('./chat');
 
-const sessionRegex = pathToRegexp('/session/:school/:session');
+const sessionRegex = pathToRegexp('/app/session/:school/:session');
 
 // helpers
 const getSchoolAndSession = (socket) => {
