@@ -14,9 +14,7 @@ module.exports = {
   devServer: {
     disableHostCheck: true,
     historyApiFallback: {
-      rewrites: [
-        { from: /^\/app/, to: '/app/index.html' },
-      ],
+      rewrites: [{ from: /^\/app/, to: '/app/index.html' }],
     },
   },
 };

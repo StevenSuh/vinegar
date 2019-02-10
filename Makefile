@@ -11,9 +11,9 @@ serve:
 serve-build:
 	docker-compose up --build
 serve-no-cache:
-	docker-compose down && make serve 
+	docker-compose build --no-cache && make serve
 serve-reset:
-	docker-compose down && docker-compose rm --all && docker-compose pull && docker-compose up --build
+	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose up --build
 reset-redis:
 	docker exec -it $(shell docker ps -qf "name=redis") redis-cli FLUSHALL
 delete-psql:

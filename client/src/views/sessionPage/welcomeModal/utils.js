@@ -34,7 +34,7 @@ export async function onInit() {
       return;
     }
 
-    return this.onClose({ color, name });
+    return this.onClose();
   }
 
   const { hasPassword } = await getSessionPasswordStatus();
@@ -109,7 +109,7 @@ export async function onWelcomeFormSubmit(e) {
       // check to see if user already has a color/name
       const { color, name } = await getUserSessionInfo();
       if (color && name) {
-        this.onClose({ color, name });
+        this.onClose();
         break;
       }
 
@@ -122,15 +122,13 @@ export async function onWelcomeFormSubmit(e) {
     case 1:
     default: {
       this.isLoading = true;
-      const { color } = await enterSession({
+      await enterSession({
         name: this.name,
         phone: this.phone,
       });
 
-      // TODO: get session info
-
       this.isLoading = false;
-      return this.onClose({ color, name: this.name });
+      return this.onClose();
     }
   }
 }

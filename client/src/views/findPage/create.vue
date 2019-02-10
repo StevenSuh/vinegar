@@ -112,10 +112,7 @@ import Loader from '@/components/loader';
 import { createSession } from '@/services/api';
 import { connectErrorMiddlewareWithCallback } from '@/services/middleware';
 
-import {
-  ALLOWED_CHARACTERS,
-  MIN_PASSWORD_LENGTH,
-} from '@/defs';
+import { ALLOWED_CHARACTERS, MIN_PASSWORD_LENGTH } from '@/defs';
 
 const regex = new RegExp(`^[${ALLOWED_CHARACTERS.join('')}]+$`);
 
@@ -172,36 +169,46 @@ export default {
     },
     onFormValidate() {
       if (this.schoolName) {
-        this.schoolNameError = regex.test(this.schoolName) ? '' :
-          `You may only use characters from this set: ${ALLOWED_CHARACTERS.join(', ')}.`;
+        this.schoolNameError = regex.test(this.schoolName)
+          ? ''
+          : `You may only use characters from this set: ${ALLOWED_CHARACTERS.join(
+              ', ',
+            )}.`;
       } else {
         this.schoolNameError = 'This field is required.';
       }
 
       if (this.sessionName) {
-        this.sessionNameError = regex.test(this.sessionName) ? '' :
-          `You may only use characters from this set: ${ALLOWED_CHARACTERS.join(', ')}.`;
+        this.sessionNameError = regex.test(this.sessionName)
+          ? ''
+          : `You may only use characters from this set: ${ALLOWED_CHARACTERS.join(
+              ', ',
+            )}.`;
       } else {
         this.sessionNameError = 'This field is required.';
       }
 
       if (this.hour) {
-        this.hourError = !Number.isNaN(this.hour) ? '' :
-          'This field must be a number.';
+        this.hourError = !Number.isNaN(this.hour)
+          ? ''
+          : 'This field must be a number.';
       } else {
         this.hourError = 'This field is required.';
       }
 
       if (this.minute) {
-        this.minuteError = !Number.isNaN(this.minute) ? '' :
-          'This field must be a number.';
+        this.minuteError = !Number.isNaN(this.minute)
+          ? ''
+          : 'This field must be a number.';
       } else {
         this.minuteError = 'This field is required.';
       }
 
       if (this.password) {
-        this.passwordError = (this.password.length >= MIN_PASSWORD_LENGTH) ? '' :
-          `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`;
+        this.passwordError =
+          this.password.length >= MIN_PASSWORD_LENGTH
+            ? ''
+            : `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`;
       } else {
         this.passwordError = '';
       }

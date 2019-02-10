@@ -9,15 +9,23 @@ module.exports = (io, socket, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const userId = user.get(Users.ID);
 
-  socket.on('onChatSend', async (data) => {
+  const color = user.get(Users.COLOR);
+  const name = user.get(Users.NAME);
+
+  socket.on('onChatSend', (data) => {
     io.in(sessionId).emit('onChatSend', {
       ...data,
+      color,
+      name,
+      date: Date.now(),
       type: Chats.TYPE_USER,
       userId,
     });
 
-    await Chats.create({
-      message: data.message,
+    Chats.create({
+      color,
+      message: data.msg,
+      name,
       sessionId,
       type: Chats.TYPE_USER,
       userId,

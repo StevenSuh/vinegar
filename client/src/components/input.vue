@@ -100,6 +100,11 @@ export default {
       searchTimeout: null,
     };
   },
+  watch: {
+    value(val) {
+      this.$refs.input.value = val;
+    },
+  },
   beforeDestroy() {
     clearTimeout(this.searchTimeout);
   },
@@ -136,11 +141,6 @@ export default {
         this.onClearSearch();
       }
     },
-  },
-  watch: {
-    value(val) {
-      this.$refs.input.value = val;
-    }
   },
 };
 </script>

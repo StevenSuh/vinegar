@@ -68,7 +68,6 @@ export default {
       session: this.$route.params.session,
       show: false,
       isWelcome: true,
-      name: null,
 
       // assets
       backImage,
@@ -79,12 +78,11 @@ export default {
     this.show = true;
   },
   methods: {
-    onCloseIsWelcome(data) {
+    onCloseIsWelcome() {
       this.isWelcome = false;
       setTimeout(() => {
         this.hide = false;
-        this.name = data.name;
-        this.$socket.emit('socket:onEnter', data);
+        this.$socket.emit('socket:onEnter');
       }, 200);
     },
     onShow() {
@@ -145,21 +143,21 @@ export default {
 }
 
 .left {
-  padding-right: 20px;
-  min-width: 533px;
-  width: 65%;
+  padding-right: 25px;
+  min-width: 492px;
+  width: 60%;
 }
 
 .right {
-  padding-left: 20px;
-  min-width: 287px;
-  width: 35%;
+  padding-left: 25px;
+  min-width: 328px;
+  width: 40%;
 }
 
 .editor-wrapper {
   height: 70%;
   width: 100%;
-  min-height: 500px;
+  min-height: 450px;
 }
 
 @media (max-width: 1000px) {
@@ -186,6 +184,10 @@ export default {
     padding-left: 0;
     padding-right: 0;
     width: 100%;
+  }
+
+  .right {
+    margin-top: 20px;
   }
 }
 </style>

@@ -8,7 +8,7 @@ module.exports = (dbClient) => {
     Chats = dbClient.define('chats', {
       message: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       id: {
         autoIncrement: true,

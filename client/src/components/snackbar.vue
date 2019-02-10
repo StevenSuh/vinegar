@@ -1,18 +1,21 @@
 <template>
   <div class="snackbar-wrapper">
-    <transition-group name="snackbar-transition" tag="div">
+    <transition-group
+      name="snackbar-transition"
+      tag="div"
+    >
       <div
-        class="snackbar-item"
         v-for="item in items"
         :key="item.id"
+        class="snackbar-item"
       >
         <p class="snackbar-msg">
           {{ item.msg }}
         </p>
         <span
           class="close hover"
+          @click="onClickClose(item.id);"
           v-html="CloseIcon"
-          @click="onClickClose(item.id)"
         />
       </div>
     </transition-group>
@@ -35,7 +38,7 @@ export default {
     };
   },
   created() {
-    connectErrorMiddlewareWithCallback(this, (msg) => {
+    connectErrorMiddlewareWithCallback(this, msg => {
       const id = Date.now();
       this.items.push({ id, msg });
 
@@ -53,7 +56,7 @@ export default {
       delete this.timeouts[id];
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -77,6 +80,12 @@ export default {
   padding: 15px 24px;
   width: 300px;
   will-change: opacity, transform;
+}
+
+@media (min-width: 1440px) {
+  .snackbar-item {
+    width: 400px;
+  }
 }
 
 .close {
@@ -112,4 +121,3 @@ export default {
   stroke: var(--main-font-color);
 }
 </style>
-

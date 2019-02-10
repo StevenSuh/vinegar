@@ -85,7 +85,18 @@ module.exports = (app) => {
         return res.status(400).send('Form has an error.');
       }
 
-      const encryptedPw = await createPassword(password);
+      const defaults = {
+        active: true,
+        duration,
+        ownerId: req.userId,
+        schoolName,
+        sessionName,
+      };
+
+      if (password) {
+        const encryptedPw = await createPassword(password);
+        defaults.password = encryptedPw;
+      }
 
       const [session, created] = await Sessions.findOrCreate({
         where: {
@@ -93,18 +104,14 @@ module.exports = (app) => {
           schoolName,
           sessionName,
         },
-        defaults: {
-          active: true,
-          duration,
-          ownerId: req.userId,
-          password: encryptedPw,
-          schoolName,
-          sessionName,
-        },
+        defaults,
       });
 
-      if (!session || !created) {
+      if (!session) {
         return res.status(400).send('Session failed to create.');
+      }
+      if (!created) {
+        return res.status(400).send('Session already exists. Try a different name.');
       }
       return res.end();
     },
@@ -208,7 +215,7 @@ module.exports = (app) => {
         return res.status(400).send('Invalid user.');
       }
 
-      return res.json({ color });
+      return res.end();
     },
   );
 };

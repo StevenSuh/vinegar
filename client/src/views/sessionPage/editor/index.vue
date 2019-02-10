@@ -158,7 +158,7 @@ export default {
   border: 1px solid #ccc;
   border-radius: 5px;
   height: 100%;
-  min-height: 500px;
+  min-height: 450px;
   overflow-y: auto;
   width: 100%;
 }

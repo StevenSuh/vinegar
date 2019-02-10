@@ -7,6 +7,7 @@ const SocketIo = require('socket.io');
 const SocketRedis = require('socket.io-redis');
 
 const dbClient = require('db')();
+const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
@@ -39,13 +40,26 @@ const getCookieIds = (socket) => {
   };
 };
 
-const socketInit = (io, socket, session, user) => {
+const socketInit = (io, socket, session, user, chats) => {
   socket.join(session.id);
   initSocketChat(io, socket, session, user);
   initSocketEditor(io, socket, session, user);
 
+  const msgs = chats.rows.map(chat => {
+    const { color, createdAt, name, message, type } = chat.get();
+    return {
+      color,
+      date: createdAt,
+      name,
+      msg: message,
+      type,
+    };
+  }).reverse();
+
   socket.emit('socket:onEnter', {
     content: session.get(Sessions.CONTENT),
+    hasMore: chats.count > 10,
+    msgs,
   });
 };
 
@@ -64,15 +78,20 @@ module.exports = (app) => {
         return socket.emit('socket:exception', { errorMessage: 'Invalid authentication.' });
       }
 
-      socket.on('socket:onEnter', async ({ color, name }) => {
+      socket.on('socket:onEnter', async () => {
         const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
         const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
         const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
         const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
 
+        const chatsPromise = Chats.findAndCountAll({
+          limit: 10,
+          order: [[Chats.CREATED_AT, 'DESC']],
+          where: { sessionId },
+        });
         const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
         const userPromise = Users.findOne({ where: { id: userId }});
-        const [session, user] = await Promise.all([sessionPromise, userPromise]);
+        const [chats, session, user] = await Promise.all([chatsPromise, sessionPromise, userPromise]);
 
         if (!session || !user) {
           return socket.emit('socket:exception', { errorMessage: 'Invalid session' });
@@ -81,10 +100,7 @@ module.exports = (app) => {
         if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
           return socket.emit('socket:exception', { errorMessage: 'You are not authenticated with the right session.' });
         }
-
-        user.color = color;
-        user.name = name;
-        return socketInit(io, socket, session, user);
+        return socketInit(io, socket, session, user, chats);
       });
       return null;
     });
