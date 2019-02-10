@@ -55,37 +55,39 @@ module.exports = (app) => {
   const io = SocketIo(httpServer);
   io.adapter(SocketRedis({ host: redisHost, port: redisPort }));
 
-  io.on('connection', async (socket) => {
+  io.on('connection', (socket) => {
     const names = getSchoolAndSession(socket);
     const { cookieId } = getCookieIds(socket);
 
-    if (!cookieId || !names.schoolName || !names.sessionName) {
-      return socket.emit('exception', { errorMessage: 'Invalid authentication.' });
-    }
-
-    socket.on('socket:onEnter', async ({ color, name }) => {
-      const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
-      const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
-      const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
-      const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
-
-      const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
-      const userPromise = Users.findOne({ where: { id: userId }});
-      const [session, user] = await Promise.all([sessionPromise, userPromise]);
-
-      if (!session || !user) {
-        return socket.emit('exception', { errorMessage: 'Invalid session' });
+    socket.on('socket:init', async () => {
+      if (!cookieId || !names.schoolName || !names.sessionName) {
+        return socket.emit('socket:exception', { errorMessage: 'Invalid authentication.' });
       }
 
-      if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
-        return socket.emit('exception', { errorMessage: 'You are not authenticated with the right session.' });
-      }
+      socket.on('socket:onEnter', async ({ color, name }) => {
+        const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
+        const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
+        const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
+        const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
 
-      user.color = color;
-      user.name = name;
-      return socketInit(io, socket, session, user);
+        const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
+        const userPromise = Users.findOne({ where: { id: userId }});
+        const [session, user] = await Promise.all([sessionPromise, userPromise]);
+
+        if (!session || !user) {
+          return socket.emit('socket:exception', { errorMessage: 'Invalid session' });
+        }
+
+        if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
+          return socket.emit('socket:exception', { errorMessage: 'You are not authenticated with the right session.' });
+        }
+
+        user.color = color;
+        user.name = name;
+        return socketInit(io, socket, session, user);
+      });
+      return null;
     });
-    return null;
   });
 
   return httpServer;

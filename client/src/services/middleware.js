@@ -22,8 +22,8 @@ export const disconnectErrorMiddleware = (component, callback) => {
   }
 };
 
-export const handleErrorMiddleware = (err) => {
+export const handleErrorMiddleware = (err, type) => {
   errorMiddleware.forEach((component) => {
-    component.$emit('onError', err);
+    component.$emit('onError', err, type);
   });
 };

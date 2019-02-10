@@ -1,0 +1,115 @@
+<template>
+  <div class="snackbar-wrapper">
+    <transition-group name="snackbar-transition" tag="div">
+      <div
+        class="snackbar-item"
+        v-for="item in items"
+        :key="item.id"
+      >
+        <p class="snackbar-msg">
+          {{ item.msg }}
+        </p>
+        <span
+          class="close hover"
+          v-html="CloseIcon"
+          @click="onClickClose(item.id)"
+        />
+      </div>
+    </transition-group>
+  </div>
+</template>
+
+<script>
+import CloseIcon from '!raw-loader!@/assets/x.svg';
+import { connectErrorMiddlewareWithCallback } from '@/services/middleware';
+
+export default {
+  data() {
+    return {
+      // state
+      items: [],
+      timeouts: {},
+
+      // assets
+      CloseIcon,
+    };
+  },
+  created() {
+    connectErrorMiddlewareWithCallback(this, (msg) => {
+      const id = Date.now();
+      this.items.push({ id, msg });
+
+      this.timeouts[id] = setTimeout(this.closeItem, 5000, id);
+    });
+  },
+  methods: {
+    onClickClose(id) {
+      clearTimeout(this.timeouts[id]);
+      this.closeItem(id);
+    },
+    closeItem(id) {
+      const index = this.items.find(item => item.id === id);
+      this.items.splice(index, 1);
+      delete this.timeouts[id];
+    },
+  },
+}
+</script>
+
+<style scoped>
+.snackbar-wrapper {
+  bottom: 20px;
+  position: fixed;
+  right: 25px;
+}
+
+.snackbar-item {
+  align-items: center;
+  background-color: var(--black-font-color);
+  border-radius: 8px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+  color: var(--main-font-color);
+  display: flex;
+  font-size: 15px;
+  justify-content: space-between;
+  line-height: 1.5em;
+  margin-top: 15px;
+  padding: 15px 24px;
+  width: 300px;
+  will-change: opacity, transform;
+}
+
+.close {
+  cursor: pointer;
+  height: 20px;
+  margin-left: 20px;
+  width: 20px;
+}
+</style>
+
+<style>
+.snackbar-transition-enter-active,
+.snackbar-transition-leave-active {
+  transition: opacity var(--transition-duration) var(--transition-curve),
+    transform var(--transition-duration) var(--transition-curve);
+}
+
+.snackbar-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.snackbar-transition-leave-to {
+  opacity: 0;
+}
+
+.close > svg {
+  height: 20px;
+  width: 20px;
+}
+
+.close > svg > path {
+  stroke: var(--main-font-color);
+}
+</style>
+

@@ -18,10 +18,10 @@ module.exports = (_io, socket, session, user) => {
 
     socket.on('editor:onEditorContentUpdate', data => {
       clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(content => {
-        session.update(content);
+      updateTimeout = setTimeout(async content => {
+        session.update({ content });
       }, CONTENT_UPDATE_DUR, data);
-    })
+    });
 
     socket.on('editor:onEditorSelectionUpdate', ({ data }) => {
       socket.broadcast.to(sessionId).emit('editor:onEditorSelectionUpdate', { data, name, userId });

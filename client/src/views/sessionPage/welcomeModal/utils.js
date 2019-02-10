@@ -141,39 +141,31 @@ export function onFormatPhone(value) {
 
   switch (numberValue.length) {
     case 0:
-      this.phone = '';
-      return;
+      return '';
     case 1:
     case 2:
-      this.phone = `(${numberValue}`;
-      break;
+      return `(${numberValue}`;
     case 3:
       if (this.phone.length === 7 || this.phone.length === 6) {
-        this.phone = `(${numberValue.slice(0, 3)}`;
-        break;
+        return `(${numberValue.slice(0, 3)}`;
       }
       // falls through
     case 4:
     case 5:
-      this.phone = `(${numberValue.slice(0, 3)}) ${numberValue.slice(3)}`;
-      break;
+      return `(${numberValue.slice(0, 3)}) ${numberValue.slice(3)}`;
     case 6:
       if (this.phone.length === 11 || this.phone.length === 10) {
-        this.phone = `(${numberValue.slice(0, 3)}) ${numberValue.slice(3, 6)}`;
-        break;
+        return `(${numberValue.slice(0, 3)}) ${numberValue.slice(3, 6)}`;
       }
       // falls through
     case 7:
     case 8:
     case 9:
     case 10:
-      this.phone = `(${numberValue.slice(0, 3)}) ${numberValue.slice(3, 6)}-${numberValue.slice(6)}`;
-      break;
+      return `(${numberValue.slice(0, 3)}) ${numberValue.slice(3, 6)}-${numberValue.slice(6)}`;
     default:
-      this.phone = `(${numberValue.slice(0, 3)}) ${numberValue.slice(3, 6)}-${numberValue.slice(6, 10)}`;
-      break;
+      return `(${numberValue.slice(0, 3)}) ${numberValue.slice(3, 6)}-${numberValue.slice(6, 10)}`;
   }
-  this.$forceUpdate();
 }
 
 const phoneRegex = new RegExp('^$|^[0-9]+$');

@@ -10,7 +10,7 @@
       :name="name"
       :placeholder="placeholder"
       :type="type"
-      :value="value"
+      :value="currentValue"
       @input="onInputChange"
     />
     <label
@@ -67,6 +67,10 @@ export default {
       type: Function,
       default: null,
     },
+    onFormat: {
+      type: Function,
+      default: null,
+    },
     onValidate: {
       type: Function,
       default: null,
@@ -91,6 +95,7 @@ export default {
   },
   data() {
     return {
+      currentValue: this.value,
       searchDelay: 300,
       searchTimeout: null,
     };
@@ -100,8 +105,14 @@ export default {
   },
   methods: {
     onInputChange(e) {
-      const { value } = e.target;
-      this.$refs.input.value = this.value;
+      e.preventDefault();
+      let { value } = e.target;
+      if (this.onFormat) {
+        value = this.onFormat(value);
+      }
+
+      this.currentValue = value;
+      this.$refs.input.value = value;
 
       if (this.onValidate && !this.onValidate(value)) {
         return;
@@ -115,7 +126,7 @@ export default {
       }
     },
     onSearchAutosearch(value) {
-      if (value.length > 2) {
+      if (value.length > 0) {
         this.searchTimeout = setTimeout(
           this.onAutosearch,
           this.searchDelay,
@@ -125,6 +136,11 @@ export default {
         this.onClearSearch();
       }
     },
+  },
+  watch: {
+    value(val) {
+      this.$refs.input.value = val;
+    }
   },
 };
 </script>

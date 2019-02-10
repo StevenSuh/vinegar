@@ -142,7 +142,7 @@ export default {
     };
   },
   created() {
-    connectErrorMiddlewareWithCallback(this, (err) => {
+    connectErrorMiddlewareWithCallback(this, () => {
       this.isLoading = false;
     });
   },

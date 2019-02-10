@@ -1,6 +1,29 @@
 import Quill from 'quill';
+import QuillCursors from 'quill-cursors';
+
+import { CONTENT_UPDATE_DUR, FONT_SIZES } from '@/defs';
+
+import PlainClipboard from './PlainClipboard';
 
 const Delta = Quill.import('delta');
+
+export function setupQuill() {
+  Quill.register('modules/clipboard', PlainClipboard, true);
+
+  const Font = Quill.import('formats/font');
+  Font.whitelist = ['rubik'];
+
+  Quill.register(Font, true);
+  Quill.register('modules/cursors', QuillCursors);
+
+  const Block = Quill.import('blots/block');
+  Block.tagName = 'DIV';
+  Quill.register(Block, true);
+
+  const Size = Quill.import('attributors/style/size');
+  Size.whitelist = FONT_SIZES;
+  Quill.register(Size, true);
+}
 
 export function onSmallerFontHandler() {
   const format = this.editor.getFormat();
@@ -33,6 +56,62 @@ export function onExtendHandler() {
 
   button.classList.toggle('active', !isActive);
   collapse.classList.toggle('show', !isActive);
+}
+
+export function initEditor() {
+  this.editor.format('font', 'rubik');
+  this.editor.format('size', '16px');
+
+  this.editor.on('editor-change', this.selectionUpdate);
+  this.editor.on('text-change', this.textUpdate);
+
+  document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
+
+  this.editor.enable(false);
+  setTimeout(() => this.onResizeCollapse(), 0);
+}
+
+export function onExtendBlur(e) {
+  const button = this.$refs.extend.children[0];
+  const { collapse } = this.$refs;
+
+  if (e.target !== button && e.target !== collapse) {
+    const isActive =
+      button.classList.contains('active') &&
+      collapse.classList.contains('show');
+
+    if (isActive) {
+      button.classList.remove('active');
+      collapse.classList.remove('show');
+    }
+  }
+}
+
+export function selectionUpdate(type, range, _oldRange, source) {
+  if (type === 'selection-change') {
+    if (source !== Quill.sources.API && range) {
+      // this setTimeout is necessary because
+      // textUpdate is occurring at the same time
+      // causing cursor to update inaccurately
+      setTimeout(() => {
+        this.$socket.emit('editor:onEditorSelectionUpdate', { data: range });
+      }, 0);
+    }
+  }
+}
+
+export function textUpdate(delta, _oldDelta, source) {
+  if (source === Quill.sources.USER) {
+    this.$socket.emit('editor:onEditorTextUpdate', {
+      data: delta,
+      content: this.editor.root.innerHTML,
+    });
+
+    clearTimeout(this.updateTimeout);
+    this.updateTimeout = setTimeout(() => {
+      this.$socket.emit('editor:onEditorContentUpdate', this.editor.root.innerHTML);
+    }, CONTENT_UPDATE_DUR);
+  }
 }
 
 export function codeBlockIndentHandler(indent) {

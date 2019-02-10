@@ -89,6 +89,7 @@
             placeholder="Your phone"
             size="small"
             suggestion="We will send you a text to remind you of your turn."
+            :on-format="onFormatPhone"
             :on-validate="onValidatePhone"
             :value="phone"
             @onChange="onPhoneChange"
@@ -216,12 +217,10 @@ export default {
     onValidatePhone,
     onValidateWelcomeForm,
     onWelcomeFormSubmit,
-    onPhoneChange: onFormatPhone,
-  },
-  sockets: {
-    'socket:onEnter': function({ color, name }) {
-      this.onClose();
+    onPhoneChange(value) {
+      this.phone = value;
     },
+    onFormatPhone,
   },
 };
 </script>

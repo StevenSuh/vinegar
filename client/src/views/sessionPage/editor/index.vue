@@ -40,41 +40,29 @@
 <script>
 import Quill from 'quill';
 import { Range } from 'quill/core/selection';
-import QuillCursors from 'quill-cursors';
 
 import {
   codeBlockIndentHandler,
-  onResizeCollapse,
+  initEditor,
+  onExtendBlur,
   onExtendHandler,
-  onSmallerFontHandler,
   onLargerFontHandler,
+  onResizeCollapse,
+  onSmallerFontHandler,
+  selectionUpdate,
+  setupQuill,
+  textUpdate,
 } from './utils';
 import ToolbarConfig from './toolbarConfig';
-import PlainClipboard from './PlainClipboard';
 
-import { CONTENT_UPDATE_DUR } from '@/defs';
+import { FONT_SIZES } from '@/defs';
 
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import 'quill-cursors/dist/quill-cursors.css';
 
 // setup editor
-Quill.register('modules/clipboard', PlainClipboard, true);
-
-const Font = Quill.import('formats/font');
-Font.whitelist = ['rubik'];
-
-Quill.register(Font, true);
-Quill.register('modules/cursors', QuillCursors);
-
-const Block = Quill.import('blots/block');
-Block.tagName = 'DIV';
-Quill.register(Block, true);
-
-const SIZES = ['12px', '14px', '16px', '22px', '28px', '36px'];
-const Size = Quill.import('attributors/style/size');
-Size.whitelist = SIZES;
-Quill.register(Size, true);
+setupQuill();
 
 export default {
   components: {
@@ -87,7 +75,7 @@ export default {
     return {
       content: '',
       editor: null,
-      sizes: SIZES,
+      sizes: FONT_SIZES,
       updateTimeout: null,
     };
   },
@@ -101,9 +89,9 @@ export default {
         toolbar: {
           container: this.$refs.toolbar,
           handlers: {
-            smallerFont: onSmallerFontHandler,
-            largerFont: onLargerFontHandler,
-            extend: onExtendHandler,
+            smallerFont: onSmallerFontHandler.bind(this),
+            largerFont: onLargerFontHandler.bind(this),
+            extend: onExtendHandler.bind(this),
             undo: () => this.editor.history.undo(),
             redo: () => this.editor.history.redo(),
           },
@@ -111,22 +99,10 @@ export default {
       },
       theme: 'snow',
     });
-
-    this.editor.format('font', 'rubik');
-    this.editor.format('size', '16px');
-
-    this.editor.on('editor-change', this.selectionUpdate);
-    this.editor.on('text-change', this.textUpdate);
-
-    document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
-
-    // add checkBlur event to window
+    this.initEditor();
     window.addEventListener('click', this.onCheckBlur);
     window.addEventListener('click', this.onExtendBlur);
     window.addEventListener('resize', this.onResizeCollapse);
-
-    setTimeout(() => this.onResizeCollapse(), 0);
-    this.editor.enable(false);
   },
   beforeDestroy() {
     window.removeEventListener('click', this.onCheckBlur);
@@ -134,6 +110,7 @@ export default {
     window.removeEventListener('resize', this.onResizeCollapse);
   },
   methods: {
+    initEditor,
     onCheckBlur() {
       if (!this.editor.hasFocus()) {
         this.$socket.emit('editor:onEditorSelectionRemove');
@@ -142,63 +119,23 @@ export default {
     onClickCollapse(e) {
       e.stopPropagation();
     },
-    onExtendBlur(e) {
-      const button = this.$refs.extend.children[0];
-      const { collapse } = this.$refs;
-
-      if (e.target !== button && e.target !== collapse) {
-        const isActive =
-          button.classList.contains('active') &&
-          collapse.classList.contains('show');
-
-        if (isActive) {
-          button.classList.remove('active');
-          collapse.classList.remove('show');
-        }
-      }
-    },
+    onExtendBlur,
     onResizeCollapse,
     onScrollEditor() {
       this.editor.getModule('cursors').update();
     },
-    selectionUpdate(type, range, oldRange, source) {
-      if (type === 'selection-change') {
-        if (source !== Quill.sources.API && range) {
-          // this setTimeout is necessary because
-          // textUpdate is occurring at the same time
-          // causing cursor to update inaccurately
-          setTimeout(() => {
-            this.$socket.emit('editor:onEditorSelectionUpdate', {
-              data: range,
-            });
-          }, 0);
-        }
-      }
-    },
-    textUpdate(delta, oldDelta, source) {
-      if (source === Quill.sources.USER) {
-        this.$socket.emit('editor:onEditorTextUpdate', {
-          data: delta,
-          content: this.editor.root.innerHTML,
-        });
-
-        clearTimeout(this.updateTimeout);
-        this.updateTimeout = setTimeout(
-          this.$socket.emit,
-          CONTENT_UPDATE_DUR,
-          'editor:onEditorContentUpdate',
-          this.editor.root.innerHTML,
-        );
-      }
-    },
+    selectionUpdate,
+    textUpdate,
   },
   sockets: {
     'socket:onEnter': function({ content }) {
       this.editor.root.innerHTML = content;
-      this.editor.history.clear();
       this.editor.enable();
 
-      setTimeout(() => this.$socket.emit('editor:onEnter'), 0);
+      setTimeout(() => {
+        this.editor.history.clear();
+        this.$socket.emit('editor:onEnter');
+      }, 0);
     },
     'editor:onEditorSelectionUpdate': function({ data, name, userId }) {
       const range = new Range(data.index, data.length);

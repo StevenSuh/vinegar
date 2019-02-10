@@ -13,8 +13,6 @@ const {
 const {
   ALLOWED_CHARACTERS,
   MIN_PASSWORD_LENGTH,
-  MIN_SEARCH_LEN,
-  ERR_SESSION_CREATE,
 } = require('defs');
 const {
   createPassword,
@@ -40,10 +38,6 @@ module.exports = (app) => {
       } = req.query;
 
       const searchQuery = query.toLowerCase();
-
-      if (searchQuery.length < MIN_SEARCH_LEN) {
-        return res.status(400).send('Search query is too short.');
-      }
 
       const sessions = await Sessions.findAllByFullName({
         attributes: [
@@ -110,10 +104,7 @@ module.exports = (app) => {
       });
 
       if (!session || !created) {
-        return res.status(400).json({
-          msg: 'Session failed to create.',
-          type: ERR_SESSION_CREATE,
-        });
+        return res.status(400).send('Session failed to create.');
       }
       return res.end();
     },
