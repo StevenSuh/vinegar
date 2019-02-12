@@ -4,16 +4,32 @@ const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
+const { DEFAULT_ENTER_MSG, DEFAULT_LEAVE_MSG } = require('defs');
 
-module.exports = (io, socket, session, user) => {
+module.exports = async (io, socket, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const userId = user.get(Users.ID);
+
+  const sessionName = `session-${sessionId}`;
 
   const color = user.get(Users.COLOR);
   const name = user.get(Users.NAME);
 
-  socket.on('onChatSend', (data) => {
-    io.in(sessionId).emit('onChatSend', {
+  const enterChat = await Chats.create({
+    color: user.get(Users.COLOR),
+    message: DEFAULT_ENTER_MSG,
+    name: user.get(Users.NAME),
+    sessionId: session.get(Sessions.ID),
+    type: Chats.TYPE_SYSTEM,
+    userId: user.get(Users.ID),
+  });
+
+  if (!enterChat) {
+    throw new Error('Failed to create enter chat');
+  }
+
+  socket.on('chat:onChatSend', async (data) => {
+    io.in(sessionName).emit('chat:onChatSend', {
       ...data,
       color,
       name,
@@ -22,12 +38,42 @@ module.exports = (io, socket, session, user) => {
       userId,
     });
 
-    Chats.create({
+    await Chats.create({
       color,
       message: data.msg,
       name,
       sessionId,
       type: Chats.TYPE_USER,
+      userId,
+    });
+  });
+
+  socket.on('chat:onChatScroll', async ({ offset }) => {
+    const chats = await Chats.findAll({
+      limit: 11,
+      offset,
+      order: [[Chats.CREATED_AT, 'DESC']],
+      where: { sessionId: session.get(Sessions.ID) },
+    });
+
+    const msgs = chats.map(chat => {
+      const { createdAt, message, type } = chat.get();
+      return { color, date: createdAt, name, msg: message, type, userId };
+    }).reverse();
+
+    socket.emit('chat:onChatScroll', {
+      hasMore: (msgs.length > 10),
+      msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
+    });
+  });
+
+  socket.on('disconnect', async () => {
+    await Chats.create({
+      color,
+      message: DEFAULT_LEAVE_MSG,
+      name,
+      sessionId,
+      type: Chats.TYPE_SYSTEM,
       userId,
     });
   });

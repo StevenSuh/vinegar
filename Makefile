@@ -10,8 +10,12 @@ serve:
 	docker-compose up
 serve-build:
 	docker-compose up --build
+delete-client:
+	docker rm $(shell docker ps -aqf "name=client")
+delete-api:
+	docker rm $(shell docker ps -aqf "name=api")
 serve-no-cache:
-	docker-compose build --no-cache && make serve
+	make delete-client && make delete-api && docker-compose build --no-cache && make serve
 serve-reset:
 	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose up --build
 reset-redis:

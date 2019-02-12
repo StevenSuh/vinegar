@@ -90,8 +90,14 @@ export default {
     },
   },
   sockets: {
+    error(err) {
+      handleErrorMiddleware(err, 'socket');
+    },
     'socket:exception': function({ errorMessage }) {
       handleErrorMiddleware(errorMessage, 'socket');
+    },
+    'socket:duplicate': function() {
+      this.$router.push('/app/find');
     },
   },
 };

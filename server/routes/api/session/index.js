@@ -1,8 +1,9 @@
 const redisClient = require('services/redis')();
 
 const dbClient = require('db')();
-const Users = require('db/users/model')(dbClient);
+const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
+const Users = require('db/users/model')(dbClient);
 
 const {
   requireUserAuth,
@@ -12,6 +13,8 @@ const {
 
 const {
   ALLOWED_CHARACTERS,
+  DEFAULT_COLOR,
+  DEFAULT_CREATE_MSG,
   MIN_PASSWORD_LENGTH,
 } = require('defs');
 const {
@@ -113,6 +116,16 @@ module.exports = (app) => {
       if (!created) {
         return res.status(400).send('Session already exists. Try a different name.');
       }
+
+      await Chats.create({
+        color: DEFAULT_COLOR,
+        message: DEFAULT_CREATE_MSG,
+        name: `${schoolName}/${sessionName}`,
+        sessionId: session.get(Sessions.ID),
+        type: Chats.TYPE_SYSTEM,
+        userId: req.userId,
+      });
+
       return res.end();
     },
   );

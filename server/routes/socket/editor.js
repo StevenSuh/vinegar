@@ -9,11 +9,13 @@ module.exports = (_io, socket, session, user) => {
   const userId = user.get(Users.ID);
   const name = user.get(Users.NAME);
 
+  const sessionName = `session-${sessionId}`;
+
   let updateTimeout = null;
 
   socket.on('editor:onEnter', () => {
     socket.on('editor:onEditorTextUpdate', ({ data }) => {
-      socket.broadcast.to(sessionId).emit('editor:onEditorTextUpdate', { data, userId });
+      socket.broadcast.to(sessionName).emit('editor:onEditorTextUpdate', { data, userId });
     });
 
     socket.on('editor:onEditorContentUpdate', data => {
@@ -24,11 +26,11 @@ module.exports = (_io, socket, session, user) => {
     });
 
     socket.on('editor:onEditorSelectionUpdate', ({ data }) => {
-      socket.broadcast.to(sessionId).emit('editor:onEditorSelectionUpdate', { data, name, userId });
+      socket.broadcast.to(sessionName).emit('editor:onEditorSelectionUpdate', { data, name, userId });
     });
 
     socket.on('editor:onEditorSelectionRemove', () => {
-      socket.broadcast.to(sessionId).emit('editor:onEditorSelectionRemove', { userId });
+      socket.broadcast.to(sessionName).emit('editor:onEditorSelectionRemove', { userId });
     });
   });
 };

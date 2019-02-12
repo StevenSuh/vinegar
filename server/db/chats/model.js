@@ -49,7 +49,7 @@ module.exports = (dbClient) => {
     Chats.UPDATED_AT = 'updatedAt';
 
     Chats.TYPE_SYSTEM = 'system';
-    Chats.TYPE_USER = 'system';
+    Chats.TYPE_USER = 'user';
   }
   return Chats;
 };

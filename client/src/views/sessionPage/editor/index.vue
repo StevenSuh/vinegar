@@ -159,7 +159,6 @@ export default {
   border-radius: 5px;
   height: 100%;
   min-height: 450px;
-  overflow-y: auto;
   width: 100%;
 }
 
@@ -168,8 +167,9 @@ export default {
 }
 
 .ql-container {
-  min-height: 458px;
+  min-height: 408px;
   max-height: calc(100% - 40px);
+  overflow: hidden auto;
 }
 
 .hide-toolbar {
