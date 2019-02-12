@@ -41,11 +41,8 @@ module.exports = (app) => {
 
       if (sessionsPage) {
         const sameSession = (names.schoolName === schoolName) && (names.sessionName === sessionName);
-        if (!sameSession) {
-          redisClient.hdelAsync(cookieId, redisClient.SESSION_ID);
-          redisClient.hdelAsync(cookieId, redisClient.SESSION_SCHOOL);
-          redisClient.hdelAsync(cookieId, redisClient.SESSION_NAME);
-        } else {
+
+        if (sameSession) {
           validSession = true;
         }
       }

@@ -184,17 +184,13 @@ module.exports = (app) => {
   app.post(
     '/api/session/enter',
     requireUserAuth,
+    requireSessionByReferer,
     async (req, res) => {
       const { cookieId } = req.cookies;
-      const sessionExists = await redisClient.hexistsAsync(cookieId, redisClient.SESSION_ID);
+      const passwordExists = req.session.get(Sessions.PASSWORD);
 
-      if (sessionExists) {
+      if (passwordExists) {
         const middle = await requireSessionAuth(req, res);
-        if (!middle) {
-          return null;
-        }
-      } else {
-        const middle = await requireSessionByReferer(req, res);
         if (!middle) {
           return null;
         }
@@ -203,7 +199,7 @@ module.exports = (app) => {
       const { name, phone } = req.body;
       const color = generateColor();
 
-      const session = req.session || Sessions.findOne({ where: { id: req.sessionId }});
+      const { session } = req;
       const sessionId = session.get(Sessions.ID);
 
       const updateItem = { color, name };
@@ -211,7 +207,7 @@ module.exports = (app) => {
         updateItem.phone = phone;
       }
 
-      if (!sessionExists) {
+      if (!passwordExists) {
         setSessionCookie({
           cookieId,
           sessionId,

@@ -54,11 +54,13 @@ const getChats = async (session) => {
   }).reverse();
 };
 
-const setupSocketDuplicate = (io, oldSocket, userSessionName) => {
-  io.in(userSessionName).on('connect', (newSocket) => {
-    if (newSocket.id !== oldSocket.id) {
-      oldSocket.emit('socket:duplicate');
-      oldSocket.disconnect(true);
+const setupSocketDuplicate = (socket, userSessionName) => {
+  socket.to(userSessionName).emit('socket:duplicate', socket.id);
+
+  socket.on('socket:duplicate', (newSocketId) => {
+    if (newSocketId !== socket.id) {
+      socket.emit('socket:duplicate');
+      socket.disconnect(true);
     }
   });
 };
@@ -66,6 +68,7 @@ const setupSocketDuplicate = (io, oldSocket, userSessionName) => {
 const socketInit = async (io, socket, session, user) => {
   socket.join(`session-${session.get(Sessions.ID)}`);
   socket.join(`user-${user.get(Users.ID)}`);
+
   await initSocketChat(io, socket, session, user);
   initSocketEditor(io, socket, session, user);
 
@@ -77,7 +80,7 @@ const socketInit = async (io, socket, session, user) => {
     msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
   });
 
-  setupSocketDuplicate(io, socket, `user-${user.get(Users.ID)}`);
+  setupSocketDuplicate(socket, `user-${user.get(Users.ID)}`);
 };
 
 // main

@@ -3,7 +3,7 @@ module.exports = {
   CONTENT_UPDATE_DUR: 1000,
   DEFAULT_COLOR: '#F88379',
   DEFAULT_ENTER_MSG: ' has entered the room.',
-  DEFAULT_CREATE_MSG: ' has created the room.',
+  DEFAULT_CREATE_MSG: ' has been created.',
   DEFAULT_LEAVE_MSG: ' has left the room.',
   MIN_PASSWORD_LENGTH: 4,
 };

@@ -15,7 +15,7 @@ module.exports = (_io, socket, session, user) => {
 
   socket.on('editor:onEnter', () => {
     socket.on('editor:onEditorTextUpdate', ({ data }) => {
-      socket.broadcast.to(sessionName).emit('editor:onEditorTextUpdate', { data, userId });
+      socket.to(sessionName).emit('editor:onEditorTextUpdate', { data, userId });
     });
 
     socket.on('editor:onEditorContentUpdate', data => {
@@ -26,11 +26,11 @@ module.exports = (_io, socket, session, user) => {
     });
 
     socket.on('editor:onEditorSelectionUpdate', ({ data }) => {
-      socket.broadcast.to(sessionName).emit('editor:onEditorSelectionUpdate', { data, name, userId });
+      socket.to(sessionName).emit('editor:onEditorSelectionUpdate', { data, name, userId });
     });
 
     socket.on('editor:onEditorSelectionRemove', () => {
-      socket.broadcast.to(sessionName).emit('editor:onEditorSelectionRemove', { userId });
+      socket.to(sessionName).emit('editor:onEditorSelectionRemove', { userId });
     });
   });
 };

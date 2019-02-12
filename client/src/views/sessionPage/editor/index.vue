@@ -256,6 +256,7 @@ export default {
 
 .ql-editor * {
   line-height: 1.5em;
+  z-index: -1;
 }
 
 .ql-cursors {

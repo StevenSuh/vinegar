@@ -21,7 +21,10 @@
       :key="n"
       class="content"
     >
-      <slot :name="`modal-${n}`" />
+      <slot
+        v-if="steps > 1"
+        :name="`modal-${n}`"
+      /> <slot v-else />
     </div>
   </div>
 </template>

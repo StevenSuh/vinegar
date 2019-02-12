@@ -229,7 +229,8 @@ export default {
 .modal {
   padding: 40px 60px;
   position: relative !important;
-  width: 600px;
+  min-width: 600px;
+  width: 30vw;
 }
 
 .welcome-header {

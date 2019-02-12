@@ -40,6 +40,30 @@
           :on-show="onShow"
         />
       </transition>
+      <transition name="fadeNoDelay">
+        <Modal v-if="duplicate">
+          <div class="modal">
+            <h2 class="duplicate-header">
+              Oops!
+            </h2>
+            <p class="duplicate-msg marginTop small">
+              Seems like you have another session open. Close this tab and go
+              join the other session!
+            </p>
+            <ButtonComponent
+              class="marginTop"
+              type="primary"
+            >
+              <router-link
+                tag="a"
+                to="/app/find"
+              >
+                Back
+              </router-link>
+            </ButtonComponent>
+          </div>
+        </Modal>
+      </transition>
     </div>
   </transition>
 </template>
@@ -49,20 +73,25 @@ import Chat from '@/views/sessionPage/chat';
 import Editor from '@/views/sessionPage/editor';
 import Welcome from '@/views/sessionPage/welcomeModal';
 
+import ButtonComponent from '@/components/button';
+import Modal from '@/components/modal';
+
 import { handleErrorMiddleware } from '@/services/middleware';
 
 import backImage from '@/assets/back.png';
 
 export default {
   components: {
-    Editor,
+    ButtonComponent,
     Chat,
+    Editor,
+    Modal,
     Welcome,
   },
   data() {
     return {
       // state
-      errorModal: false,
+      duplicate: false,
       hide: true,
       school: this.$route.params.school,
       session: this.$route.params.session,
@@ -96,8 +125,10 @@ export default {
     'socket:exception': function({ errorMessage }) {
       handleErrorMiddleware(errorMessage, 'socket');
     },
-    'socket:duplicate': function() {
-      this.$router.push('/app/find');
+    'socket:duplicate': function(data) {
+      this.duplicate = true;
+      this.$socket.emit('socket:duplicate', data);
+      this.$socket.close();
     },
   },
 };
@@ -164,6 +195,22 @@ export default {
   height: 70%;
   width: 100%;
   min-height: 450px;
+}
+
+.modal {
+  padding: 40px 60px;
+  position: relative !important;
+  min-width: 600px;
+  text-align: center;
+  width: 30vw;
+}
+
+.duplicate-header {
+  font-weight: 500;
+}
+
+.duplicate-msg {
+  line-height: 1.4em;
 }
 
 @media (max-width: 1000px) {
