@@ -41,27 +41,10 @@
         />
       </transition>
       <transition name="fadeNoDelay">
-        <Modal v-if="errorModal">
-          <div class="modal">
-            <h2 class="error-header">
-              {{ errorModal.header }}
-            </h2>
-            <p class="error-msg marginTop small">
-              {{ errorModal.msg }}
-            </p>
-            <ButtonComponent
-              class="marginTop"
-              type="primary"
-            >
-              <router-link
-                tag="a"
-                to="/app/find"
-              >
-                Back
-              </router-link>
-            </ButtonComponent>
-          </div>
-        </Modal>
+        <ErrorModal
+          v-if="errorModal"
+          :error-modal="errorModal"
+        />
       </transition>
     </div>
   </transition>
@@ -70,10 +53,8 @@
 <script>
 import Chat from '@/views/sessionPage/chat';
 import Editor from '@/views/sessionPage/editor';
+import ErrorModal from '@/views/sessionPage/errorModal';
 import Welcome from '@/views/sessionPage/welcomeModal';
-
-import ButtonComponent from '@/components/button';
-import Modal from '@/components/modal';
 
 import { handleErrorMiddleware } from '@/services/middleware';
 
@@ -83,10 +64,9 @@ import { DUPLICATE_HEADER, DUPLICATE_MSG } from '@/defs';
 
 export default {
   components: {
-    ButtonComponent,
     Chat,
     Editor,
-    Modal,
+    ErrorModal,
     Welcome,
   },
   data() {
@@ -102,6 +82,11 @@ export default {
       // assets
       backImage,
     };
+  },
+  beforeDestroy() {
+    if (this.$socket) {
+      this.$socket.close();
+    }
   },
   mounted() {
     this.$socket.emit('socket:init');
@@ -123,15 +108,15 @@ export default {
     error(err) {
       handleErrorMiddleware(err, 'socket');
     },
-    'socket:exception': function({ errorMessage }) {
+    'socket:onException': function({ errorMessage }) {
       handleErrorMiddleware(errorMessage, 'socket');
     },
-    'socket:duplicate': function(data) {
+    'socket:onDuplicate': function(data) {
       this.errorModal = {
         header: DUPLICATE_HEADER,
         msg: DUPLICATE_MSG,
       };
-      this.$socket.emit('socket:duplicate', data);
+      this.$socket.emit('socket:onDuplicate', data);
       this.$socket.close();
     },
   },
@@ -199,22 +184,6 @@ export default {
   height: 70%;
   width: 100%;
   min-height: 450px;
-}
-
-.modal {
-  padding: 40px 60px;
-  position: relative !important;
-  min-width: 600px;
-  text-align: center;
-  width: 30vw;
-}
-
-.error-header {
-  font-weight: 500;
-}
-
-.error-msg {
-  line-height: 1.4em;
 }
 
 @media (max-width: 1000px) {

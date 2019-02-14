@@ -1,0 +1,56 @@
+<template>
+  <Modal>
+    <div class="error-modal">
+      <h2 class="error-header">
+        {{ errorModal.header }}
+      </h2>
+      <p class="error-msg marginTop small">
+        {{ errorModal.msg }}
+      </p>
+      <ButtonComponent
+        class="marginTop"
+        type="primary"
+      >
+        <router-link
+          tag="a"
+          to="/app/find"
+        >
+          Back
+        </router-link>
+      </ButtonComponent>
+    </div>
+  </Modal>
+</template>
+
+<script>
+import ButtonComponent from '@/components/button';
+import Modal from '@/components/modal';
+
+export default {
+  components: {
+    ButtonComponent,
+    Modal,
+  },
+  props: {
+    errorModal: Object,
+  },
+};
+</script>
+
+<style scoped>
+.error-modal {
+  padding: 40px 60px;
+  position: relative !important;
+  min-width: 600px;
+  text-align: center;
+  width: 30vw;
+}
+
+.error-header {
+  font-weight: 500;
+}
+
+.error-msg {
+  line-height: 1.4em;
+}
+</style>

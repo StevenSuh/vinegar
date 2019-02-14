@@ -55,11 +55,11 @@ const getChats = async (session) => {
 };
 
 const setupSocketDuplicate = (socket, userSessionName) => {
-  socket.to(userSessionName).emit('socket:duplicate', socket.id);
+  socket.to(userSessionName).emit('socket:onDuplicate', socket.id);
 
-  socket.on('socket:duplicate', (newSocketId) => {
+  socket.on('socket:onDuplicate', (newSocketId) => {
     if (newSocketId !== socket.id) {
-      socket.emit('socket:duplicate');
+      socket.emit('socket:onDuplicate');
       socket.disconnect(true);
     }
   });
@@ -95,7 +95,7 @@ module.exports = (app) => {
 
     socket.on('socket:init', async () => {
       if (!cookieId || !names.schoolName || !names.sessionName) {
-        return socket.emit('socket:exception', { errorMessage: 'Invalid authentication.' });
+        return socket.emit('socket:onException', { errorMessage: 'Invalid authentication.' });
       }
 
       socket.on('socket:onEnter', async () => {
@@ -109,11 +109,11 @@ module.exports = (app) => {
         const [session, user] = await Promise.all([sessionPromise, userPromise]);
 
         if (!session || !user) {
-          return socket.emit('socket:exception', { errorMessage: 'Invalid session' });
+          return socket.emit('socket:onException', { errorMessage: 'Invalid session' });
         }
 
         if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
-          return socket.emit('socket:exception', { errorMessage: 'You are not authenticated with the right session.' });
+          return socket.emit('socket:onException', { errorMessage: 'You are not authenticated with the right session.' });
         }
         return socketInit(io, socket, session, user);
       });

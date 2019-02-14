@@ -10,6 +10,12 @@ export function onEnter({ hasMore, msgs }) {
   this.scrollToBottom();
 }
 
+export function onDuplicate() {
+  this.hasMore = false;
+  this.msgs = [];
+  this.$refs.chat.disabled = true;
+}
+
 export function onChatSend(data) {
   const { msgs } = this.$refs;
   const isAtBottom = (msgs.scrollHeight - msgs.clientHeight) === msgs.scrollTop;

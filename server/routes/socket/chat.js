@@ -81,14 +81,24 @@ module.exports = async (io, socket, session, user) => {
     });
   });
 
-  socket.on('disconnect', async () => {
-    await Chats.create({
-      color,
-      message: DEFAULT_LEAVE_MSG,
-      name,
-      sessionId,
-      type: Chats.TYPE_SYSTEM,
-      userId,
-    });
-  });
+  // not sure yet
+  // socket.on('disconnect', async () => {
+  //   io.in(sessionName).emit('chat:onChatSend', {
+  //     color,
+  //     message: DEFAULT_LEAVE_MSG,
+  //     name,
+  //     date: Date.now(),
+  //     type: Chats.TYPE_USER,
+  //     userId,
+  //   });
+
+  //   await Chats.create({
+  //     color,
+  //     message: DEFAULT_LEAVE_MSG,
+  //     name,
+  //     sessionId,
+  //     type: Chats.TYPE_SYSTEM,
+  //     userId,
+  //   });
+  // });
 };

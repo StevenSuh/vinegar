@@ -80,7 +80,7 @@
       <textarea
         ref="chat"
         class="msg-box"
-        disabled
+        disabled="true"
         rows="1"
         placeholder="Type a message..."
         type="text"
@@ -112,7 +112,7 @@ import {
   scrollToBottomSmoothly,
   updateInputHeight,
 } from './methods';
-import { onEnter, onChatSend, onChatScroll } from './socket';
+import { onEnter, onDuplicate, onChatSend, onChatScroll } from './socket';
 
 export default {
   components: {
@@ -149,6 +149,7 @@ export default {
   },
   sockets: {
     'socket:onEnter': onEnter,
+    'socket:onDuplicate': onDuplicate,
     'chat:onChatSend': onChatSend,
     'chat:onChatScroll': onChatScroll,
   },
