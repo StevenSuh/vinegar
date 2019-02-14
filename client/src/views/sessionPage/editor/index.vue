@@ -306,18 +306,25 @@ button.active,
   background-color: var(--gray-bg-color-3);
 }
 
+.ql-picker-item:focus::before,
 .ql-snow.ql-toolbar button:focus,
 .ql-snow .ql-toolbar button:focus,
 .ql-snow.ql-toolbar button.ql-active,
 .ql-snow .ql-toolbar button.ql-active,
-.ql-snow.ql-toolbar .ql-picker-label.ql-active,
-.ql-snow .ql-toolbar .ql-picker-label.ql-active,
 .ql-snow.ql-toolbar button.active,
 .ql-snow .ql-toolbar button.active,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected,
 .ql-picker.ql-expanded .ql-picker-label::before {
   color: var(--main-font-color) !important;
+}
+
+.ql-snow.ql-toolbar .ql-picker-label.ql-active,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active,
+.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke {
+  color: inherit;
+  stroke: var(--black-font-color);
 }
 
 .ql-snow.ql-toolbar button:hover,
@@ -333,8 +340,6 @@ button.active,
 .ql-snow .ql-toolbar button:focus .ql-stroke,
 .ql-snow.ql-toolbar button.ql-active .ql-stroke,
 .ql-snow .ql-toolbar button.ql-active .ql-stroke,
-.ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
 .ql-snow.ql-toolbar button:focus .ql-stroke-miter,
@@ -427,16 +432,7 @@ button.active,
 .ql-snow .ql-picker.ql-header .ql-picker-item::before,
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item::before {
-  font-family: 'Rubik', sans-serif !important;
   font-weight: 400 !important;
-}
-
-.ql-font-rubik,
-.ql-picker-item[data-value='rubik']::before,
-.ql-picker-label[data-value='rubik']::before {
-  content: 'Rubik' !important;
-  font-family: 'Rubik', sans-serif !important;
-  font-weight: 400;
 }
 
 code {
@@ -448,7 +444,7 @@ code,
 code *,
 pre,
 pre * {
-  font-family: monospace !important;
+  font-family: 'Courier New', monospace !important;
 }
 
 code strong,
@@ -483,6 +479,39 @@ pre strong {
 .ql-editor ol,
 .ql-editor ul {
   padding-left: 0;
+}
+
+.ql-picker-item::before,
+.ql-picker-label::before {
+  font-weight: 400;
+}
+
+.ql-font-rubik,
+.ql-picker-item[data-value='rubik']::before,
+.ql-picker-label[data-value='rubik']::before {
+  content: 'Rubik' !important;
+  font-family: 'Rubik', sans-serif !important;
+}
+
+.ql-font-arial,
+.ql-picker-item[data-value='arial']::before,
+.ql-picker-label[data-value='arial']::before {
+  content: 'Arial' !important;
+  font-family: 'Arial', sans-serif !important;
+}
+
+.ql-font-times,
+.ql-picker-item[data-value='times']::before,
+.ql-picker-label[data-value='times']::before {
+  content: 'Times' !important;
+  font-family: 'Times New Roman', sans-serif !important;
+}
+
+.ql-font-courier,
+.ql-picker-item[data-value='courier']::before,
+.ql-picker-label[data-value='courier']::before {
+  content: 'Courier' !important;
+  font-family: 'Courier New', monospace !important;
 }
 
 @media (max-width: 700px) {

@@ -132,7 +132,10 @@ export default {
         const currMsg = msgs[index];
 
         if (prevMsg && prevMsg.type !== 'system' && currMsg.type !== 'system') {
-          const hasPrev = prevMsg.userId === currMsg.userId;
+          const hasPrev =
+            prevMsg.userId === currMsg.userId &&
+            prevMsg.name === currMsg.name &&
+            prevMsg.color === currMsg.color;
           return { ...msg, hasPrev };
         }
         return msg;

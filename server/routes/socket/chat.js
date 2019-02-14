@@ -57,8 +57,22 @@ module.exports = async (io, socket, session, user) => {
     });
 
     const msgs = chats.map(chat => {
-      const { createdAt, message, type } = chat.get();
-      return { color, date: createdAt, name, msg: message, type, userId };
+      const {
+        color: userColor,
+        createdAt,
+        message,
+        name: userName,
+        type,
+      } = chat.get();
+
+      return {
+        color: userColor,
+        date: createdAt,
+        msg: message,
+        name: userName,
+        type,
+        userId,
+      };
     }).reverse();
 
     socket.emit('chat:onChatScroll', {

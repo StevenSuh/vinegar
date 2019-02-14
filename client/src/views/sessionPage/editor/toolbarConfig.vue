@@ -7,13 +7,32 @@
     </span>
     <span class="ql-formats">
       <button
-        class="ql-smallerFont"
-        v-html="SizeDecIcon"
-      />
-      <button
         class="ql-largerFont"
         v-html="SizeIncIcon"
       />
+      <button
+        class="ql-smallerFont"
+        v-html="SizeDecIcon"
+      />
+    </span>
+    <span class="ql-formats">
+      <select class="ql-font">
+        <option
+          value="rubik"
+          selected
+        >
+          Rubik
+        </option>
+        <option value="arial">
+          Arial
+        </option>
+        <option value="times">
+          Times
+        </option>
+        <option value="courier">
+          Courier
+        </option>
+      </select>
     </span>
     <span class="ql-formats">
       <button

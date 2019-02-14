@@ -41,14 +41,13 @@
         />
       </transition>
       <transition name="fadeNoDelay">
-        <Modal v-if="duplicate">
+        <Modal v-if="errorModal">
           <div class="modal">
-            <h2 class="duplicate-header">
-              Oops!
+            <h2 class="error-header">
+              {{ errorModal.header }}
             </h2>
-            <p class="duplicate-msg marginTop small">
-              Seems like you have another session open. Close this tab and go
-              join the other session!
+            <p class="error-msg marginTop small">
+              {{ errorModal.msg }}
             </p>
             <ButtonComponent
               class="marginTop"
@@ -80,6 +79,8 @@ import { handleErrorMiddleware } from '@/services/middleware';
 
 import backImage from '@/assets/back.png';
 
+import { DUPLICATE_HEADER, DUPLICATE_MSG } from '@/defs';
+
 export default {
   components: {
     ButtonComponent,
@@ -91,7 +92,7 @@ export default {
   data() {
     return {
       // state
-      duplicate: false,
+      errorModal: null,
       hide: true,
       school: this.$route.params.school,
       session: this.$route.params.session,
@@ -126,7 +127,10 @@ export default {
       handleErrorMiddleware(errorMessage, 'socket');
     },
     'socket:duplicate': function(data) {
-      this.duplicate = true;
+      this.errorModal = {
+        header: DUPLICATE_HEADER,
+        msg: DUPLICATE_MSG,
+      };
       this.$socket.emit('socket:duplicate', data);
       this.$socket.close();
     },
@@ -205,11 +209,11 @@ export default {
   width: 30vw;
 }
 
-.duplicate-header {
+.error-header {
   font-weight: 500;
 }
 
-.duplicate-msg {
+.error-msg {
   line-height: 1.4em;
 }
 

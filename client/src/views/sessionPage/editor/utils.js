@@ -9,12 +9,11 @@ const Delta = Quill.import('delta');
 
 export function setupQuill() {
   Quill.register('modules/clipboard', PlainClipboard, true);
+  Quill.register('modules/cursors', QuillCursors);
 
   const Font = Quill.import('formats/font');
-  Font.whitelist = ['rubik'];
-
+  Font.whitelist = ['rubik', 'arial', 'times', 'courier'];
   Quill.register(Font, true);
-  Quill.register('modules/cursors', QuillCursors);
 
   const Block = Quill.import('blots/block');
   Block.tagName = 'DIV';
