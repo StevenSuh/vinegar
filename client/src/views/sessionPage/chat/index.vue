@@ -100,7 +100,18 @@ import ArrowDownIcon from '@/assets/arrow_down.png';
 import NameArrowIcon from '@/assets/back.png';
 import NameCircleIcon from '!raw-loader!@/assets/name_circle.svg';
 
-import { formatDate, onScroll } from './methods';
+import {
+  filterMsgs,
+  formatDate,
+  onInputChange,
+  onInputKeydown,
+  onInputKeyup,
+  onScroll,
+  sendChat,
+  scrollToBottom,
+  scrollToBottomSmoothly,
+  updateInputHeight,
+} from './methods';
 import { onEnter, onChatSend, onChatScroll } from './socket';
 
 export default {
@@ -126,73 +137,15 @@ export default {
   },
   methods: {
     formatDate,
-    filterMsgs(msgs) {
-      return msgs.map((msg, index) => {
-        const prevMsg = msgs[index - 1];
-        const currMsg = msgs[index];
-
-        if (prevMsg && prevMsg.type !== 'system' && currMsg.type !== 'system') {
-          const hasPrev =
-            prevMsg.userId === currMsg.userId &&
-            prevMsg.name === currMsg.name &&
-            prevMsg.color === currMsg.color;
-          return { ...msg, hasPrev };
-        }
-        return msg;
-      });
-    },
-    onInputChange(e) {
-      e.preventDefault();
-      const { value } = e.target;
-      this.inputValue = value;
-
-      this.updateInputHeight();
-      this.scrollToBottom();
-    },
-    onInputKeydown(e) {
-      if (!e.shiftKey && e.keyCode === 13) {
-        e.preventDefault();
-      }
-    },
-    onInputKeyup(e) {
-      if (!e.shiftKey && e.keyCode === 13) {
-        e.preventDefault();
-
-        const value = this.inputValue.trim();
-        if (value) {
-          this.sendChat(value);
-        }
-      }
-    },
+    filterMsgs,
+    onInputChange,
+    onInputKeydown,
+    onInputKeyup,
     onScroll,
-    sendChat(value) {
-      this.inputValue = '';
-      this.$refs.chat.value = '';
-      this.updateInputHeight();
-
-      this.$socket.emit('chat:onChatSend', { msg: value });
-      this.scrollToBottom();
-    },
-    scrollToBottom() {
-      setTimeout(() => {
-        this.$refs.msgs.scrollTop = this.$refs.msgs.scrollHeight;
-      }, 0);
-    },
-    scrollToBottomSmoothly() {
-      const { msgs } = this.$refs;
-      msgs.scrollTo({
-        top: msgs.scrollHeight,
-        behavior: 'smooth',
-      });
-    },
-    updateInputHeight() {
-      const { chat } = this.$refs;
-      chat.removeAttribute('style');
-      chat.style.height = `${Math.min(
-        chat.scrollHeight + 2,
-        this.maxHeight,
-      )}px`;
-    },
+    sendChat,
+    scrollToBottom,
+    scrollToBottomSmoothly,
+    updateInputHeight,
   },
   sockets: {
     'socket:onEnter': onEnter,
