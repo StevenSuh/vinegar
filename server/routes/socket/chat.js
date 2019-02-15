@@ -4,7 +4,7 @@ const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
-const { DEFAULT_ENTER_MSG, DEFAULT_LEAVE_MSG } = require('defs');
+const { DEFAULT_ENTER_MSG } = require('defs');
 
 module.exports = async (io, socket, session, user) => {
   const sessionId = session.get(Sessions.ID);

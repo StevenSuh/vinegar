@@ -24,6 +24,19 @@ export function setupQuill() {
   Quill.register(Size, true);
 }
 
+export function initEditor() {
+  this.editor.format('font', 'rubik');
+  this.editor.format('size', '16px');
+
+  this.editor.on('editor-change', this.selectionUpdate);
+  this.editor.on('text-change', this.textUpdate);
+
+  document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
+
+  this.editor.enable(false);
+  setTimeout(() => this.onResizeCollapse(), 0);
+}
+
 export function onSmallerFontHandler() {
   const format = this.editor.getFormat();
   let index = this.sizes.indexOf(format.size || '16px');
@@ -55,19 +68,6 @@ export function onExtendHandler() {
 
   button.classList.toggle('active', !isActive);
   collapse.classList.toggle('show', !isActive);
-}
-
-export function initEditor() {
-  this.editor.format('font', 'rubik');
-  this.editor.format('size', '16px');
-
-  this.editor.on('editor-change', this.selectionUpdate);
-  this.editor.on('text-change', this.textUpdate);
-
-  document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
-
-  this.editor.enable(false);
-  setTimeout(() => this.onResizeCollapse(), 0);
 }
 
 export function onExtendBlur(e) {
