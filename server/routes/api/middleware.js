@@ -42,7 +42,7 @@ const requireSessionByReferer = async (req, res, next = Function) => {
     return false;
   }
 
-  const session = await Sessions.findActiveBySchoolAndSession({
+  const session = await Sessions.findBySchoolAndSession({
     schoolName,
     sessionName,
   });

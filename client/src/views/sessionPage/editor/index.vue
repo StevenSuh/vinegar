@@ -42,6 +42,7 @@ import Quill from 'quill';
 import { Range } from 'quill/core/selection';
 
 import {
+  checkForEnter,
   codeBlockIndentHandler,
   initEditor,
   onExtendBlur,
@@ -75,6 +76,7 @@ export default {
     return {
       content: '',
       editor: null,
+      prevEnter: false,
       sizes: FONT_SIZES,
       updateTimeout: null,
     };
@@ -110,6 +112,7 @@ export default {
     window.removeEventListener('resize', this.onResizeCollapse);
   },
   methods: {
+    checkForEnter,
     initEditor,
     onCheckBlur() {
       if (!this.editor.hasFocus()) {

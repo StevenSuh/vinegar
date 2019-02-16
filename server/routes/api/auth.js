@@ -64,7 +64,6 @@ module.exports = (app) => {
     const [user] = await Users.findOrCreate({
       where: { gid },
       defaults: {
-        active: false,
         email,
         gid,
       },

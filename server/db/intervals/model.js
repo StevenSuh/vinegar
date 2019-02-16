@@ -25,6 +25,14 @@ module.exports = (dbClient) => {
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
+      startTime: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
+      endTime: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
     }, {
       freezeTableName: true,
       timestamps: true,
@@ -37,6 +45,8 @@ module.exports = (dbClient) => {
     Intervals.ID = 'id';
     Intervals.UPVOTE = 'upvote';
     Intervals.UPDATED_AT = 'updatedAt';
+    Intervals.START_TIME = 'startTime';
+    Intervals.END_TIME = 'endTime';
   }
   return Intervals;
 };

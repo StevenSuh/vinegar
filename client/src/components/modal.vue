@@ -88,6 +88,10 @@ export default {
       default: () => {},
       type: Function,
     },
+    onEsc: {
+      default: () => {},
+      type: Function,
+    },
     currentStep: {
       default: 0,
       type: Number,
@@ -112,6 +116,7 @@ export default {
   },
   beforeCreate() {
     document.body.classList.add('overflow');
+    window.addEventListener('keyup', this.onKeyup);
   },
   mounted() {
     if (!this.isLoading) {
@@ -121,6 +126,14 @@ export default {
   beforeDestroy() {
     this.$refs.content[this.currentStep].animate(leaveAnim, leaveTiming);
     document.body.classList.remove('overflow');
+    window.removeEventListener('keyup', this.onKeyup);
+  },
+  methods: {
+    onKeyup(e) {
+      if (e.keyCode === 27) {
+        this.onEsc();
+      }
+    },
   },
 };
 </script>

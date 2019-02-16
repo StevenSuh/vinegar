@@ -38,7 +38,6 @@
   padding: 3px 5px;
   pointer-events: none;
   position: absolute;
-  transition: opacity var(--transition-duration) var(--transition-curve);
   transform: translateY(2px);
   z-index: 1;
 }
@@ -292,6 +291,26 @@ pre strong {
   font-weight: 800 !important;
 }
 
+.ql-snow .ql-editor blockquote {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.ql-snow .ql-editor blockquote:first-child {
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.ql-snow .ql-editor blockquote:last-child {
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+
+.ql-snow .ql-editor blockquote:only-child {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .ql-cursor-selection-block {
   pointer-events: none;
 }
@@ -306,7 +325,6 @@ pre strong {
   margin-top: -1px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--transition-duration) var(--transition-curve);
   top: 100%;
   z-index: 1;
 }

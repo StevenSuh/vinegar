@@ -29,6 +29,7 @@
             :school="$route.params.school"
           />
         </div>
+        <Control />
       </div>
       <div class="right">
         <Chat />
@@ -52,6 +53,7 @@
 
 <script>
 import Chat from '@/views/sessionPage/chat';
+import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
 import ErrorModal from '@/views/sessionPage/errorModal';
 import Welcome from '@/views/sessionPage/welcomeModal';
@@ -65,6 +67,7 @@ import { DUPLICATE_HEADER, DUPLICATE_MSG } from '@/defs';
 export default {
   components: {
     Chat,
+    Control,
     Editor,
     ErrorModal,
     Welcome,

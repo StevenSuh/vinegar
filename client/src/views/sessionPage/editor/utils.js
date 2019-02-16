@@ -99,12 +99,29 @@ export function selectionUpdate(type, range, _oldRange, source) {
   }
 }
 
+export function checkForEnter(delta) {
+  const ops = delta.ops || [];
+
+  if (ops.length === 2) {
+    const { insert } = ops[1];
+
+    if (insert === '\n') {
+      if (!this.prevEnter) {
+        this.prevEnter = true;
+        return;
+      }
+      const { index, length } = this.editor.getSelection();
+      this.editor.removeFormat(index + 1, length, 'silent');
+    }
+  }
+  this.prevEnter = false;
+};
+
 export function textUpdate(delta, _oldDelta, source) {
   if (source === Quill.sources.USER) {
-    this.$socket.emit('editor:onEditorTextUpdate', {
-      data: delta,
-      content: this.editor.root.innerHTML,
-    });
+    this.checkForEnter(delta);
+
+    this.$socket.emit('editor:onEditorTextUpdate', { data: delta });
 
     clearTimeout(this.updateTimeout);
     this.updateTimeout = setTimeout(() => {
