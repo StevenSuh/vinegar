@@ -41,6 +41,8 @@
 import Quill from 'quill';
 import { Range } from 'quill/core/selection';
 
+import { socketMixin } from '@/services/socket';
+
 import {
   checkForEnter,
   codeBlockIndentHandler,
@@ -66,14 +68,17 @@ import 'quill-cursors/dist/quill-cursors.css';
 setupQuill();
 
 export default {
+  mixins: [socketMixin],
   components: {
     ToolbarConfig,
   },
   props: {
     name: String,
+    $socket: WebSocket,
   },
   data() {
     return {
+      active: false,
       content: '',
       editor: null,
       prevEnter: false,
@@ -115,8 +120,8 @@ export default {
     checkForEnter,
     initEditor,
     onCheckBlur() {
-      if (!this.editor.hasFocus()) {
-        this.$socket.emit('editor:onEditorSelectionRemove');
+      if (this.active && !this.editor.hasFocus()) {
+        this.$socket.sendEvent('editor:onEditorSelectionRemove');
       }
     },
     onClickCollapse(e) {
@@ -136,17 +141,18 @@ export default {
       this.editor.enable();
 
       setTimeout(() => {
+        this.active = true;
         this.editor.history.clear();
-        this.$socket.emit('editor:onEnter');
+        this.$socket.sendEvent('editor:onEnter');
       }, 0);
     },
     'socket:onDuplicate': function() {
       this.editor.enable(false);
       this.editor.root.innerHTML = '';
     },
-    'editor:onEditorSelectionUpdate': function({ data, name, userId }) {
+    'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
       const range = new Range(data.index, data.length);
-      this.editor.getModule('cursors').setCursor(userId, range, name, 'red');
+      this.editor.getModule('cursors').setCursor(userId, range, name, color);
     },
     'editor:onEditorSelectionRemove': function({ userId }) {
       this.editor.getModule('cursors').removeCursor(userId);

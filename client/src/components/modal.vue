@@ -57,13 +57,11 @@ const enterTiming = {
 const leaveAnim = [
   {
     opacity: 1,
-    transform: 'translate(-50%, -50%) scale(1)',
     pointerEvents: 'none',
     userSelect: 'none',
   },
   {
     opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.8)',
     pointerEvents: 'auto',
     userSelect: 'auto',
   },

@@ -94,6 +94,8 @@
 </template>
 
 <script>
+import { socketMixin } from '@/services/socket';
+
 import Loader from '@/components/loader';
 
 import ArrowDownIcon from '@/assets/arrow_down.png';
@@ -115,6 +117,7 @@ import {
 import { onEnter, onDuplicate, onChatSend, onChatScroll } from './socket';
 
 export default {
+  mixins: [socketMixin],
   components: {
     Loader,
   },
@@ -134,6 +137,9 @@ export default {
       NameArrowIcon,
       NameCircleIcon,
     };
+  },
+  props: {
+    $socket: WebSocket,
   },
   methods: {
     formatDate,
@@ -238,7 +244,7 @@ export default {
   line-height: 1.3em;
   margin-bottom: 10px;
   white-space: normal;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .same {
@@ -248,7 +254,6 @@ export default {
 .msg-system {
   margin-bottom: 0;
   margin-top: 10px;
-  white-space: nowrap;
 }
 
 .scroll-down {

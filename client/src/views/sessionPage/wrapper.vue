@@ -27,12 +27,13 @@
           <Editor
             :session="$route.params.session"
             :school="$route.params.school"
+            :$socket="$socket"
           />
         </div>
-        <Control />
+        <Control :$socket="$socket" />
       </div>
       <div class="right">
-        <Chat />
+        <Chat :$socket="$socket" />
       </div>
       <transition name="fadeNoDelay">
         <Welcome
@@ -58,6 +59,7 @@ import Editor from '@/views/sessionPage/editor';
 import ErrorModal from '@/views/sessionPage/errorModal';
 import Welcome from '@/views/sessionPage/welcomeModal';
 
+import { socketMixin } from '@/services/socket';
 import { handleErrorMiddleware } from '@/services/middleware';
 
 import backImage from '@/assets/back.png';
@@ -65,6 +67,7 @@ import backImage from '@/assets/back.png';
 import { DUPLICATE_HEADER, DUPLICATE_MSG } from '@/defs';
 
 export default {
+  mixins: [socketMixin],
   components: {
     Chat,
     Control,
@@ -86,13 +89,11 @@ export default {
       backImage,
     };
   },
-  beforeDestroy() {
-    if (this.$socket) {
-      this.$socket.close();
-    }
+  props: {
+    $socket: WebSocket,
   },
   mounted() {
-    this.$socket.emit('socket:init');
+    this.$socket.sendEvent('socket:onInit');
     this.show = true;
   },
   methods: {
@@ -100,7 +101,7 @@ export default {
       this.isWelcome = false;
       setTimeout(() => {
         this.hide = false;
-        this.$socket.emit('socket:onEnter');
+        this.$socket.sendEvent('socket:onEnter');
       }, 200);
     },
     onShow() {
@@ -119,7 +120,7 @@ export default {
         header: DUPLICATE_HEADER,
         msg: DUPLICATE_MSG,
       };
-      this.$socket.emit('socket:onDuplicate', data);
+      this.$socket.sendEvent('socket:onDuplicate', data);
       this.$socket.close();
     },
   },

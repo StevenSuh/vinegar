@@ -5,22 +5,32 @@ const dbClient = require('db')();
 const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 
-const sessionRegex = pathToRegexp('/app/session/:school/:session');
+const { SOCKET_DUPLICATE } = require('./defs');
 
-const getSchoolAndSession = (socket) => {
-  const { referer } = socket.request.headers;
+const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
+
+const shouldHandle = function(req) {
+  const match = sessionRegex.exec(req.url);
+
+  if (!match) {
+    return false;
+  }
+  return true;
+};
+
+const getSchoolAndSession = (req) => {
+  const referer = req.url;
   const decodedUrl = decodeURI(referer);
-  const urlEnding = decodedUrl.slice(decodedUrl.split('/', 3).join('/').length);
+  const sessionParse = sessionRegex.exec(decodedUrl) || [];
 
-  const sessionParse = sessionRegex.exec(urlEnding) || [];
   return {
     schoolName: sessionParse[1],
     sessionName: sessionParse[2],
   };
 };
 
-const getCookieIds = (socket) => {
-  const reqCookie = socket.request.headers.cookie;
+const getCookieIds = (req) => {
+  const reqCookie = req.headers.cookie || '';
   const cookies = cookie.parse(reqCookie);
 
   return {
@@ -42,13 +52,13 @@ const getChats = async (session) => {
   }).reverse();
 };
 
-const setupSocketDuplicate = (socket, userSessionName) => {
-  socket.to(userSessionName).emit('socket:onDuplicate', socket.id);
+const setupSocketDuplicate = (ws, userSessionName) => {
+  ws.to(userSessionName).sendServer(SOCKET_DUPLICATE, { id: ws.id });
 
-  socket.on('socket:onDuplicate', (newSocketId) => {
-    if (newSocketId !== socket.id) {
-      socket.emit('socket:onDuplicate');
-      socket.disconnect(true);
+  ws.onEventServer(SOCKET_DUPLICATE, ({ id: newWsId }) => {
+    if (newWsId !== ws.id) {
+      ws.sendEvent(SOCKET_DUPLICATE);
+      ws.close();
     }
   });
 };
@@ -57,5 +67,6 @@ module.exports = {
   getSchoolAndSession,
   getCookieIds,
   getChats,
+  shouldHandle,
   setupSocketDuplicate,
 };

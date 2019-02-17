@@ -36,9 +36,9 @@ export default {
 
 <style scoped>
 .loader {
-  border: 2px solid transparent;
-  border-top: 2px solid var(--black-font-color);
-  border-right: 2px solid var(--black-font-color);
+  border: 2.5px solid transparent;
+  border-top: 2.5px solid var(--black-font-color);
+  border-right: 2.5px solid var(--black-font-color);
   border-radius: 50%;
   display: block;
   height: 24px;

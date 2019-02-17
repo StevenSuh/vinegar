@@ -1,6 +1,7 @@
-const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const express = require('express');
+const http = require('http');
 
 const { customMorgan, enableResBody } = require('utils');
 
@@ -24,7 +25,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 app.disable('etag');
 
-const httpServer = require('./routes/socket')(app);
+const httpServer = new http.Server();
+require('./routes/socket')(httpServer);
 
 httpServer.listen(WS_PORT);
 app.listen(PORT);

@@ -35,9 +35,9 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PASSWORD_SALT=
-      - POSTGRES_USERNAME=
+      - POSTGRES_USERNAME=postgres
       - POSTGRES_HOST=postgres
-      - POSTGRES_DATABASE_NAME=vinegar
+      - POSTGRES_DATABASE_NAME=postgres
       - POSTGRES_PASSWORD=
       - POSTGRES_PORT=5432
   client:

@@ -29,7 +29,7 @@ module.exports = (dbClient) => {
         validate: {
           isOneOf(value) {
             if (!TYPES.includes(value)) {
-              throw new Error(`${value} is not one of the allowed chat type defined in ${TYPES}`);
+              throw new Error(`${value} must be one of ${TYPES}`);
             }
           },
         }

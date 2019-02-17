@@ -5,16 +5,9 @@ const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
 const { DEFAULT_ENTER_MSG } = require('defs');
+const { CHAT_SEND, CHAT_SCROLL } = require('routes/socket/defs');
 
-module.exports = async (io, socket, session, user) => {
-  const sessionId = session.get(Sessions.ID);
-  const userId = user.get(Users.ID);
-
-  const sessionName = `session-${sessionId}`;
-
-  const color = user.get(Users.COLOR);
-  const name = user.get(Users.NAME);
-
+const createEnterChat = async (wss, _ws, session, user) => {
   const enterChat = await Chats.create({
     color: user.get(Users.COLOR),
     message: DEFAULT_ENTER_MSG,
@@ -28,8 +21,38 @@ module.exports = async (io, socket, session, user) => {
     throw new Error('Failed to create enter chat');
   }
 
-  socket.on('chat:onChatSend', async (data) => {
-    io.in(sessionName).emit('chat:onChatSend', {
+  const {
+    color,
+    createdAt,
+    message,
+    name,
+    type,
+    userId,
+  } = enterChat.get();
+
+  wss.to(`session-${session.get(Sessions.ID)}`).sendEvent(CHAT_SEND, {
+    color,
+    msg: message,
+    name,
+    date: createdAt,
+    type,
+    userId,
+  });
+};
+
+module.exports = async (wss, ws, session, user) => {
+  const sessionId = session.get(Sessions.ID);
+  const userId = user.get(Users.ID);
+
+  const sessionName = `session-${sessionId}`;
+
+  const color = user.get(Users.COLOR);
+  const name = user.get(Users.NAME);
+
+  await createEnterChat(wss, ws, session, user);
+
+  ws.onEvent(CHAT_SEND, async (data) => {
+    wss.to(sessionName).sendEvent(CHAT_SEND, {
       ...data,
       color,
       name,
@@ -48,7 +71,7 @@ module.exports = async (io, socket, session, user) => {
     });
   });
 
-  socket.on('chat:onChatScroll', async ({ offset }) => {
+  ws.onEvent(CHAT_SCROLL, async ({ offset }) => {
     const chats = await Chats.findAll({
       limit: 11,
       offset,
@@ -75,30 +98,9 @@ module.exports = async (io, socket, session, user) => {
       };
     }).reverse();
 
-    socket.emit('chat:onChatScroll', {
+    ws.sendEvent(CHAT_SCROLL, {
       hasMore: (msgs.length > 10),
       msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
     });
   });
-
-  // not sure yet
-  // socket.on('disconnect', async () => {
-  //   io.in(sessionName).emit('chat:onChatSend', {
-  //     color,
-  //     message: DEFAULT_LEAVE_MSG,
-  //     name,
-  //     date: Date.now(),
-  //     type: Chats.TYPE_USER,
-  //     userId,
-  //   });
-
-  //   await Chats.create({
-  //     color,
-  //     message: DEFAULT_LEAVE_MSG,
-  //     name,
-  //     sessionId,
-  //     type: Chats.TYPE_SYSTEM,
-  //     userId,
-  //   });
-  // });
 };

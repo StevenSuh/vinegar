@@ -1,8 +1,7 @@
-const { redisHost, redisPort } = require('config');
+// const { redisHost, redisPort } = require('config');
 
-const http = require('http');
-const SocketIo = require('socket.io');
-const SocketRedis = require('socket.io-redis');
+const WebSocket = require('ws');
+const { WsWrapper, WssWrapper } = require('routes/socket/wrapper');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
@@ -10,51 +9,61 @@ const Users = require('db/users/model')(dbClient);
 
 const redisClient = require('services/redis')();
 
-const initSocketEditor = require('./editor');
-const initSocketChat = require('./chat');
+const initSocketEditor = require('./modules/editor');
+const initSocketChat = require('./modules/chat');
 
 const {
   getSchoolAndSession,
   getCookieIds,
   getChats,
+  shouldHandle,
   setupSocketDuplicate,
 } = require('./utils');
 
-const startSocket = async (io, socket, session, user) => {
-  socket.join(`session-${session.get(Sessions.ID)}`);
-  socket.join(`user-${user.get(Users.ID)}`);
+const {
+  SOCKET_ENTER,
+  SOCKET_EXCEPTION,
+  SOCKET_INIT,
+} = require('./defs');
 
-  await initSocketChat(io, socket, session, user);
-  initSocketEditor(io, socket, session, user);
+WebSocket.Server.prototype.shouldHandle = shouldHandle;
+
+const startSocket = async (wss, ws, session, user) => {
+  ws.join(`session-${session.get(Sessions.ID)}`);
+  ws.join(`user-${user.get(Users.ID)}`);
+
+  await initSocketChat(wss, ws, session, user);
+  initSocketEditor(wss, ws, session, user);
 
   const msgs = await getChats(session);
 
-  socket.emit('socket:onEnter', {
+  ws.sendEvent(SOCKET_ENTER, {
     content: session.get(Sessions.CONTENT),
     isOwner: session.get(Sessions.OWNER_ID) === user.get(Users.ID),
     hasMore: (msgs.length > 10),
     msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
   });
 
-  setupSocketDuplicate(socket, `user-${user.get(Users.ID)}`);
+  setupSocketDuplicate(ws, `user-${user.get(Users.ID)}`);
 };
 
 // main
-module.exports = (app) => {
-  const httpServer = http.Server(app);
-  const io = SocketIo(httpServer);
-  io.adapter(SocketRedis({ host: redisHost, port: redisPort }));
+module.exports = (server) => {
+  const wss = WssWrapper(new WebSocket.Server({ path: true, server }));
 
-  io.on('connection', (socket) => {
-    const names = getSchoolAndSession(socket);
-    const { cookieId } = getCookieIds(socket);
+  wss.on('connection', (socket, req) => {
+    const ws = WsWrapper(socket);
 
-    socket.on('socket:init', async () => {
+    const names = getSchoolAndSession(req);
+    const { cookieId } = getCookieIds(req);
+
+    ws.onEvent(SOCKET_INIT, () => {
       if (!cookieId || !names.schoolName || !names.sessionName) {
-        return socket.emit('socket:onException', { errorMessage: 'Invalid authentication.' });
+        ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid authentication.' });
+        return ws.close();
       }
 
-      socket.on('socket:onEnter', async () => {
+      ws.onEvent(SOCKET_ENTER, async () => {
         const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
         const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
         const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
@@ -65,17 +74,16 @@ module.exports = (app) => {
         const [session, user] = await Promise.all([sessionPromise, userPromise]);
 
         if (!session || !user) {
-          return socket.emit('socket:onException', { errorMessage: 'Invalid session' });
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid Session.' });
+          return ws.close();
         }
 
         if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
-          return socket.emit('socket:onException', { errorMessage: 'You are not authenticated with the right session.' });
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'You are not authenticated with the right session.' });
+          return ws.close();
         }
-        return startSocket(io, socket, session, user);
+        return startSocket(wss, ws, session, user);
       });
-      return null;
     });
   });
-
-  return httpServer;
 };

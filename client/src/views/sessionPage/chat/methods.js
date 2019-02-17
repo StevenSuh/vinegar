@@ -16,7 +16,7 @@ export function onScroll(e) {
     e.preventDefault();
     this.isLoading = Date.now();
     this.scrollTop = el.scrollTop;
-    this.$socket.emit('chat:onChatScroll', { offset: this.msgs.length });
+    this.$socket.sendEvent('chat:onChatScroll', { offset: this.msgs.length });
   }
 
   if (((el.scrollHeight - el.clientHeight) - el.scrollTop) > 0) {
@@ -73,7 +73,7 @@ export function sendChat(value) {
   this.$refs.chat.value = '';
   this.updateInputHeight();
 
-  this.$socket.emit('chat:onChatSend', { msg: value });
+  this.$socket.sendEvent('chat:onChatSend', { msg: value });
   this.scrollToBottom();
 }
 

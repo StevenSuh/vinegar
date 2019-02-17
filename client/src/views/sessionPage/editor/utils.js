@@ -93,7 +93,7 @@ export function selectionUpdate(type, range, _oldRange, source) {
       // textUpdate is occurring at the same time
       // causing cursor to update inaccurately
       setTimeout(() => {
-        this.$socket.emit('editor:onEditorSelectionUpdate', { data: range });
+        this.$socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
       }, 0);
     }
   }
@@ -121,11 +121,11 @@ export function textUpdate(delta, _oldDelta, source) {
   if (source === Quill.sources.USER) {
     this.checkForEnter(delta);
 
-    this.$socket.emit('editor:onEditorTextUpdate', { data: delta });
+    this.$socket.sendEvent('editor:onEditorTextUpdate', { data: delta });
 
     clearTimeout(this.updateTimeout);
     this.updateTimeout = setTimeout(() => {
-      this.$socket.emit('editor:onEditorContentUpdate', this.editor.root.innerHTML);
+      this.$socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.root.innerHTML });
     }, CONTENT_UPDATE_DUR);
   }
 }

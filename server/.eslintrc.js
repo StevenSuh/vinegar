@@ -10,5 +10,7 @@ module.exports = {
   rules: {
     'import/no-unresolved': 'off',
     'node/no-missing-require': 'off',
+    'func-names': 'off',
+    'consistent-return': 'off',
   },
 };
