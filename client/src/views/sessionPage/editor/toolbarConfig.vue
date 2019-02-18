@@ -69,6 +69,9 @@
       />
     </span>
     <span class="ql-formats">
+      <button class="ql-link" /> <button class="ql-image" />
+    </span>
+    <span class="ql-formats">
       <button class="ql-blockquote" /> <button class="ql-code-block" />
     </span>
     <span class="ql-formats">

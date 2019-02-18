@@ -3,7 +3,6 @@
     <div
       v-if="show"
       class="session"
-      :class="hide ? 'hide' : ''"
     >
       <router-link
         class="back-button-wrapper hover"
@@ -36,13 +35,6 @@
         <Chat :socket="socket" />
       </div>
       <transition name="fadeNoDelay">
-        <Welcome
-          v-if="isWelcome"
-          :on-close="onCloseIsWelcome"
-          :on-show="onShow"
-        />
-      </transition>
-      <transition name="fadeNoDelay">
         <ErrorModal
           v-if="errorModal"
           :error-modal="errorModal"
@@ -57,7 +49,6 @@ import Chat from '@/views/sessionPage/chat';
 import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
 import ErrorModal from '@/views/sessionPage/errorModal';
-import Welcome from '@/views/sessionPage/welcomeModal';
 
 import { socketMixin } from '@/services/socket';
 import { handleErrorMiddleware } from '@/services/middleware';
@@ -70,9 +61,8 @@ export default {
   components: {
     Chat,
     Control,
-    Editor,
     ErrorModal,
-    Welcome,
+    Editor,
   },
   mixins: [socketMixin],
   props: {
@@ -82,31 +72,16 @@ export default {
     return {
       // state
       errorModal: null,
-      hide: true,
       school: this.$route.params.school,
       session: this.$route.params.session,
       show: false,
-      isWelcome: true,
 
       // assets
       backImage,
     };
   },
   mounted() {
-    this.socket.sendEvent('socket:onInit');
     this.show = true;
-  },
-  methods: {
-    onCloseIsWelcome() {
-      this.isWelcome = false;
-      setTimeout(() => {
-        this.hide = false;
-        this.socket.sendEvent('socket:onEnter');
-      }, 200);
-    },
-    onShow() {
-      this.hide = false;
-    },
   },
   sockets: {
     error(err) {
@@ -135,10 +110,6 @@ export default {
   padding: 60px 70px;
   transition: opacity var(--transition-duration) var(--transition-curve);
   transition-delay: 0.3s;
-}
-
-.session.hide {
-  opacity: 0;
 }
 
 .school-name {

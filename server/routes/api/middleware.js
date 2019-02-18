@@ -1,22 +1,46 @@
 const redisClient = require('services/redis')();
 const pathToRegexp = require('path-to-regexp');
+const uuidv4 = require('uuid/v4');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
+const Users = require('db/users/model')(dbClient);
 
 const sessionRegex = pathToRegexp('/app/session/:school/:session');
 
+const createUser = async (res) => {
+  const user = await Users.create();
+
+  const cookieId = uuidv4();
+  res.cookie('cookieId', cookieId, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 1 month
+    secure: false, // TODO: change to true
+  });
+
+  await redisClient.hsetAsync(cookieId, redisClient.USER_ID, user.get(Users.ID));
+  redisClient.expireAsync(cookieId, 60 * 60 * 24 * 30); // 1 month
+
+  return user;
+}
+
 const requireUserAuth = async (req, res, next = Function) => {
+  let user = false;
+  let userId = null;
+
   const { cookieId } = req.cookies;
-  if (!cookieId) {
-    res.status(400).send('Invalid cookie.');
-    return false;
+  if (cookieId) {
+    userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
+    if (userId) {
+      user = true;
+    } else {
+      res.clearCookie('cookieId');
+    }
   }
 
-  const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
-  if (!userId) {
-    res.status(400).send('Invalid user.');
-    return false;
+  if (!user) {
+    user = await createUser(res);
+    userId = user.get(Users.ID);
   }
 
   req.userId = userId;
@@ -86,6 +110,7 @@ const requireSessionAuth = async (req, res, next = Function) => {
 
 
 module.exports = {
+  createUser,
   getNamesByReferer,
   requireUserAuth,
   requireSessionAuth,

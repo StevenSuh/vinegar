@@ -28,8 +28,12 @@
   --black-font-color: #444444;
   --white-font-color: #ffffff;
 
+  --box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px;
+
   --transition-curve: cubic-bezier(0.8, 0, 0.2, 1);
   --transition-duration: 0.2s;
+  --transition-mid-duration: 0.15s;
+  --transition-short-duration: 0.1s;
 }
 
 body,

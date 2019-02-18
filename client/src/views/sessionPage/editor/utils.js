@@ -1,15 +1,16 @@
 import Quill from 'quill';
 import QuillCursors from 'quill-cursors';
+import ImageResize from 'quill-image-resize-module';
 
 import { CONTENT_UPDATE_DUR, FONT_SIZES } from '@/defs';
 
 import PlainClipboard from './PlainClipboard';
-
-const Delta = Quill.import('delta');
+import customizeTooltip from './modules/CustomTooltip';
 
 export function setupQuill() {
   Quill.register('modules/clipboard', PlainClipboard, true);
   Quill.register('modules/cursors', QuillCursors);
+  Quill.register('modules/imageResize', ImageResize);
 
   const Font = Quill.import('formats/font');
   Font.whitelist = ['rubik', 'arial', 'times', 'courier'];
@@ -33,41 +34,10 @@ export function initEditor() {
 
   document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
 
+  customizeTooltip.call(this);
+
   this.editor.enable(false);
   setTimeout(() => this.onResizeCollapse(), 0);
-}
-
-export function onSmallerFontHandler() {
-  const format = this.editor.getFormat();
-  let index = this.sizes.indexOf(format.size || '16px');
-
-  index = Math.max(index - 1, 0);
-  this.editor.format('size', this.sizes[index]);
-}
-
-export function onLargerFontHandler() {
-  const format = this.editor.getFormat();
-  let index = this.sizes.indexOf(format.size || '16px');
-
-  index = Math.min(index + 1, this.sizes.length - 1);
-  this.editor.format('size', this.sizes[index]);
-}
-
-export function onExtendHandler() {
-  const { extend } = this.$refs;
-  const button = extend.children[0];
-  const { collapse } = this.$refs;
-  const isActive = button.classList.contains('active');
-
-  if (!isActive) {
-    const parent = this.$refs.toolbar;
-    const distance = (parent.offsetWidth - extend.offsetWidth) - (extend.offsetLeft - parent.offsetLeft);
-
-    this.$refs.collapse.style.right = `${distance}px`;
-  }
-
-  button.classList.toggle('active', !isActive);
-  collapse.classList.toggle('show', !isActive);
 }
 
 export function onExtendBlur(e) {
@@ -132,27 +102,6 @@ export function textUpdate(delta, _oldDelta, source) {
       this.socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.root.innerHTML });
     }, CONTENT_UPDATE_DUR);
   }
-}
-
-export function codeBlockIndentHandler(indent) {
-  return {
-    key: 9,
-    shiftKey: !indent,
-    format: { 'code-block': true },
-    handler(range) {
-      const text = '  ';
-
-      const delta = new Delta()
-        .retain(range.index)
-        .delete(range.length)
-        .insert(text);
-      const index = text.length + range.index;
-      const length = 0;
-
-      this.quill.updateContents(delta, Quill.sources.USER);
-      this.quill.setSelection(index, length, Quill.sources.USER);
-    },
-  };
 }
 
 export function onResizeCollapse() {

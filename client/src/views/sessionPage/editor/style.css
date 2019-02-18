@@ -33,7 +33,7 @@
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px;
+  box-shadow: var(--box-shadow);
   opacity: 0;
   padding: 3px 5px;
   pointer-events: none;
@@ -93,8 +93,13 @@
   font-size: 14px;
 }
 
-.ql-editor * {
+.ql-editor > div {
   line-height: 1.5em;
+  z-index: 0;
+}
+
+.ql-editor > div span,
+.ql-editor > div img {
   z-index: -1;
 }
 
@@ -244,6 +249,8 @@ button.active,
 }
 
 .ql-toolbar.ql-snow .ql-picker-options {
+  border-color: #ccc;
+  box-shadow: var(--box-shadow);
   border-radius: 5px;
 }
 
@@ -389,6 +396,99 @@ strong.ql-font-courier {
 .ql-editor em,
 .ql-editor strong {
   z-index: 0;
+}
+
+.ql-snow .ql-hidden {
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ql-snow .ql-tooltip {
+  border-radius: 5px;
+  box-shadow: var(--box-shadow);
+  padding: 5px 15px;
+  font-size: 14px;
+  transition: opacity var(--transition-mid-duration) var(--transition-curve);
+  width: fit-content;
+  z-index: 1000;
+  will-change: opacity;
+}
+
+.ql-snow .ql-tooltip.ql-editing {
+  padding: 4.5px 15px;
+}
+
+.ql-snow .ql-tooltip::before {
+  content: 'Link:' !important;
+  margin-right: 6px;
+  /* display: none; */
+}
+
+.ql-snow .ql-tooltip input[type=text] {
+  border: none;
+  border-radius: 5px;
+  color: var(--black-font-color);
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.ql-snow .ql-tooltip input[type=text]::placeholder {
+  opacity: 0.5;
+}
+
+a.ql-preview:hover {
+  text-decoration: underline;
+}
+
+a.ql-action,
+a.ql-remove {
+  color: var(--black-font-color);
+  transition: opacity var(--transition-short-duration) var(--transition-curve);
+}
+
+a.ql-action:hover,
+a.ql-remove:hover {
+  opacity: 0.5;
+}
+
+.ql-snow .ql-tooltip.vinegar-ql-image.ql-editing .ql-action::after {
+  border-right: 1px solid #ccc;
+  padding-right: 8px;
+}
+
+.ql-snow .ql-tooltip.vinegar-ql-image .ql-remove::before {
+  border-right: 1px solid #ccc;
+  padding-right: 8px;
+}
+
+.vinegar-ql-upload-wrapper {
+  cursor: pointer;
+  display: none;
+  height: 22px;
+  margin-left: 8px;
+  transition: opacity var(--transition-short-duration) var(--transition-curve);
+  vertical-align: middle;
+}
+
+.ql-tooltip.vinegar-ql-image .vinegar-ql-upload-wrapper {
+  display: inline-block;
+}
+
+.vinegar-ql-upload-wrapper:hover {
+  opacity: 0.5;
+}
+
+.vinegar-ql-upload-wrapper > svg {
+  height: 20px;
+  stroke: var(--black-font-color);
+  stroke-width: 1.75px;
+  width: 20px;
+}
+
+.vinegar-ql-upload {
+  display: none;
 }
 
 @media (max-width: 700px) {

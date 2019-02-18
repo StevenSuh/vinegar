@@ -15,14 +15,7 @@ export async function onInit() {
    * - If session checked in, skip the welcome intro flow
    * - If session has password, enable password check modal first
    */
-  const {
-    validSession,
-    validUser,
-  } = await getAuthStatus();
-
-  if (!validUser) {
-    return this.$router.push('/');
-  }
+  const { validSession } = await getAuthStatus();
 
   if (validSession) {
     // this means that user already went through the session welcome flow

@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="editor"
-    @scroll="onScrollEditor"
-  >
+  <div class="editor">
     <div ref="toolbar">
       <div
         ref="open"
@@ -45,17 +42,21 @@ import { socketMixin } from '@/services/socket';
 
 import {
   checkForEnter,
-  codeBlockIndentHandler,
   initEditor,
   onExtendBlur,
-  onExtendHandler,
-  onLargerFontHandler,
   onResizeCollapse,
-  onSmallerFontHandler,
   selectionUpdate,
   setupQuill,
   textUpdate,
 } from './utils';
+import {
+  codeBlockIndentHandler,
+  onExtendHandler,
+  onLargerFontHandler,
+  onLinkHandler,
+  onImageHandler,
+  onSmallerFontHandler,
+} from './modules/handlers';
 import ToolbarConfig from './toolbarConfig';
 
 import { FONT_SIZES } from '@/defs';
@@ -88,10 +89,14 @@ export default {
   },
   mounted() {
     this.editor = new Quill(this.$refs.editor, {
+      bounds: this.$refs.editor,
       modules: {
         cursors: { autoRegisterListener: false },
         keyboard: {
           bindings: { 'indent code-block': codeBlockIndentHandler(true) },
+        },
+        imageResize: {
+          modules: ['Resize', 'DisplaySize'],
         },
         toolbar: {
           container: this.$refs.toolbar,
@@ -99,6 +104,8 @@ export default {
             smallerFont: onSmallerFontHandler.bind(this),
             largerFont: onLargerFontHandler.bind(this),
             extend: onExtendHandler.bind(this),
+            link: onLinkHandler.bind(this),
+            image: onImageHandler.bind(this),
             undo: () => this.editor.history.undo(),
             redo: () => this.editor.history.redo(),
           },
@@ -110,11 +117,13 @@ export default {
     window.addEventListener('click', this.onCheckBlur);
     window.addEventListener('click', this.onExtendBlur);
     window.addEventListener('resize', this.onResizeCollapse);
+    this.editor.root.addEventListener('scroll', this.onScrollEditor);
   },
   beforeDestroy() {
     window.removeEventListener('click', this.onCheckBlur);
     window.removeEventListener('click', this.onExtendBlur);
     window.removeEventListener('resize', this.onResizeCollapse);
+    this.editor.root.removeEventListener('scroll', this.onScrollEditor);
   },
   methods: {
     checkForEnter,
@@ -130,7 +139,18 @@ export default {
     onExtendBlur,
     onResizeCollapse,
     onScrollEditor() {
-      this.editor.getModule('cursors').update();
+      const items = this.$refs.editor.children;
+      const lastItem = items[items.length - 1];
+      if (lastItem.className === '') {
+        lastItem.style.display = 'none';
+      }
+
+      this.editor.theme.tooltip.cancel();
+      /* eslint-disable no-empty */
+      try {
+        this.editor.getModule('cursors').update();
+      } catch (_) {}
+      /* eslint-enable no-empty */
     },
     selectionUpdate,
     textUpdate,
@@ -152,14 +172,26 @@ export default {
     },
     'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
       const range = new Range(data.index, data.length);
-      this.editor.getModule('cursors').setCursor(userId, range, name, color);
+      /* eslint-disable no-empty */
+      try {
+        this.editor.getModule('cursors').setCursor(userId, range, name, color);
+      } catch (_) {}
+      /* eslint-enable no-empty */
     },
     'editor:onEditorSelectionRemove': function({ userId }) {
-      this.editor.getModule('cursors').removeCursor(userId);
+      /* eslint-disable no-empty */
+      try {
+        this.editor.getModule('cursors').removeCursor(userId);
+      } catch (_) {}
+      /* eslint-enable no-empty */
     },
     'editor:onEditorTextUpdate': function({ data, userId }) {
       this.editor.updateContents(data, userId);
-      this.editor.getModule('cursors').update();
+      /* eslint-disable no-empty */
+      try {
+        this.editor.getModule('cursors').update();
+      } catch (_) {}
+      /* eslint-enable no-empty */
     },
   },
 };

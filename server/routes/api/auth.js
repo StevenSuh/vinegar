@@ -1,10 +1,6 @@
-const uuidv4 = require('uuid/v4');
 const redisClient = require('services/redis')();
 
-const dbClient = require('db')();
-const Users = require('db/users/model')(dbClient);
-
-const { getNamesByReferer } = require('routes/api/middleware');
+const { createUser, getNamesByReferer } = require('routes/api/middleware');
 
 module.exports = (app) => {
   app.get('/api/signin', async (req, res) => {
@@ -13,25 +9,15 @@ module.exports = (app) => {
       return res.json({});
     }
 
-    const user = await Users.create();
-
-    const cookieId = uuidv4();
-    res.cookie('cookieId', cookieId, {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: false, // TODO: change to true
-    });
-
-    await redisClient.hsetAsync(cookieId, redisClient.USER_ID, user.get(Users.ID));
-    redisClient.expireAsync(cookieId, 60 * 60 * 24 * 7);
-
+    await createUser(res);
     return res.json({});
   });
 
   app.get('/api/auth/status', async (req, res) => {
     const { cookieId } = req.cookies;
     if (!cookieId) {
-      return res.json({ validSession: false, validUser: false });
+      await createUser(res);
+      return res.json({ validSession: false });
     }
 
     let validSession = false;
@@ -54,8 +40,11 @@ module.exports = (app) => {
     }
 
     const userIdExists = await redisClient.hexistsAsync(cookieId, redisClient.USER_ID);
+    if (!userIdExists) {
+      await createUser(res);
+    }
 
-    return res.json({ validUser: Boolean(userIdExists), validSession });
+    return res.json({ validSession });
   });
 
   app.get('/api/signout', (req, res) => {
