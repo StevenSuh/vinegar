@@ -67,13 +67,16 @@ import backImage from '@/assets/back.png';
 import { DUPLICATE_HEADER, DUPLICATE_MSG } from '@/defs';
 
 export default {
-  mixins: [socketMixin],
   components: {
     Chat,
     Control,
     Editor,
     ErrorModal,
     Welcome,
+  },
+  mixins: [socketMixin],
+  props: {
+    socket: WebSocket,
   },
   data() {
     return {
@@ -88,9 +91,6 @@ export default {
       // assets
       backImage,
     };
-  },
-  props: {
-    $socket: WebSocket,
   },
   mounted() {
     this.$socket.sendEvent('socket:onInit');

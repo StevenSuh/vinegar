@@ -1,13 +1,11 @@
 <template>
   <SessionPageWrapper
-    :$socket="$socket"
     v-if="show"
+    :$socket="$socket"
   />
 </template>
 
 <script>
-import Vue from 'vue';
-
 import { initSocket } from '@/services/socket';
 
 import SessionPageWrapper from './wrapper';
@@ -15,6 +13,12 @@ import SessionPageWrapper from './wrapper';
 export default {
   components: {
     SessionPageWrapper,
+  },
+  data() {
+    return {
+      $socket: null,
+      show: false,
+    };
   },
   beforeCreate() {
     const { school } = this.$route.params;
@@ -35,12 +39,6 @@ export default {
       this.$socket.close();
       this.$socket = null;
     }
-  },
-  data() {
-    return {
-      $socket: null,
-      show: false,
-    };
   },
 };
 </script>

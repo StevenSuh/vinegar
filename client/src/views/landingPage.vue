@@ -17,7 +17,10 @@
                 </p>
               </ButtonComponent>
               <ButtonComponent type="primary">
-                <router-link tag="a" to="/app/find">
+                <router-link
+                  tag="a"
+                  to="/app/find"
+                >
                   Start
                 </router-link>
               </ButtonComponent>
@@ -48,7 +51,9 @@
                 Join Your Session
               </router-link>
             </ButtonComponent>
-            <p class="caption">*No sign-in required</p>
+            <p class="caption">
+              *No sign-in required
+            </p>
           </div>
           <img
             class="right"

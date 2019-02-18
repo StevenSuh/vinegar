@@ -119,9 +119,12 @@ import {
 import { onEnter, onDuplicate, onChatSend, onChatScroll } from './socket';
 
 export default {
-  mixins: [socketMixin],
   components: {
     Loader,
+  },
+  mixins: [socketMixin],
+  props: {
+    socket: WebSocket,
   },
   data() {
     return {
@@ -139,9 +142,6 @@ export default {
       NameArrowIcon,
       NameCircleIcon,
     };
-  },
-  props: {
-    $socket: WebSocket,
   },
   methods: {
     formatDate,

@@ -21,14 +21,17 @@ import Inactive from './inactive';
 
 import { socketMixin } from '@/services/socket';
 
-import ButtonComponent from '@/components/button';
+// import ButtonComponent from '@/components/button';
 
 export default {
-  mixins: [socketMixin],
   components: {
     Active,
-    ButtonComponent,
+    // ButtonComponent,
     Inactive,
+  },
+  mixins: [socketMixin],
+  props: {
+    socket: WebSocket,
   },
   data() {
     return {
@@ -40,9 +43,6 @@ export default {
       isOwner: null,
       status: null,
     };
-  },
-  props: {
-    $socket: WebSocket,
   },
   sockets: {
     'socket:onEnter': function({ isOwner }) {

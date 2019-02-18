@@ -101,7 +101,6 @@ import Loader from '@/components/loader';
 import Decision from '@/views/findPage/decision';
 import Join from '@/views/findPage/join';
 import Create from '@/views/findPage/create';
-import ButtonComponent from '@/components/button';
 
 import { MIN_MOBILE_WIDTH } from '@/defs';
 
@@ -111,7 +110,6 @@ import rightImage from '@/assets/find_right.png';
 
 export default {
   components: {
-    ButtonComponent,
     Create,
     Join,
     Loader,

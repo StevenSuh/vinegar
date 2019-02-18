@@ -68,13 +68,13 @@ import 'quill-cursors/dist/quill-cursors.css';
 setupQuill();
 
 export default {
-  mixins: [socketMixin],
   components: {
     ToolbarConfig,
   },
+  mixins: [socketMixin],
   props: {
     name: String,
-    $socket: WebSocket,
+    socket: WebSocket,
   },
   data() {
     return {

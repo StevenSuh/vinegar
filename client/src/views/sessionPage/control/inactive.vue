@@ -1,4 +1,6 @@
-<template> </template>
+<template>
+  <div>Inactive</div>
+</template>
 
 <script>
 export default {};
