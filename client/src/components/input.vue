@@ -4,7 +4,6 @@
       :id="id"
       ref="input"
       class="input"
-      :autofocus="autofocus"
       :autocomplete="autocomplete"
       :class="[errorMessage ? 'error' : '', size]"
       :maxlength="maxLen"
@@ -41,10 +40,6 @@
 <script>
 export default {
   props: {
-    autofocus: {
-      type: String,
-      default: 'off',
-    },
     autocomplete: {
       type: String,
       default: 'on',

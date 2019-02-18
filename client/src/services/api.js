@@ -18,7 +18,7 @@ export const signOut = apiTemplate(
   },
 );
 
-export const getSigninUrl = apiTemplate(
+export const signIn = apiTemplate(
   '/api/signin',
   async (endpoint) => {
     const res = await axios.get(endpoint);

@@ -1,5 +1,3 @@
-import { getSigninUrl } from '@/services/api';
-
 import alarmClockImage from '@/assets/alarmClock.png';
 import dotsImage from '@/assets/dots.png';
 import exclamationImage from '@/assets/exclamation.png';
@@ -15,8 +13,6 @@ import rightImage from '@/assets/landing_right.png';
 import snooImage from '@/assets/snoo.png';
 import squigglesImage from '@/assets/squiggles.png';
 import steveImage from '@/assets/steve.png';
-
-import 'web-animations-js';
 
 import '@/style.css';
 import './style.css';
@@ -68,15 +64,6 @@ async function init() {
     };
   });
 
-  const loader = document.getElementById('loader');
-  const loaderAnim = loader.animate(
-    [
-      { transform: 'rotate(0deg)' },
-      { transform: 'rotate(360deg)' },
-    ],
-    { duration: 500, iterations: Infinity },
-  );
-
   document.getElementById('about').onclick = () => {
     const how = document.getElementById('how');
     const { top } = how.getBoundingClientRect();
@@ -86,13 +73,6 @@ async function init() {
       behavior: 'smooth',
     });
   };
-
-  const { signinUrl } = await getSigninUrl();
-  const login = document.getElementById('login');
-  login.href = signinUrl;
-  loader.classList.add('hide');
-  login.classList.add('show');
-  loaderAnim.cancel();
 }
 
 window.onload = init;

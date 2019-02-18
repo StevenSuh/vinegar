@@ -13,10 +13,6 @@ module.exports = (dbClient) => {
         allowNull: true,
         type: Sequelize.STRING,
       },
-      gid: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
       id: {
         autoIncrement: true,
         primaryKey: true,
@@ -32,7 +28,6 @@ module.exports = (dbClient) => {
         type: Sequelize.STRING,
       },
     }, {
-      indexes: [{ unique: true, fields: ['gid'] }],
       freezeTableName: true,
       timestamps: true,
     });
@@ -41,7 +36,6 @@ module.exports = (dbClient) => {
     Users.COLOR = 'color';
     Users.CREATED_AT = 'createdAt';
     Users.EMAIL = 'email';
-    Users.GID = 'gid';
     Users.ID = 'id';
     Users.NAME = 'name';
     Users.PHONE = 'phone';

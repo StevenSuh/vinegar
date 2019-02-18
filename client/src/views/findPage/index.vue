@@ -33,14 +33,6 @@
             <h2 class="nav-header">
               Vinegar
             </h2>
-            <ButtonComponent
-              class="sign-out hover"
-              type="minimal"
-            >
-              <p @click="onSignOut">
-                Sign Out
-              </p>
-            </ButtonComponent>
           </nav>
         </div>
         <img
@@ -57,7 +49,7 @@
           <transition name="fade">
             <div v-if="loaded">
               <transition name="fade">
-                <div v-if="isAuth">
+                <div>
                   <transition name="fade">
                     <Decision
                       v-if="isMakingChoice"
@@ -71,12 +63,6 @@
                   <transition name="fade">
                     <Create v-if="isCreatingSession" />
                   </transition>
-                </div>
-              </transition>
-              <transition name="fade">
-                <div v-if="!isAuth">
-                  <!-- TODO -->
-                  Not auth :(
                 </div>
               </transition>
             </div>
@@ -110,7 +96,7 @@
 </template>
 
 <script>
-import { getAuthStatus, signOut } from '@/services/api';
+import { signIn } from '@/services/api';
 import Loader from '@/components/loader';
 import Decision from '@/views/findPage/decision';
 import Join from '@/views/findPage/join';
@@ -134,7 +120,6 @@ export default {
   data() {
     return {
       // state
-      isAuth: false,
       isMobile: window.innerWidth <= MIN_MOBILE_WIDTH,
       isMakingChoice: true,
       isJoiningSession: false,
@@ -171,8 +156,7 @@ export default {
       this.isCreatingSession = true;
     },
     async onInit() {
-      const { validUser } = await getAuthStatus();
-      this.isAuth = validUser;
+      await signIn();
       this.loaded = true;
     },
     onResize() {
@@ -182,10 +166,6 @@ export default {
       this.isMakingChoice = true;
       this.isJoiningSession = false;
       this.isCreatingSession = false;
-    },
-    async onSignOut() {
-      await signOut();
-      this.$router.push('/');
     },
   },
 };

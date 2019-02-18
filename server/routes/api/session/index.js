@@ -89,11 +89,11 @@ module.exports = (app) => {
       }
 
       const defaults = {
+        active: true,
         duration,
         ownerId: req.userId,
         schoolName,
         sessionName,
-        status: Sessions.STATUS_INITIAL,
       };
 
       if (password) {
@@ -103,6 +103,7 @@ module.exports = (app) => {
 
       const [session, created] = await Sessions.findOrCreate({
         where: {
+          active: true,
           schoolName,
           sessionName,
         },

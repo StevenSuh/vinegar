@@ -17,27 +17,9 @@
                 </p>
               </ButtonComponent>
               <ButtonComponent type="primary">
-                <a
-                  v-if="signinUrlLoaded && signinUrl !== '/app/find'"
-                  :href="signinUrl"
-                >
-                  Login
-                </a>
-                <router-link
-                  v-else-if="signinUrlLoaded && signinUrl === '/app/find'"
-                  tag="a"
-                  to="/app/find"
-                >
-                  Login
+                <router-link tag="a" to="/app/find">
+                  Start
                 </router-link>
-                <span
-                  v-else
-                  class="oauth-placeholder"
-                >
-                  <span class="loader-absolute">
-                    <Loader color="white" />
-                  </span>
-                </span>
               </ButtonComponent>
             </div>
           </nav>
@@ -346,8 +328,6 @@
 
 <script>
 import ButtonComponent from '@/components/button';
-import Loader from '@/components/loader';
-import { getSigninUrl } from '@/services/api';
 
 import alarmClockImage from '@/assets/alarmClock.png';
 import dotsImage from '@/assets/dots.png';
@@ -371,14 +351,11 @@ export default {
   name: 'IntroPage',
   components: {
     ButtonComponent,
-    Loader,
   },
   data() {
     return {
       // state
       show: false,
-      signinUrlLoaded: false,
-      signinUrl: '',
 
       // img assets
       alarmClockImage,
@@ -401,17 +378,10 @@ export default {
   beforeCreate() {
     document.title = 'Vinegar';
   },
-  async mounted() {
-    await this.onInit();
+  mounted() {
     this.show = true;
   },
   methods: {
-    async onInit() {
-      const { signinUrl } = await getSigninUrl();
-
-      this.signinUrl = signinUrl;
-      this.signinUrlLoaded = true;
-    },
     onClickAbout() {
       const { how } = this.$refs;
       const { top } = how.getBoundingClientRect();

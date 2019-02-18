@@ -1,7 +1,4 @@
 module.exports = {
-  googleClientId: process.env.GOOGLE_CLIENT_ID,
-  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  googleRedirect: process.env.GOOGLE_REDIRECT_URL,
   passwordSalt: process.env.PASSWORD_SALT,
   passwordIteration: 100000,
   passwordKeyLen: 32,
