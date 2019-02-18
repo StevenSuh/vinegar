@@ -7,7 +7,7 @@ const Users = require('db/users/model')(dbClient);
 const { DEFAULT_ENTER_MSG } = require('defs');
 const { CHAT_SEND, CHAT_SCROLL } = require('routes/socket/defs');
 
-const createEnterChat = async (wss, _ws, session, user) => {
+const createEnterChat = async (_wss, ws, session, user) => {
   const enterChat = await Chats.create({
     color: user.get(Users.COLOR),
     message: DEFAULT_ENTER_MSG,
@@ -30,7 +30,7 @@ const createEnterChat = async (wss, _ws, session, user) => {
     userId,
   } = enterChat.get();
 
-  wss.to(`session-${session.get(Sessions.ID)}`).sendEvent(CHAT_SEND, {
+  ws.to(`session-${session.get(Sessions.ID)}`).sendEvent(CHAT_SEND, {
     color,
     msg: message,
     name,

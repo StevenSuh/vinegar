@@ -3,4 +3,5 @@ WORKDIR "/app"
 COPY ./package.json ./
 RUN yarn
 COPY . .
-CMD ["yarn", "start"]
+RUN yarn add global forever
+CMD ["forever", "start", "-c", "'yarn start'", "./"]

@@ -1,6 +1,7 @@
 /* eslint no-param-reassign: 0 */
 /* eslint no-underscore-dangle: 0 */
 const uuidv4 = require('uuid/v4');
+const WebSocket = require('ws');
 
 const { addWsCallback, wsRedisPub } = require('./redis');
 
@@ -20,7 +21,12 @@ const WsWrapper = (ws) => {
   };
 
   ws.on('message', (message) => {
-    const data = JSON.parse(message);
+    let data = null;
+    try {
+      data = JSON.parse(message);
+    } catch (_) {
+      return;
+    }
     const { type } = data;
 
     const validEvents = wsEvents.filter(item => item.type === type);
@@ -44,8 +50,10 @@ const WsWrapper = (ws) => {
   };
 
   ws.sendEvent = (type, data = {}) => {
-    const json = JSON.stringify({ ...data, _type: type });
-    ws.send(json);
+    if (ws.readyState === WebSocket.OPEN) {
+      const json = JSON.stringify({ ...data, _type: type });
+      ws.send(json);
+    }
   };
 
   ws.toAll = (type, data = {}) => {
@@ -95,16 +103,18 @@ const WssWrapper = (wss) => {
       const { _except, _target } = data;
 
       wss.clients.forEach((client) => {
-        if (_except && client.id === _except) {
-          return null;
-        }
+        if (client.readyState === WebSocket.OPEN) {
+          if (_except && client.id === _except) {
+            return null;
+          }
 
-        if (_target) {
-          if (client.sessions.includes(_target)) {
+          if (_target) {
+            if (client.sessions.includes(_target)) {
+              return cb(data);
+            }
+          } else {
             return cb(data);
           }
-        } else {
-          return cb(data);
         }
       });
     });
@@ -146,16 +156,18 @@ const WssWrapper = (wss) => {
     const { _except, _target, _type } = data;
 
     wss.clients.forEach((client) => {
-      if (_except && client.id === _except) {
-        return null;
-      }
+      if (client.readyState === WebSocket.OPEN) {
+        if (_except && client.id === _except) {
+          return null;
+        }
 
-      if (_target) {
-        if (client.sessions.includes(_target)) {
+        if (_target) {
+          if (client.sessions.includes(_target)) {
+            return client.sendEvent(_type, data);
+          }
+        } else {
           return client.sendEvent(_type, data);
         }
-      } else {
-        return client.sendEvent(_type, data);
       }
     });
   });

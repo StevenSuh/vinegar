@@ -1,4 +1,6 @@
 /* eslint no-param-reassign: 0 */
+import { handleErrorMiddleware } from '@/services/middleware';
+
 const wsCallbacks = [];
 
 const addWsCallbacks = (type, cb) => {
@@ -7,17 +9,26 @@ const addWsCallbacks = (type, cb) => {
 
 export const initSocket = (socket) => {
   socket.sendEvent = function(type, data = {}) {
-    this.send(JSON.stringify({ ...data, type }));
+    if (socket.readyState === socket.OPEN) {
+      this.send(JSON.stringify({ ...data, type }));
+    }
   };
 
   socket.addEventListener('message', (e) => {
-    const data = JSON.parse(e.data);
-    const { _type } = data;
+    if (socket.readyState === socket.OPEN) {
+      let data = '';
+      try {
+        data = JSON.parse(e.data);
+      } catch (err) {
+        handleErrorMiddleware(err, 'socket');
+      }
+      const { _type } = data;
 
-    const validCbs = wsCallbacks.filter(item => item.type === _type);
-    validCbs.forEach(({ cb }) => {
-      cb(data);
-    });
+      const validCbs = wsCallbacks.filter(item => item.type === _type);
+      validCbs.forEach(({ cb }) => {
+        cb(data);
+      });
+    }
   });
 };
 

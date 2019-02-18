@@ -4,6 +4,7 @@
       :id="id"
       ref="input"
       class="input"
+      :autofocus="autofocus"
       :autocomplete="autocomplete"
       :class="[errorMessage ? 'error' : '', size]"
       :maxlength="maxLen"
@@ -40,6 +41,10 @@
 <script>
 export default {
   props: {
+    autofocus: {
+      type: String,
+      default: 'off',
+    },
     autocomplete: {
       type: String,
       default: 'on',
@@ -157,9 +162,11 @@ export default {
   border-radius: 8px;
   font-size: 17px;
   font-weight: 300;
+  height: 58px;
   padding: 18px 25px;
   transition: padding var(--transition-duration) var(--transition-curve);
   width: 100%;
+  will-change: padding;
 }
 
 .input.error {
@@ -181,6 +188,7 @@ export default {
 
 .input.small {
   font-size: 15px;
+  height: 48px;
   padding: 14px 17px;
 }
 
@@ -225,6 +233,7 @@ export default {
     transform var(--transition-duration) var(--transition-curve);
   pointer-events: none;
   user-select: none;
+  will-change: opacity, transform;
 }
 
 .input.small + .label {

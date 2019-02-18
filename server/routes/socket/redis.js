@@ -19,6 +19,9 @@ const addWsCallback = (channel, cb) => {
 
 const redisPubWrapper = (redisClient) => {
   redisClient.publishEvent = (type, data) => {
+    if (typeof data !== 'object') {
+      throw new Error('Invalid data type.');
+    }
     redisClient.publish(type, JSON.stringify(data));
   };
 };
@@ -29,7 +32,12 @@ wsRedisSub.on('message', (channel, message) => {
   const validCbs = wsCallbacks.filter(item => item.channel === channel);
 
   if (validCbs.length > 0) {
-    const data = JSON.parse(message);
+    let data = '';
+    try {
+      data = JSON.parse(message);
+    } catch (_) {
+      return;
+    }
 
     validCbs.forEach(({ cb }) => {
       cb(data);

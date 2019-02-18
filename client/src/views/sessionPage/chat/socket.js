@@ -6,7 +6,7 @@ export function onEnter({ hasMore, msgs }) {
   this.msgs = this.filterMsgs(msgsFormatted);
 
   this.hasMore = hasMore;
-  this.$refs.chat.disabled = false;
+  (this.$refs.chat || document.getElementById('chat')).disabled = false;
   this.scrollToBottom();
 }
 

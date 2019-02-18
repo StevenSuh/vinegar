@@ -1,6 +1,7 @@
 <template>
   <div class="chatroom">
     <div
+      id="msgs"
       ref="msgs"
       class="msgs-wrapper"
       @scroll="onScroll"
@@ -78,6 +79,7 @@
         </div>
       </transition>
       <textarea
+        id="chat"
         ref="chat"
         class="msg-box"
         disabled="true"

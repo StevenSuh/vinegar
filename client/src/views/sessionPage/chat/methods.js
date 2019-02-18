@@ -78,8 +78,9 @@ export function sendChat(value) {
 }
 
 export function scrollToBottom() {
+  const { msgs } = this.$refs;
   setTimeout(() => {
-    this.$refs.msgs.scrollTop = this.$refs.msgs.scrollHeight;
+    msgs.scrollTop = msgs.scrollHeight;
   }, 0);
 }
 
