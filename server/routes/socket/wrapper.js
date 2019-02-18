@@ -17,6 +17,10 @@ const WsWrapper = (ws) => {
   };
 
   ws.onEvent = (type, cb) => {
+    if (['message', 'close', 'error', 'open'].includes(type)) {
+      throw new Error(`${type} event is a part of default events. Use 'on' api instead of 'onEvent'.`);
+    }
+
     wsEvents.push({ type, cb });
   };
 

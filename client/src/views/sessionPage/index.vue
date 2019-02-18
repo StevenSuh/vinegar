@@ -1,12 +1,13 @@
 <template>
   <SessionPageWrapper
     v-if="show"
-    :$socket="$socket"
+    :socket="socket"
   />
 </template>
 
 <script>
 import { initSocket } from '@/services/socket';
+import { handleErrorMiddleware } from '@/services/middleware';
 
 import SessionPageWrapper from './wrapper';
 
@@ -16,7 +17,7 @@ export default {
   },
   data() {
     return {
-      $socket: null,
+      socket: null,
       show: false,
     };
   },
@@ -25,19 +26,24 @@ export default {
     const { session } = this.$route.params;
     document.title = `Vinegar - ${school}/${session}`;
   },
-  mounted() {
+  created() {
     const url = `ws://${window.location.host}/ws${window.location.pathname}`;
-    this.$socket = new WebSocket(url);
-    initSocket(this.$socket);
 
-    this.$socket.addEventListener('open', () => {
+    try {
+      this.socket = new WebSocket(url);
+    } catch (err) {
+      handleErrorMiddleware(err, 'socket');
+      return;
+    }
+    initSocket(this.socket);
+    this.socket.addEventListener('open', () => {
       this.show = true;
     });
   },
   beforeDestroy() {
-    if (this.$socket) {
-      this.$socket.close();
-      this.$socket = null;
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
     }
   },
 };

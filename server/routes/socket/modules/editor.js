@@ -41,5 +41,9 @@ module.exports = (_wss, ws, session, user) => {
     ws.onEvent(EDITOR_SELECTION_REMOVE, () => {
       ws.to(sessionName).sendEvent(EDITOR_SELECTION_REMOVE, { userId });
     });
+
+    ws.on('close', () => {
+      ws.to(sessionName).sendEvent(EDITOR_SELECTION_REMOVE, { userId });
+    });
   });
 };

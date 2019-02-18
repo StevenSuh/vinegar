@@ -121,7 +121,7 @@ export default {
     initEditor,
     onCheckBlur() {
       if (this.active && !this.editor.hasFocus()) {
-        this.$socket.sendEvent('editor:onEditorSelectionRemove');
+        this.socket.sendEvent('editor:onEditorSelectionRemove');
       }
     },
     onClickCollapse(e) {
@@ -143,7 +143,7 @@ export default {
       setTimeout(() => {
         this.active = true;
         this.editor.history.clear();
-        this.$socket.sendEvent('editor:onEnter');
+        this.socket.sendEvent('editor:onEnter');
       }, 0);
     },
     'socket:onDuplicate': function() {

@@ -171,7 +171,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 70%;
+  height: 60%;
   max-height: 600px;
   min-height: 300px;
   padding: 23px 29px;
@@ -259,6 +259,7 @@ export default {
 }
 
 .scroll-down {
+  pointer-events: none;
   position: absolute;
   width: 100%;
   text-align: center;
@@ -272,6 +273,7 @@ export default {
   cursor: pointer;
   height: 24px;
   overflow: auto;
+  pointer-events: auto;
   width: 24px;
 }
 </style>

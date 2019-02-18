@@ -27,13 +27,13 @@
           <Editor
             :session="$route.params.session"
             :school="$route.params.school"
-            :$socket="$socket"
+            :socket="socket"
           />
         </div>
-        <Control :$socket="$socket" />
+        <Control :socket="socket" />
       </div>
       <div class="right">
-        <Chat :$socket="$socket" />
+        <Chat :socket="socket" />
       </div>
       <transition name="fadeNoDelay">
         <Welcome
@@ -93,7 +93,7 @@ export default {
     };
   },
   mounted() {
-    this.$socket.sendEvent('socket:onInit');
+    this.socket.sendEvent('socket:onInit');
     this.show = true;
   },
   methods: {
@@ -101,7 +101,7 @@ export default {
       this.isWelcome = false;
       setTimeout(() => {
         this.hide = false;
-        this.$socket.sendEvent('socket:onEnter');
+        this.socket.sendEvent('socket:onEnter');
       }, 200);
     },
     onShow() {
@@ -120,8 +120,8 @@ export default {
         header: DUPLICATE_HEADER,
         msg: DUPLICATE_MSG,
       };
-      this.$socket.sendEvent('socket:onDuplicate', data);
-      this.$socket.close();
+      this.socket.sendEvent('socket:onDuplicate', data);
+      this.socket.close();
     },
   },
 };
