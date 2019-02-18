@@ -48,6 +48,7 @@
                 Join Your Session
               </router-link>
             </ButtonComponent>
+            <p class="caption">*No sign-in required</p>
           </div>
           <img
             class="right"

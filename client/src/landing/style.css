@@ -363,6 +363,12 @@
   background-color: var(--main-bg-color-hover);
 }
 
+.caption {
+  font-size: 14px;
+  margin-top: 15px;
+  opacity: 0.7;
+}
+
 @media (max-width: 416px) {
   .button.medium > * {
     font-size: 16px;
