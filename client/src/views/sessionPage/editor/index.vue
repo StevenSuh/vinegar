@@ -98,6 +98,7 @@ export default {
         imageResize: {
           modules: ['Resize', 'DisplaySize'],
         },
+        imageDrop: true,
         toolbar: {
           container: this.$refs.toolbar,
           handlers: {
@@ -146,11 +147,11 @@ export default {
       }
 
       this.editor.theme.tooltip.cancel();
-      /* eslint-disable no-empty */
       try {
         this.editor.getModule('cursors').update();
-      } catch (_) {}
-      /* eslint-enable no-empty */
+      } catch (err) {
+        console.warn(err);
+      }
     },
     selectionUpdate,
     textUpdate,
@@ -172,26 +173,26 @@ export default {
     },
     'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
       const range = new Range(data.index, data.length);
-      /* eslint-disable no-empty */
       try {
         this.editor.getModule('cursors').setCursor(userId, range, name, color);
-      } catch (_) {}
-      /* eslint-enable no-empty */
+      } catch (err) {
+        console.warn(err);
+      }
     },
     'editor:onEditorSelectionRemove': function({ userId }) {
-      /* eslint-disable no-empty */
       try {
         this.editor.getModule('cursors').removeCursor(userId);
-      } catch (_) {}
-      /* eslint-enable no-empty */
+      } catch (err) {
+        console.warn(err);
+      }
     },
     'editor:onEditorTextUpdate': function({ data, userId }) {
       this.editor.updateContents(data, userId);
-      /* eslint-disable no-empty */
       try {
         this.editor.getModule('cursors').update();
-      } catch (_) {}
-      /* eslint-enable no-empty */
+      } catch (err) {
+        console.warn(err);
+      }
     },
   },
 };

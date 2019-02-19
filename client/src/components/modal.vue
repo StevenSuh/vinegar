@@ -132,6 +132,7 @@ export default {
         }
         const animation = el.animate(enterAnim, timing);
         animation.onfinish = () => { el.animation = null; };
+        // disable-eslint-next-line no-param-reassign
         el.animation = animation;
       }
     },
@@ -141,6 +142,7 @@ export default {
         el.style.userSelect = 'none';
         const animation = el.animate(leaveAnim, leaveTiming);
         animation.onfinish = () => { el.animation = null; };
+        // disable-eslint-next-line no-param-reassign
         el.animation = animation;
       }
     },

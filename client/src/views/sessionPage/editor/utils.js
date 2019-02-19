@@ -1,6 +1,7 @@
 import Quill from 'quill';
 import QuillCursors from 'quill-cursors';
 import ImageResize from 'quill-image-resize-module';
+import { ImageDrop } from 'quill-image-drop-module';
 
 import { CONTENT_UPDATE_DUR, FONT_SIZES } from '@/defs';
 
@@ -11,6 +12,7 @@ export function setupQuill() {
   Quill.register('modules/clipboard', PlainClipboard, true);
   Quill.register('modules/cursors', QuillCursors);
   Quill.register('modules/imageResize', ImageResize);
+  Quill.register('modules/imageDrop', ImageDrop);
 
   const Font = Quill.import('formats/font');
   Font.whitelist = ['rubik', 'arial', 'times', 'courier'];
