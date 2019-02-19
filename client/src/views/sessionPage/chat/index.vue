@@ -188,6 +188,7 @@ export default {
   border: 1px solid var(--gray-bg-color-2);
   border-radius: 8px;
   font-size: 15px;
+  font-weight: 300;
   line-height: 21px;
   padding: 10px 25px;
   resize: none;

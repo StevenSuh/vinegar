@@ -32,19 +32,17 @@ const startSocket = async (wss, ws, session, user) => {
   ws.join(`session-${session.get(Sessions.ID)}`);
   ws.join(`user-${user.get(Users.ID)}`);
 
+  setupSocketDuplicate(ws, `user-${user.get(Users.ID)}`);
   await initSocketChat(wss, ws, session, user);
   initSocketEditor(wss, ws, session, user);
 
   const msgs = await getChats(session);
-
   ws.sendEvent(SOCKET_ENTER, {
     content: session.get(Sessions.CONTENT),
     isOwner: session.get(Sessions.OWNER_ID) === user.get(Users.ID),
     hasMore: (msgs.length > 10),
     msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
   });
-
-  setupSocketDuplicate(ws, `user-${user.get(Users.ID)}`);
 };
 
 // main

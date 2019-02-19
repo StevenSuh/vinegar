@@ -49,8 +49,8 @@ const enterAnim = [
 
 const enterTiming = {
   delay: 400,
-  duration: 300,
-  easing: 'cubic-bezier(0.8, 0, 0.2, 1.5)',
+  duration: 200,
+  easing: 'cubic-bezier(0.8, 0, 0.2, 1)',
   fill: 'forwards',
 };
 
@@ -68,8 +68,9 @@ const leaveAnim = [
 ];
 
 const leaveTiming = {
+  delay: 0,
   duration: 200,
-  easing: 'cubic-bezier(0.8, 0, 0.2, 1.5)',
+  easing: 'cubic-bezier(0.8, 0, 0.2, 1)',
   fill: 'forwards',
 };
 
@@ -118,7 +119,11 @@ export default {
   },
   mounted() {
     if (!this.isLoading) {
-      this.$refs.content[this.currentStep].animate(enterAnim, enterTiming);
+      const mountedTiming = {
+        ...enterTiming,
+        delay: enterTiming.delay + 400,
+      };
+      this.$refs.content[this.currentStep].animate(enterAnim, mountedTiming);
     }
   },
   beforeDestroy() {

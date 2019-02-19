@@ -17,7 +17,7 @@ export function onDuplicate() {
 }
 
 export function onChatSend(data) {
-  const { msgs } = this.$refs;
+  const msgs = this.$refs.msgs || {};
   const isAtBottom = (msgs.scrollHeight - msgs.clientHeight) === msgs.scrollTop;
 
   const dataFormatted = {

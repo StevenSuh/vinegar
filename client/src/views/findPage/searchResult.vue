@@ -129,7 +129,7 @@ export default {
 }
 
 .name-filler {
-  padding-left: 9px;
+  padding-left: 8px;
 }
 
 .result-school,

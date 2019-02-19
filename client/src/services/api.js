@@ -5,6 +5,9 @@ const apiTemplate = (endpoint, fn) => async (...args) => {
   try {
     return await fn(endpoint, ...args);
   } catch (err) {
+    if (err.response.data.indexOf('<html') === 0) {
+      err.response.data = 'There is an error with the server. Please try again later.';
+    }
     handleErrorMiddleware(err.response.data, endpoint);
     throw new Error(err.response.data);
   }

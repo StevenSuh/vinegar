@@ -90,6 +90,7 @@ export default {
 <style scoped>
 .main {
   transition: opacity var(--transition-duration) var(--transition-curve);
+  transition-delay: var(--transition-duration);
 }
 
 .hide {

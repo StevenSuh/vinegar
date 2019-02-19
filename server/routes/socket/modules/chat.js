@@ -7,39 +7,6 @@ const Users = require('db/users/model')(dbClient);
 const { DEFAULT_ENTER_MSG } = require('defs');
 const { CHAT_SEND, CHAT_SCROLL } = require('routes/socket/defs');
 
-const createEnterChat = async (_wss, ws, session, user) => {
-  const enterChat = await Chats.create({
-    color: user.get(Users.COLOR),
-    message: DEFAULT_ENTER_MSG,
-    name: user.get(Users.NAME),
-    sessionId: session.get(Sessions.ID),
-    type: Chats.TYPE_SYSTEM,
-    userId: user.get(Users.ID),
-  });
-
-  if (!enterChat) {
-    throw new Error('Failed to create enter chat');
-  }
-
-  const {
-    color,
-    createdAt,
-    message,
-    name,
-    type,
-    userId,
-  } = enterChat.get();
-
-  ws.to(`session-${session.get(Sessions.ID)}`).sendEvent(CHAT_SEND, {
-    color,
-    msg: message,
-    name,
-    date: createdAt,
-    type,
-    userId,
-  });
-};
-
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const userId = user.get(Users.ID);
@@ -49,7 +16,22 @@ module.exports = async (wss, ws, session, user) => {
   const color = user.get(Users.COLOR);
   const name = user.get(Users.NAME);
 
-  await createEnterChat(wss, ws, session, user);
+  const enterChat = await Chats.create({
+    color,
+    message: DEFAULT_ENTER_MSG,
+    name,
+    sessionId: session.get(Sessions.ID),
+    type: Chats.TYPE_SYSTEM,
+    userId,
+  });
+
+  if (!enterChat) {
+    throw new Error('Failed to create enter chat');
+  }
+
+  const { createdAt: date, message: msg, type: chatType } = enterChat.get();
+  ws.to(`session-${session.get(Sessions.ID)}`)
+    .sendEvent(CHAT_SEND, { color, msg, name, date, type: chatType, userId });
 
   ws.onEvent(CHAT_SEND, async (data) => {
     wss.to(sessionName).sendEvent(CHAT_SEND, {

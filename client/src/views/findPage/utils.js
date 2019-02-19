@@ -9,7 +9,21 @@ export function formatDate(date) {
   hours = hours || 12;
   minutes = minutes < 10 ? `0${minutes}` : minutes;
 
-  return `${hours}:${minutes} ${ampm}`;
+  const today = new Date();
+  const yearDiff = today.getFullYear() - wrapDate.getFullYear();
+  const monthDiff = today.getMonth() - wrapDate.getMonth();
+  const dayDiff = today.getDate() - wrapDate.getDate();
+
+  const diff = yearDiff || monthDiff || dayDiff;
+  const diffType = yearDiff && 'year' || monthDiff && 'month' || dayDiff && 'day';
+
+  let dateStr = '';
+  if (diff) {
+    const isPlural = diff > 1;
+    dateStr = ` - ${isPlural ? diff : 'a'} ${diffType + (isPlural ? 's' : '')} ago`;
+  }
+
+  return `${hours}:${minutes} ${ampm}${dateStr}`;
 };
 
 export function highlightSchool(data) {
