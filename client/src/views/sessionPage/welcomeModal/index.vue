@@ -2,6 +2,7 @@
   <ModalComponent
     :current-step="welcomeStep"
     :on-close="onValidateWelcomeForm"
+    :show="showModal"
     :steps="2"
   >
     <div
@@ -190,6 +191,7 @@ export default {
       passwordError: '',
       phone: '',
       phoneError: '',
+      showModal: false,
       welcomeStep: 0,
 
       // assets
@@ -221,6 +223,10 @@ export default {
       this.phone = value;
     },
     onFormatPhone,
+    onShowModal() {
+      this.showModal = true;
+      this.onShow();
+    },
   },
 };
 </script>

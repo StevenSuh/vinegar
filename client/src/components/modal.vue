@@ -15,16 +15,18 @@
         />
       </div>
     </transition>
-    <div
-      v-for="n in steps"
-      ref="content"
-      :key="n"
-      class="content"
-    >
-      <slot
-        v-if="steps > 1"
-        :name="`modal-${n}`"
-      /> <slot v-else />
+    <div class="content-wrapper" :class="!show ? 'hide' : ''">
+      <div
+        v-for="n in steps"
+        ref="content"
+        :key="n"
+        class="content"
+      >
+        <slot
+          v-if="steps > 1"
+          :name="`modal-${n}`"
+        /> <slot v-else />
+      </div>
     </div>
   </div>
 </template>
@@ -33,20 +35,9 @@
 import Loader from '@/components/loader';
 
 const enterAnim = [
-  {
-    opacity: 0,
-    transform: 'translate(-50%, -50%) scale(0.8)',
-    pointerEvents: 'none',
-    userSelect: 'none',
-  },
-  {
-    opacity: 1,
-    transform: 'translate(-50%, -50%) scale(1)',
-    pointerEvents: 'auto',
-    userSelect: 'auto',
-  },
+  { opacity: 0, transform: 'translate(-50%, -50%) scale(0.8)' },
+  { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
 ];
-
 const enterTiming = {
   delay: 400,
   duration: 200,
@@ -54,19 +45,7 @@ const enterTiming = {
   fill: 'forwards',
 };
 
-const leaveAnim = [
-  {
-    opacity: 1,
-    pointerEvents: 'none',
-    userSelect: 'none',
-  },
-  {
-    opacity: 0,
-    pointerEvents: 'auto',
-    userSelect: 'auto',
-  },
-];
-
+const leaveAnim = [{ opacity: 1 }, { opacity: 0 }];
 const leaveTiming = {
   delay: 0,
   duration: 200,
@@ -95,6 +74,10 @@ export default {
       default: 0,
       type: Number,
     },
+    show: {
+      default: true,
+      type: Boolean,
+    },
     steps: {
       default: 1,
       type: Number,
@@ -103,13 +86,18 @@ export default {
   watch: {
     isLoading(value, oldValue) {
       if (!value && oldValue) {
-        this.$refs.content[this.currentStep].animate(enterAnim, enterTiming);
+        this.onEnter(this.$refs.content[this.currentStep]);
+      }
+    },
+    show(value, oldValue) {
+      if (value && value !== oldValue) {
+        this.onEnter(this.$refs.content[this.currentStep], 200);
       }
     },
     currentStep(value, oldValue) {
       if (value !== oldValue) {
-        this.$refs.content[oldValue].animate(leaveAnim, leaveTiming);
-        this.$refs.content[value].animate(enterAnim, enterTiming);
+        this.onLeave(this.$refs.content[oldValue]);
+        this.onEnter(this.$refs.content[value]);
       }
     },
   },
@@ -118,16 +106,12 @@ export default {
     window.addEventListener('keyup', this.onKeyup);
   },
   mounted() {
-    if (!this.isLoading) {
-      const mountedTiming = {
-        ...enterTiming,
-        delay: enterTiming.delay + 400,
-      };
-      this.$refs.content[this.currentStep].animate(enterAnim, mountedTiming);
+    if (!this.isLoading && this.show) {
+      this.onEnter(this.$refs.content[this.currentStep], 200);
     }
   },
   beforeDestroy() {
-    this.$refs.content[this.currentStep].animate(leaveAnim, leaveTiming);
+    this.onLeave(this.$refs.content[this.currentStep]);
     document.body.classList.remove('overflow');
     window.removeEventListener('keyup', this.onKeyup);
   },
@@ -135,6 +119,29 @@ export default {
     onKeyup(e) {
       if (e.keyCode === 27) {
         this.onEsc();
+      }
+    },
+    onEnter(el, delay) {
+      if (!el.animation) {
+        el.style.pointerEvents = 'auto';
+        el.style.userSelect = 'auto';
+
+        let timing = enterTiming;
+        if (delay) {
+          timing = { ...timing, delay: enterTiming.delay + delay };
+        }
+        const animation = el.animate(enterAnim, timing);
+        animation.onfinish = () => { el.animation = null; };
+        el.animation = animation;
+      }
+    },
+    onLeave(el) {
+      if (!el.animation) {
+        el.style.pointerEvents = 'none';
+        el.style.userSelect = 'none';
+        const animation = el.animate(leaveAnim, leaveTiming);
+        animation.onfinish = () => { el.animation = null; };
+        el.animation = animation;
       }
     },
   },
@@ -164,12 +171,22 @@ export default {
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
   left: 50%;
   opacity: 0;
-  pointer-events: none;
   position: fixed !important;
+  pointer-events: none;
   user-select: none;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.8);
   will-change: transform, opacity;
+}
+
+.content-wrapper {
+  transition: opacity var(--transition-duration) var(--transition-curve);
+}
+
+.content-wrapper.hide {
+  opacity: 0 !important;
+  pointer-events: none;
+  user-select: none;
 }
 
 .loader-wrapper {

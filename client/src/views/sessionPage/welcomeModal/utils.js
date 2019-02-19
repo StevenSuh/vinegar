@@ -23,7 +23,7 @@ export async function onInit() {
     const { color, name } = await getUserSessionInfo();
     if (!color || !name) {
       this.welcomeStep += 1;
-      this.onShow();
+      this.onShowModal();
       return;
     }
 
@@ -35,7 +35,7 @@ export async function onInit() {
     this.welcomeStep += 1;
   }
 
-  this.onShow();
+  this.onShowModal();
 }
 
 export function onValidateWelcomeForm() {
