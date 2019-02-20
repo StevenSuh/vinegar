@@ -12,6 +12,8 @@ const {
   EDITOR_SELECTION_REMOVE,
 } = require('routes/socket/defs');
 
+const { deflate } = require('utils');
+
 module.exports = (_wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
@@ -29,8 +31,8 @@ module.exports = (_wss, ws, session, user) => {
 
     ws.onEvent(EDITOR_CONTENT_UPDATE, data => {
       clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(async (content) => {
-        session.update(content);
+      updateTimeout = setTimeout(async ({ content }) => {
+        session.update({ content: deflate(content) });
       }, CONTENT_UPDATE_DUR, data);
     });
 

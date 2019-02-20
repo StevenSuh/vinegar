@@ -20,7 +20,7 @@
         placeholder="Type your session name..."
         suggestion="Try &quot;UCSC&quot;"
         type="search"
-        :class="{ 'search-expanded': searchResult.length > 0 }"
+        :class="{ 'search-expanded': searchQuery.length > 0 && searched }"
         :on-autosearch="onSearch"
         :on-clear-search="onClearSearch"
         :value="searchQuery"
@@ -28,7 +28,7 @@
       />
       <transition name="fadeNoDelay">
         <SearchResult
-          v-if="searchResult.length > 0"
+          v-if="searchQuery.length > 0 && searched"
           class="searchResult"
           :data="searchResult"
           :input-id="searchInputId"
@@ -52,6 +52,7 @@ export default {
   data() {
     return {
       // state
+      searched: false,
       searchInputId: 'join-input',
       searchQuery: '',
       searchOffset: 0,
@@ -61,12 +62,14 @@ export default {
   methods: {
     onClearSearch() {
       this.searchResult = [];
+      this.searched = false;
     },
     onInputChange(value) {
       this.searchQuery = value;
     },
     async onSearch() {
       this.searchResult = await getSearchSessionResults(this.searchQuery);
+      this.searched = true;
     },
   },
 };

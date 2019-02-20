@@ -1,6 +1,16 @@
 const morgan = require('morgan');
+const zlib = require('zlib');
 
 module.exports = {
+  deflate: (input) => {
+    return zlib.deflateSync(input).toString('base64');
+  },
+  inflate: (text) => {
+    if (text) {
+      return zlib.inflateSync(Buffer.from(text, 'base64')).toString();
+    }
+    return text;
+  },
   enableResBody: (_req, res, next) => {
     // from https://stackoverflow.com/questions/19215042/express-logging-response-body
     // the `res` obj does not have `body` property unlike `req`

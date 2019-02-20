@@ -7,10 +7,31 @@ const addWsCallbacks = (type, cb) => {
   wsCallbacks.push({ type, cb });
 };
 
+export const EmptySockert = () => ({
+  sendEvent: type => {
+    handleErrorMiddleware(type, 'socket');
+  },
+  pong: () => {
+    handleErrorMiddleware('pong', 'socket');
+  },
+});
+
 export const initSocket = (socket) => {
   socket.sendEvent = function(type, data = {}) {
     if (socket.readyState === socket.OPEN) {
-      this.send(JSON.stringify({ ...data, type }));
+      try {
+        this.send(JSON.stringify({ ...data, type }));
+      } catch (e) {
+        handleErrorMiddleware(e, 'socket');
+      }
+    }
+  };
+
+  socket.pong = function() {
+    try {
+      this.send('pong');
+    } catch (e) {
+      handleErrorMiddleware(e, 'socket');
     }
   };
 

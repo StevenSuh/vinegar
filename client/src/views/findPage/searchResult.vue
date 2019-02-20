@@ -31,6 +31,12 @@
         </span>
       </p>
     </div>
+    <div
+      class="result-empty paddingTop paddingBottom small"
+      v-if="data.length === 0"
+    >
+      No session found :(
+    </div>
   </div>
 </template>
 
@@ -161,6 +167,11 @@ export default {
   position: absolute;
   top: -4px;
   width: 24px;
+}
+
+.result-empty {
+  opacity: 0.5;
+  text-align: center;
 }
 </style>
 

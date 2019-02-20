@@ -15,7 +15,10 @@
         />
       </div>
     </transition>
-    <div class="content-wrapper" :class="!show ? 'hide' : ''">
+    <div
+      class="content-wrapper"
+      :class="!show ? 'hide' : ''"
+    >
       <div
         v-for="n in steps"
         ref="content"
@@ -32,6 +35,7 @@
 </template>
 
 <script>
+/* eslint-disable no-param-reassign */
 import Loader from '@/components/loader';
 
 const enterAnim = [
@@ -131,8 +135,9 @@ export default {
           timing = { ...timing, delay: enterTiming.delay + delay };
         }
         const animation = el.animate(enterAnim, timing);
-        animation.onfinish = () => { el.animation = null; };
-        // disable-eslint-next-line no-param-reassign
+        animation.onfinish = () => {
+          el.animation = null;
+        };
         el.animation = animation;
       }
     },
@@ -141,13 +146,15 @@ export default {
         el.style.pointerEvents = 'none';
         el.style.userSelect = 'none';
         const animation = el.animate(leaveAnim, leaveTiming);
-        animation.onfinish = () => { el.animation = null; };
-        // disable-eslint-next-line no-param-reassign
+        animation.onfinish = () => {
+          el.animation = null;
+        };
         el.animation = animation;
       }
     },
   },
 };
+/* eslint-enable no-param-reassign */
 </script>
 
 <style>

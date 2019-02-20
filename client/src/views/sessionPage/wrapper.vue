@@ -67,11 +67,14 @@ export default {
   mixins: [socketMixin],
   props: {
     socket: WebSocket,
+    errorModal: {
+      default: null,
+      type: Object,
+    },
   },
   data() {
     return {
       // state
-      errorModal: null,
       school: this.$route.params.school,
       session: this.$route.params.session,
       show: false,
@@ -88,6 +91,10 @@ export default {
       handleErrorMiddleware(err, 'socket');
     },
     'socket:onException': function({ errorMessage }) {
+      this.errorModal = {
+        header: 'An error has occurred.',
+        msg: errorMessage,
+      };
       handleErrorMiddleware(errorMessage, 'socket');
     },
     'socket:onDuplicate': function(data) {
@@ -95,8 +102,14 @@ export default {
         header: DUPLICATE_HEADER,
         msg: DUPLICATE_MSG,
       };
-      this.socket.sendEvent('socket:onDuplicate', data);
       this.socket.close();
+    },
+  },
+  watch: {
+    errorModal(value, oldValue) {
+      if (value !== oldValue) {
+        this.errorModal = value;
+      }
     },
   },
 };

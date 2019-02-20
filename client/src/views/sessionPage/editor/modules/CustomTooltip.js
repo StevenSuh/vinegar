@@ -40,7 +40,7 @@ export default function() {
       tooltip.root.style.top = `${normalizedTop - shift - 3}px`;
     }
     if (normalizedTop < containerBounds.top) {
-      tooltip.root.style.top = `0px`;
+      tooltip.root.style.top = '-10px';
     }
     tooltip.root.style.marginTop = '';
   };

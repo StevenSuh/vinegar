@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import Quill from 'quill';
 
 const Clipboard = Quill.import('modules/clipboard');
@@ -7,7 +8,55 @@ class PlainClipboard extends Clipboard {
   onPaste(e) {
     e.preventDefault();
     const range = this.quill.getSelection();
-    const text = e.clipboardData.getData('text/plain');
+    const text = e.clipboardData.getData('text/plain') || e.clipboardData.getData('url');
+
+    if (text) {
+      this.onPasteText(text, range);
+    }
+
+    if (e.clipboardData && e.clipboardData.items && e.clipboardData.items.length) {
+			this.readFiles(e.clipboardData.items, dataUrl => {
+        const index = (this.quill.getSelection() || {}).index || this.quill.getLength();
+        this.quill.insertEmbed(index, 'image', dataUrl, 'user');
+			});
+		}
+  }
+
+  readFiles(files, callback) {
+		// check each file for an image
+		[].forEach.call(files, file => {
+			if (!file.type.match(/^image\/(gif|jpe?g|a?png|svg|webp|bmp|vnd\.microsoft\.icon)/i)) {
+				// file is not an image
+				// Note that some file formats such as psd start with image/* but are not readable
+				return;
+			}
+			// set up file reader
+      const blob = file.getAsFile ? file.getAsFile() : file;
+			const reader = new FileReader();
+			reader.onload = (evt) => {
+        if (!blob.webkitRelativePath) {
+          callback(evt.target.result);
+        }
+			};
+			// read the clipboard item or file
+			if (blob instanceof Blob) {
+				reader.readAsDataURL(blob);
+			}
+		});
+	}
+
+  onPasteText(text, range) {
+    const imgTypes = ['.png', '.gif', '.jpeg', '.bmp', '.ico'];
+    for (let i = 0; i < imgTypes.length; i += 1) {
+      const type = imgTypes[i];
+      if (text.endsWith(type)) {
+        return this.quill.insertEmbed(range.index, "image", text);
+      }
+    }
+
+    if (text.startsWith('http')) {
+      return this.quill.insertText(range.index, text, { link: text });
+    }
 
     const current = this.quill.getFormat();
     const leftSide = this.quill.getFormat(range.index - 1, range.index);

@@ -9,6 +9,8 @@ const Users = require('db/users/model')(dbClient);
 
 const redisClient = require('services/redis')();
 
+const { inflate } = require('utils');
+
 const initSocketEditor = require('./modules/editor');
 const initSocketChat = require('./modules/chat');
 
@@ -38,7 +40,7 @@ const startSocket = async (wss, ws, session, user) => {
 
   const msgs = await getChats(session);
   ws.sendEvent(SOCKET_ENTER, {
-    content: session.get(Sessions.CONTENT),
+    content: inflate(session.get(Sessions.CONTENT)),
     isOwner: session.get(Sessions.OWNER_ID) === user.get(Users.ID),
     hasMore: (msgs.length > 10),
     msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
@@ -47,7 +49,29 @@ const startSocket = async (wss, ws, session, user) => {
 
 // main
 module.exports = (server) => {
-  const wss = WssWrapper(new WebSocket.Server({ path: true, server }));
+  const wss = WssWrapper(new WebSocket.Server({
+    path: true,
+    server,
+    perMessageDeflate: {
+      zlibDeflateOptions: {
+        // See zlib defaults.
+        chunkSize: 1024,
+        memLevel: 7,
+        level: 3
+      },
+      zlibInflateOptions: {
+        chunkSize: 10 * 1024
+      },
+      // Other options settable:
+      clientNoContextTakeover: true, // Defaults to negotiated value.
+      serverNoContextTakeover: true, // Defaults to negotiated value.
+      serverMaxWindowBits: 10, // Defaults to negotiated value.
+      // Below options specified as default values.
+      concurrencyLimit: 10, // Limits zlib concurrency for perf.
+      threshold: 1024 // Size (in bytes) below which messages
+      // should not be compressed.
+    },
+  }));
 
   wss.on('connection', (socket, req) => {
     const ws = WsWrapper(socket);
@@ -72,12 +96,12 @@ module.exports = (server) => {
         const [session, user] = await Promise.all([sessionPromise, userPromise]);
 
         if (!session || !user) {
-          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid Session.' });
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Session does not exist.' });
           return ws.close();
         }
 
         if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
-          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'You are not authenticated with the right session.' });
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Session does not exist.' });
           return ws.close();
         }
         return startSocket(wss, ws, session, user);

@@ -5,6 +5,7 @@
   >
     <SessionPageWrapper
       v-if="show"
+      :error-modal="errorModal"
       :socket="socket"
     />
     <transition name="fadeNoDelay">
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import { initSocket } from '@/services/socket';
+import { initSocket, EmptySocket } from '@/services/socket';
 import { handleErrorMiddleware } from '@/services/middleware';
 
 import Welcome from '@/views/sessionPage/welcomeModal';
@@ -32,9 +33,11 @@ export default {
   },
   data() {
     return {
+      errorModal: null,
       isWelcome: true,
       socket: null,
       show: false,
+      idleTimeout: null,
     };
   },
   beforeCreate() {
@@ -47,8 +50,19 @@ export default {
       this.socket.close();
       this.socket = null;
     }
+    window.removeEventListener('mousemove', this.onMouseMove);
   },
   methods: {
+    onMouseMove() {
+      clearInterval(this.idleTimeout);
+      this.idleTimeout = setInterval(() => {
+        if (this.socket) {
+          this.socket.pong();
+        } else {
+          clearInterval(this.idleTimeout);
+        }
+      }, 20000);
+    },
     onInit(cb) {
       if (!this.socket) {
         const url = `ws://${window.location.host}/ws${
@@ -57,13 +71,26 @@ export default {
         try {
           this.socket = new WebSocket(url);
         } catch (err) {
+          this.errorModal = {
+            header: 'An error has occurred.',
+            msg: 'You have been disconnected from session.',
+          };
           handleErrorMiddleware(err, 'socket');
           return;
         }
         initSocket(this.socket);
         this.socket.addEventListener('open', () => {
+          window.addEventListener('mousemove', this.onMouseMove);
           this.socket.sendEvent('socket:onInit');
           cb();
+        });
+        this.socket.addEventListener('close', () => {
+          this.errorModal = {
+            header: 'An error has occurred.',
+            msg: 'You have been disconnected from session.',
+          };
+          handleErrorMiddleware('You have been disconnected from session.', 'socket');
+          this.socket = EmptySocket();
         });
       } else {
         cb();

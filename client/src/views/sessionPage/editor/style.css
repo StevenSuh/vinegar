@@ -38,6 +38,7 @@
   padding: 3px 5px;
   pointer-events: none;
   position: absolute;
+  transition: opacity var(--transition-mid-duration) var(--transition-curve);
   transform: translateY(2px);
   z-index: 1;
 }
@@ -142,6 +143,12 @@ button.ql-active,
 button.active,
 .ql-expanded {
   background-color: var(--main-font-color-light) !important;
+}
+
+.ql-picker,
+.ql-formats > button,
+.ql-picker-item {
+  transition: background-color 0.05s linear;
 }
 
 .ql-picker:hover,
@@ -252,6 +259,7 @@ button.active,
   border-color: #ccc;
   box-shadow: var(--box-shadow);
   border-radius: 5px;
+  transition: opacity var(--transition-mid-duration) var(--transition-curve);
 }
 
 .ql-snow .ql-picker-options {

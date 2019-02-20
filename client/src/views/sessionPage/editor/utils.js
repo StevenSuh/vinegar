@@ -2,17 +2,21 @@ import Quill from 'quill';
 import QuillCursors from 'quill-cursors';
 import ImageResize from 'quill-image-resize-module';
 import { ImageDrop } from 'quill-image-drop-module';
+import MagicUrl from 'quill-magic-url';
 
 import { CONTENT_UPDATE_DUR, FONT_SIZES } from '@/defs';
 
 import PlainClipboard from './PlainClipboard';
 import customizeTooltip from './modules/CustomTooltip';
+import ImageUrlDrop from './modules/imageUrlDrop';
 
 export function setupQuill() {
   Quill.register('modules/clipboard', PlainClipboard, true);
   Quill.register('modules/cursors', QuillCursors);
   Quill.register('modules/imageResize', ImageResize);
   Quill.register('modules/imageDrop', ImageDrop);
+  Quill.register('modules/imageUrlDrop', ImageUrlDrop);
+  Quill.register('modules/magicUrl', MagicUrl);
 
   const Font = Quill.import('formats/font');
   Font.whitelist = ['rubik', 'arial', 'times', 'courier'];

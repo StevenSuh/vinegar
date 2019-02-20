@@ -8,7 +8,7 @@
         {{ errorModal.msg }}
       </p>
       <ButtonComponent
-        class="marginTop"
+        class="error-button"
         type="primary"
       >
         <router-link
@@ -52,5 +52,9 @@ export default {
 
 .error-msg {
   line-height: 1.4em;
+}
+
+.error-button {
+  margin-top: 30px;
 }
 </style>

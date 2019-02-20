@@ -99,6 +99,8 @@ export default {
           modules: ['Resize', 'DisplaySize'],
         },
         imageDrop: true,
+        imageUrlDrop: true,
+        magicUrl: true,
         toolbar: {
           container: this.$refs.toolbar,
           handlers: {
@@ -150,7 +152,7 @@ export default {
       try {
         this.editor.getModule('cursors').update();
       } catch (err) {
-        console.warn(err);
+        console.warn(err); // eslint-disable-line no-console
       }
     },
     selectionUpdate,
@@ -158,14 +160,11 @@ export default {
   },
   sockets: {
     'socket:onEnter': function({ content }) {
-      this.editor.root.innerHTML = content;
+      this.active = true;
+      this.editor.clipboard.dangerouslyPasteHTML(content, 'silent');
       this.editor.enable();
-
-      setTimeout(() => {
-        this.active = true;
-        this.editor.history.clear();
-        this.socket.sendEvent('editor:onEnter');
-      }, 0);
+      this.editor.history.clear();
+      this.socket.sendEvent('editor:onEnter');
     },
     'socket:onDuplicate': function() {
       this.editor.enable(false);
@@ -176,14 +175,14 @@ export default {
       try {
         this.editor.getModule('cursors').setCursor(userId, range, name, color);
       } catch (err) {
-        console.warn(err);
+        console.warn(err); // eslint-disable-line no-console
       }
     },
     'editor:onEditorSelectionRemove': function({ userId }) {
       try {
         this.editor.getModule('cursors').removeCursor(userId);
       } catch (err) {
-        console.warn(err);
+        console.warn(err); // eslint-disable-line no-console
       }
     },
     'editor:onEditorTextUpdate': function({ data, userId }) {
@@ -191,7 +190,7 @@ export default {
       try {
         this.editor.getModule('cursors').update();
       } catch (err) {
-        console.warn(err);
+        console.warn(err); // eslint-disable-line no-console
       }
     },
   },
