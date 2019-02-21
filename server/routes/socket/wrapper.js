@@ -3,9 +3,12 @@
 const uuidv4 = require('uuid/v4');
 const WebSocket = require('ws');
 
+const { tryCatch } = require('utils');
+
 const { addWsCallback, wsRedisPub } = require('./redis');
 
-const { EDITOR_CONTENT_UPDATE, REDIS_EVENT } = require('./defs');
+const { REDIS_EVENT } = require('./defs');
+const { socketLogger } = require('./utils');
 
 const WsWrapper = (ws) => {
   const wsEvents = [];
@@ -25,36 +28,24 @@ const WsWrapper = (ws) => {
   };
 
   ws.on('message', (message) => {
+    socketLogger(message, ws);
+
     if (message === 'pong') {
-      if (process.env.NODE_ENV !== 'production') {
-        // eslint-disable-next-line no-console
-        console.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message}`);
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send('ping');
       }
-      ws.send('ping');
       return;
     }
 
-    let data = null;
-    try {
-      data = JSON.parse(message);
-    } catch (_) {
-      // eslint-disable-next-line no-console
-      console.warn('socket message has failed to parse: ', message);
-    }
-    const { type } = data;
-    if (process.env.NODE_ENV !== 'production') {
-      const msg = { ...data };
-      if (type === EDITOR_CONTENT_UPDATE) {
-        delete msg.content;
-      }
-      // eslint-disable-next-line no-console
-      console.log(`SOCKET /${type} ${ws.sessions.join(', ')} - ${JSON.stringify(msg)}`);
-    }
+    const data = tryCatch(() => JSON.parse(message));
+    if (data) {
+      const { type } = data;
 
-    const validEvents = wsEvents.filter(item => item.type === type);
-    validEvents.forEach(({ cb }) => {
-      cb(data);
-    });
+      const validEvents = wsEvents.filter(item => item.type === type);
+      validEvents.forEach(({ cb }) => {
+        cb(data);
+      });
+    }
   });
 
   ws.onEventServer = (type, cb) => {

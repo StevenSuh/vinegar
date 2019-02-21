@@ -36,6 +36,11 @@ export default {
   text-align: center;
 }
 
+.button.small > * {
+  font-size: 15px;
+  padding: 6px 20px;
+}
+
 .button.medium > * {
   font-size: 20px;
   padding: 14px 36px;

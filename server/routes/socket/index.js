@@ -13,6 +13,7 @@ const { inflate } = require('utils');
 
 const initSocketEditor = require('./modules/editor');
 const initSocketChat = require('./modules/chat');
+const initSocketControl = require('./modules/control');
 
 const {
   getSchoolAndSession,
@@ -35,15 +36,20 @@ const startSocket = async (wss, ws, session, user) => {
   ws.join(`user-${user.get(Users.ID)}`);
 
   setupSocketDuplicate(ws, `user-${user.get(Users.ID)}`);
+
   await initSocketChat(wss, ws, session, user);
   initSocketEditor(wss, ws, session, user);
+  initSocketControl(wss, ws, session, user);
 
   const msgs = await getChats(session);
   ws.sendEvent(SOCKET_ENTER, {
     content: inflate(session.get(Sessions.CONTENT)),
-    isOwner: session.get(Sessions.OWNER_ID) === user.get(Users.ID),
+    duration: session.get(Sessions.DURATION),
     hasMore: (msgs.length > 10),
+    isOwner: session.get(Sessions.OWNER_ID) === user.get(Users.ID),
     msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
+    participants: session.get(Sessions.PARTICIPANTS),
+    status: session.get(Sessions.STATUS),
   });
 };
 

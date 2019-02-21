@@ -23,11 +23,7 @@
           </span>
         </h1>
         <div class="editor-wrapper">
-          <Editor
-            :session="$route.params.session"
-            :school="$route.params.school"
-            :socket="socket"
-          />
+          <Editor :socket="socket" />
         </div>
         <Control :socket="socket" />
       </div>
@@ -66,7 +62,7 @@ export default {
   },
   mixins: [socketMixin],
   props: {
-    socket: WebSocket,
+    socket: [Object, WebSocket],
     errorModal: {
       default: null,
       type: Object,

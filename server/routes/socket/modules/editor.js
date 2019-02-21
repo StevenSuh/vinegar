@@ -10,6 +10,7 @@ const {
   EDITOR_CONTENT_UPDATE,
   EDITOR_SELECTION_UPDATE,
   EDITOR_SELECTION_REMOVE,
+  SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
 const { deflate } = require('utils');
@@ -32,6 +33,10 @@ module.exports = (_wss, ws, session, user) => {
     ws.onEvent(EDITOR_CONTENT_UPDATE, data => {
       clearTimeout(updateTimeout);
       updateTimeout = setTimeout(async ({ content }) => {
+        if (!content) {
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid editor content.' });
+          return;
+        }
         session.update({ content: deflate(content) });
       }, CONTENT_UPDATE_DUR, data);
     });

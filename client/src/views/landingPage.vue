@@ -382,7 +382,7 @@ export default {
     };
   },
   beforeCreate() {
-    document.title = 'Vinegar';
+    document.title = 'Vinegar - Note Taking App';
   },
   mounted() {
     this.show = true;

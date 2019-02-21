@@ -42,7 +42,6 @@ export function initEditor() {
 
   customizeTooltip.call(this);
 
-  this.editor.enable(false);
   setTimeout(() => this.onResizeCollapse(), 0);
 }
 

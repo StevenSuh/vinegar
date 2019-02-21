@@ -64,7 +64,7 @@ export function onValidateWelcomeForm() {
       }
 
       if (this.phone && !/[(]\d{3}[)][ ]\d{3}[-]\d{4}/.test(this.phone)) {
-        this.phoneError = 'Phone number must be in format: (XXX) XXX-XXXX.';
+        this.phoneError = 'Phone number must be in format: (xxx) xxx-xxxx.';
         hasError = true;
       } else {
         this.phoneError = '';

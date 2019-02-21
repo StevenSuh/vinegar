@@ -5,9 +5,36 @@ const dbClient = require('db')();
 const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 
-const { SOCKET_DUPLICATE } = require('./defs');
+const { tryCatch } = require('utils');
+
+const { EDITOR_CONTENT_UPDATE, SOCKET_DUPLICATE } = require('./defs');
 
 const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
+
+const socketLogger = (message, ws) => {
+  if (process.env.NODE_ENV !== 'production') {
+    if (message === 'pong') {
+      // eslint-disable-next-line no-console
+      console.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message}`);
+      return;
+    }
+
+    const data = tryCatch(() => JSON.parse(message));
+
+    if (data) {
+      const { type } = data;
+      const msg = { ...data };
+      if (type === EDITOR_CONTENT_UPDATE) {
+        delete msg.content;
+      }
+      // eslint-disable-next-line no-console
+      console.log(`SOCKET /${type} ${ws.sessions.join(', ')} - ${JSON.stringify(msg)}`);
+    } else {
+      // eslint-disable-next-line no-console
+      console.log(`SOCKET error - ${message}`);
+    }
+  }
+};
 
 const shouldHandle = function(req) {
   const match = sessionRegex.exec(req.url);
@@ -69,4 +96,5 @@ module.exports = {
   getChats,
   shouldHandle,
   setupSocketDuplicate,
+  socketLogger,
 };

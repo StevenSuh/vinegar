@@ -1,6 +1,7 @@
 /* eslint no-param-reassign: 0 */
 const redis = require('redis');
-const EVENTS = require('./defs');
+const { tryCatch } = require('utils');
+const { SUBSCRIBE_EVENTS } = require('./defs');
 
 const wsRedisPub = redis.createClient({
   host: process.env.REDIS_HOST,
@@ -32,12 +33,7 @@ wsRedisSub.on('message', (channel, message) => {
   const validCbs = wsCallbacks.filter(item => item.channel === channel);
 
   if (validCbs.length > 0) {
-    let data = '';
-    try {
-      data = JSON.parse(message);
-    } catch (_) {
-      return;
-    }
+    const data = tryCatch(() => JSON.parse(message));
 
     validCbs.forEach(({ cb }) => {
       cb(data);
@@ -45,7 +41,7 @@ wsRedisSub.on('message', (channel, message) => {
   }
 });
 
-wsRedisSub.subscribe(...Object.values(EVENTS));
+wsRedisSub.subscribe(...Object.values(SUBSCRIBE_EVENTS));
 
 module.exports = {
   addWsCallback,

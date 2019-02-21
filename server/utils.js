@@ -2,6 +2,18 @@ const morgan = require('morgan');
 const zlib = require('zlib');
 
 module.exports = {
+  tryCatch: (fn, errCb) => {
+    try {
+      return fn();
+    } catch (err) {
+      if (errCb) {
+        return errCb();
+      }
+      // eslint-disable-next-line no-console
+      console.warn(err);
+      return null;
+    }
+  },
   deflate: (input) => {
     return zlib.deflateSync(input).toString('base64');
   },

@@ -5,7 +5,11 @@
       ref="input"
       class="input"
       :autocomplete="autocomplete"
-      :class="[errorMessage ? 'error' : '', size]"
+      :class="{
+        'error': errorMessage,
+        [size]: true,
+        'hasLabel': label,
+      }"
       :maxlength="maxLen"
       :name="name"
       :placeholder="placeholder"
@@ -115,13 +119,12 @@ export default {
       if (this.onFormat) {
         value = this.onFormat(value);
       }
-
-      this.currentValue = value;
-      this.$refs.input.value = value;
-
       if (this.onValidate && !this.onValidate(value)) {
+        this.$refs.input.value = this.currentValue;
         return;
       }
+      this.currentValue = value;
+      this.$refs.input.value = value;
 
       this.$emit('onChange', value);
 
@@ -159,9 +162,36 @@ export default {
   font-weight: 300;
   height: 58px;
   padding: 18px 25px;
-  transition: padding var(--transition-duration) var(--transition-curve);
+  transition: border-color var(--transition-duration) var(--transition-curve);
   width: 100%;
-  will-change: padding;
+  will-change: border-color;
+}
+
+.input:focus {
+  border-color: var(--main-bg-color);
+  z-index: 100;
+}
+
+.input:focus + .label {
+  z-index: 100;
+}
+
+.input.small {
+  font-size: 15px;
+  height: 48px;
+  padding: 14px 17px;
+}
+
+.input.x-small {
+  font-size: 13px;
+  height: 30px;
+  padding: 7px 12px;
+}
+
+.input.hasLabel {
+  transition: border-color var(--transition-duration) var(--transition-curve),
+    padding var(--transition-duration) var(--transition-curve);
+  will-change: border-color, padding;
 }
 
 .input.error {
@@ -181,39 +211,58 @@ export default {
   padding-left: 10px;
 }
 
-.input.small {
-  font-size: 15px;
-  height: 48px;
-  padding: 14px 17px;
+.error-message.x-small {
+  font-size: 12px;
+  margin-top: 3px;
+  padding-left: 10px;
 }
 
 .input::placeholder {
   color: var(--gray-font-color);
-  transition: color var(--transition-duration) var(--transition-curve);
+  transition: opacity var(--transition-duration) var(--transition-curve),
+    transform var(--transition-duration) var(--transition-curve);
+  will-change: opacity, transform;
 }
 
-.input.error::placeholder {
+.input:focus::placeholder {
+  opacity: 0;
+}
+
+.input.hasLabel:focus::placeholder {
+  transform: translateY(-18px);
+}
+
+.input.hasLabel.small:focus::placeholder {
+  transform: translateY(-16px);
+}
+
+.input.error::placeholder,
+.input.error + .label {
   color: var(--main-font-color);
 }
 
-.input:focus {
+.input.hasLabel:focus {
   padding-top: 27px;
   padding-bottom: 9px;
 }
 
-.input.small:focus {
+.input.hasLabel.small:focus {
   padding-top: 22px;
   padding-bottom: 6px;
 }
 
-.input:focus + .label {
+.input.hasLabel:focus + .label {
   opacity: 1;
   transform: translateY(8px);
 }
 
-.input.small:focus + .label {
+.input.hasLabel.small:focus + .label {
   opacity: 1;
   transform: translateY(5px);
+}
+
+.input.hasLabel.x-small:focus + .label {
+  display: none;
 }
 
 .label {
@@ -226,6 +275,7 @@ export default {
   top: 0;
   transition: opacity var(--transition-duration) var(--transition-curve),
     transform var(--transition-duration) var(--transition-curve);
+  transform: translateY(calc(29px - 50%));
   pointer-events: none;
   user-select: none;
   will-change: opacity, transform;
@@ -234,6 +284,10 @@ export default {
 .input.small + .label {
   font-size: 13px;
   left: 18px;
+}
+
+.input.x-small + .label {
+  display: none;
 }
 
 .suggestion {
@@ -247,6 +301,12 @@ export default {
 .suggestion.small {
   font-size: 13px;
   margin-top: 4px;
+  padding-left: 10px;
+}
+
+.suggestion.x-small {
+  font-size: 12px;
+  margin-top: 3px;
   padding-left: 10px;
 }
 </style>

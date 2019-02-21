@@ -172,6 +172,7 @@ export default {
   position: fixed !important;
   top: 0;
   width: 100vw;
+  z-index: 1001;
 }
 
 .content {
@@ -186,6 +187,7 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%) scale(0.8);
   will-change: transform, opacity;
+  z-index: 1001;
 }
 
 .content-wrapper {

@@ -64,6 +64,7 @@ export default {
   bottom: 20px;
   position: fixed;
   right: 25px;
+  z-index: 10000;
 }
 
 .snackbar-item {

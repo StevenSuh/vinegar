@@ -15,7 +15,7 @@
         <InputComponent
           id="school-name"
           :error-message="schoolNameError"
-          label="School"
+          label="School Name"
           name="schoolName"
           placeholder="School Name"
           type="text"
@@ -26,7 +26,7 @@
           id="session-name"
           class="marginTop smaller"
           :error-message="sessionNameError"
-          label="Session"
+          label="Session Name"
           name="sessionName"
           placeholder="Session Name"
           suggestion="Example: &quot;CMPS 101&quot;"
@@ -310,7 +310,7 @@ export default {
 }
 
 #minute {
-  border-left-width: 0;
+  margin-left: -1px;
   border-top-left-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
 }

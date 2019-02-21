@@ -41,8 +41,7 @@ export default {
     };
   },
   beforeCreate() {
-    const { school } = this.$route.params;
-    const { session } = this.$route.params;
+    const { school, session } = this.$route.params;
     document.title = `Vinegar - ${school}/${session}`;
   },
   beforeDestroy() {
@@ -50,46 +49,39 @@ export default {
       this.socket.close();
       this.socket = null;
     }
-    window.removeEventListener('mousemove', this.onMouseMove);
   },
   methods: {
-    onMouseMove() {
-      clearInterval(this.idleTimeout);
-      this.idleTimeout = setInterval(() => {
-        if (this.socket) {
-          this.socket.pong();
-        } else {
-          clearInterval(this.idleTimeout);
-        }
-      }, 20000);
-    },
     onInit(cb) {
       if (!this.socket) {
+        const { school, session } = this.$route.params;
+
         const url = `ws://${window.location.host}/ws${
           window.location.pathname
         }`;
+
         try {
           this.socket = new WebSocket(url);
         } catch (err) {
           this.errorModal = {
             header: 'An error has occurred.',
-            msg: 'You have been disconnected from session.',
+            msg: `You have been disconnected from session: ${school}/${session}.`,
           };
           handleErrorMiddleware(err, 'socket');
           return;
         }
+
         initSocket(this.socket);
         this.socket.addEventListener('open', () => {
-          window.addEventListener('mousemove', this.onMouseMove);
+          this.socket.startPingPong();
           this.socket.sendEvent('socket:onInit');
           cb();
         });
         this.socket.addEventListener('close', () => {
           this.errorModal = {
             header: 'An error has occurred.',
-            msg: 'You have been disconnected from session.',
+            msg: `You have been disconnected from session: ${school}/${session}.`,
           };
-          handleErrorMiddleware('You have been disconnected from session.', 'socket');
+          handleErrorMiddleware(`You have been disconnected from session: ${school}/${session}.`, 'socket');
           this.socket = EmptySocket();
         });
       } else {

@@ -7,26 +7,20 @@ const addWsCallbacks = (type, cb) => {
   wsCallbacks.push({ type, cb });
 };
 
-export const EmptySockert = () => ({
-  sendEvent: type => {
-    handleErrorMiddleware(type, 'socket');
+export const EmptySocket = () => ({
+  sendEvent: () => {
+    // handleErrorMiddleware('You are not connected to a session.', 'socket');
   },
+  startPingPong: () => {},
   pong: () => {
-    handleErrorMiddleware('pong', 'socket');
+    // handleErrorMiddleware('You are not connected to a session.', 'socket');
+  },
+  close: () => {
+    handleErrorMiddleware('You are not connected to a session.', 'socket');
   },
 });
 
 export const initSocket = (socket) => {
-  socket.sendEvent = function(type, data = {}) {
-    if (socket.readyState === socket.OPEN) {
-      try {
-        this.send(JSON.stringify({ ...data, type }));
-      } catch (e) {
-        handleErrorMiddleware(e, 'socket');
-      }
-    }
-  };
-
   socket.pong = function() {
     try {
       this.send('pong');
@@ -35,8 +29,24 @@ export const initSocket = (socket) => {
     }
   };
 
-  socket.addEventListener('message', (e) => {
-    if (socket.readyState === socket.OPEN) {
+  socket.startPingPong = function() {
+    clearInterval(this.idleTimeout);
+    this.idleTimeout = setInterval(this.pong, 20000);
+  }
+
+  socket.sendEvent = function(type, data = {}) {
+    if (this.readyState === this.OPEN) {
+      try {
+        this.send(JSON.stringify({ ...data, type }));
+      } catch (e) {
+        handleErrorMiddleware(e, 'socket');
+      }
+      this.startPingPong();
+    }
+  };
+
+  socket.addEventListener('message', function(e) {
+    if (this.readyState === this.OPEN) {
       let data = '';
       try {
         data = JSON.parse(e.data);
@@ -49,6 +59,7 @@ export const initSocket = (socket) => {
       validCbs.forEach(({ cb }) => {
         cb(data);
       });
+      this.startPingPong();
     }
   });
 };

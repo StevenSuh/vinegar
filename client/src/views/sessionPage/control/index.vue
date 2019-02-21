@@ -1,37 +1,45 @@
 <template>
   <div class="control">
-    <div v-if="isInterval"></div>
-    <Inactive
-      v-else-if="status !== 'active'"
+    <div v-if="isInterval">
+      IsInterval
+    </div>
+    <Initial
+      v-else-if="status === 'initial'"
       :duration="duration"
       :is-owner="isOwner"
+      :socket="socket"
+    />
+    <Waiting
+      v-else-if="status === 'waiting'"
+      :duration="duration"
+      :participants="participants"
     />
     <Active
       v-else-if="status === 'active'"
       :end-time="endTime"
       :interval-name="intervalName"
       :is-owner="isOwner"
+      :socket="socket"
     />
   </div>
 </template>
 
 <script>
 import Active from './active';
-import Inactive from './inactive';
+import Initial from './initial';
+import Waiting from './waiting';
 
 import { socketMixin } from '@/services/socket';
-
-// import ButtonComponent from '@/components/button';
 
 export default {
   components: {
     Active,
-    // ButtonComponent,
-    Inactive,
+    Initial,
+    Waiting,
   },
   mixins: [socketMixin],
   props: {
-    socket: WebSocket,
+    socket: [Object, WebSocket],
   },
   data() {
     return {
@@ -41,12 +49,20 @@ export default {
       intervalEndTime: null,
       isInterval: null,
       isOwner: null,
+      participants: null,
       status: null,
     };
   },
   sockets: {
-    'socket:onEnter': function({ isOwner }) {
+    'socket:onEnter': function({ duration, isOwner, participants, status }) {
+      this.duration = duration;
       this.isOwner = isOwner;
+      this.participants = participants;
+      this.status = status;
+    },
+    'control:onUpdate': function({ participants, status }) {
+      this.participants = participants;
+      this.status = status;
     },
   },
 };

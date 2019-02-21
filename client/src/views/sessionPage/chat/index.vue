@@ -124,7 +124,7 @@ export default {
   },
   mixins: [socketMixin],
   props: {
-    socket: WebSocket,
+    socket: [Object, WebSocket],
   },
   data() {
     return {

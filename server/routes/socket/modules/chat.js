@@ -1,11 +1,10 @@
 const dbClient = require('db')();
-
 const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
 const { DEFAULT_ENTER_MSG } = require('defs');
-const { CHAT_SEND, CHAT_SCROLL } = require('routes/socket/defs');
+const { CHAT_SEND, CHAT_SCROLL, SOCKET_EXCEPTION } = require('routes/socket/defs');
 
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
@@ -54,6 +53,11 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.onEvent(CHAT_SCROLL, async ({ offset }) => {
+    if (!offset) {
+      ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid number of offset.' });
+      return;
+    }
+
     const chats = await Chats.findAll({
       limit: 11,
       offset,
