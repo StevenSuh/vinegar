@@ -16,7 +16,7 @@ module.exports = (dbClient) => {
         defaultValue: '',
         type: Sequelize.TEXT,
       },
-      // minutes
+      // seconds
       duration: {
         allowNull: false,
         type: Sequelize.INTEGER,

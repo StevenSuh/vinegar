@@ -5,6 +5,10 @@ let Users = null;
 module.exports = (dbClient) => {
   if (!Users) {
     Users = dbClient.define('users', {
+      active: {
+        defaultValue: false,
+        type: Sequelize.BOOLEAN,
+      },
       color: {
         allowNull: true,
         type: Sequelize.STRING,

@@ -29,8 +29,8 @@ module.exports = async (wss, ws, session, user) => {
   }
 
   const { createdAt: date, message: msg, type: chatType } = enterChat.get();
-  ws.to(`session-${session.get(Sessions.ID)}`)
-    .sendEvent(CHAT_SEND, { color, msg, name, date, type: chatType, userId });
+  ws.to(sessionName).sendEvent(CHAT_SEND,
+    { color, msg, name, date, type: chatType, userId });
 
   ws.onEvent(CHAT_SEND, async (data) => {
     wss.to(sessionName).sendEvent(CHAT_SEND, {

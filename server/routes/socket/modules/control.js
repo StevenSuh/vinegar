@@ -4,11 +4,11 @@ const Sessions = require('db/sessions/model')(dbClient);
 
 const {
   CONTROL_INIT,
-  CONTROL_UPDATE,
+  CONTROL_UPDATE_STATUS,
   SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
-module.exports = (_wss, ws, session, /* user */) => {
+module.exports = (wss, ws, session, /* user */) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
 
@@ -26,7 +26,8 @@ module.exports = (_wss, ws, session, /* user */) => {
       participants,
       status: Sessions.STATUS_WAITING,
     });
-    ws.to(sessionName).sendEvent(CONTROL_UPDATE, {
+
+    wss.to(sessionName).sendEvent(CONTROL_UPDATE_STATUS, {
       participants,
       status: Sessions.STATUS_WAITING,
     });

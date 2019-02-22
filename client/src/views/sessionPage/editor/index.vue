@@ -30,7 +30,7 @@
         <ToolbarConfig />
       </div>
     </div>
-    <div ref="editor" />
+    <div ref="editor" @click="onFocusEditor" />
   </div>
 </template>
 
@@ -82,6 +82,7 @@ export default {
       content: '',
       editor: null,
       prevEnter: false,
+      prevFocus: null,
       sizes: FONT_SIZES,
       updateTimeout: null,
     };
@@ -130,8 +131,14 @@ export default {
   methods: {
     checkForEnter,
     initEditor,
+    onFocusEditor() {
+      if (this.active && !this.prevFocus && this.editor.hasFocus()) {
+        this.prevFocus = true;
+      }
+    },
     onCheckBlur() {
-      if (this.active && !this.editor.hasFocus()) {
+      if (this.active && this.prevFocus && !this.editor.hasFocus()) {
+        this.prevFocus = false;
         this.socket.sendEvent('editor:onEditorSelectionRemove');
       }
     },

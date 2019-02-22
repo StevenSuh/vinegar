@@ -46,11 +46,11 @@ module.exports = async () => {
        - as: 'User' -> getUser
     */
     Sessions.hasMany(Chats, {
-      as: 'ChatMessages',
+      as: 'Chats',
       foreignKey: { allowNull: false, name: 'sessionId' },
     });
     Users.hasMany(Chats, {
-      as: 'ChatMessages',
+      as: 'Chats',
       foreignKey: { allowNull: false, name: 'userId' },
     });
 

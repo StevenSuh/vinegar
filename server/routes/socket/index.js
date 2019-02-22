@@ -9,16 +9,14 @@ const Users = require('db/users/model')(dbClient);
 
 const redisClient = require('services/redis')();
 
-const { inflate } = require('utils');
-
 const initSocketEditor = require('./modules/editor');
 const initSocketChat = require('./modules/chat');
 const initSocketControl = require('./modules/control');
 
 const {
-  getSchoolAndSession,
   getCookieIds,
-  getChats,
+  getSchoolAndSession,
+  sendEnterEvent,
   shouldHandle,
   setupSocketDuplicate,
 } = require('./utils');
@@ -32,6 +30,9 @@ const {
 WebSocket.Server.prototype.shouldHandle = shouldHandle;
 
 const startSocket = async (wss, ws, session, user) => {
+  const startTime = Date.now();
+  await user.update({ active: true });
+
   ws.join(`session-${session.get(Sessions.ID)}`);
   ws.join(`user-${user.get(Users.ID)}`);
 
@@ -41,43 +42,15 @@ const startSocket = async (wss, ws, session, user) => {
   initSocketEditor(wss, ws, session, user);
   initSocketControl(wss, ws, session, user);
 
-  const msgs = await getChats(session);
-  ws.sendEvent(SOCKET_ENTER, {
-    content: inflate(session.get(Sessions.CONTENT)),
-    duration: session.get(Sessions.DURATION),
-    hasMore: (msgs.length > 10),
-    isOwner: session.get(Sessions.OWNER_ID) === user.get(Users.ID),
-    msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
-    participants: session.get(Sessions.PARTICIPANTS),
-    status: session.get(Sessions.STATUS),
-  });
+  await sendEnterEvent(ws, session, user);
+
+  const diffTime = Date.now() - startTime;
+  console.log('SOCKET /socket:onEnter took:', `${diffTime}ms`);
 };
 
 // main
 module.exports = (server) => {
-  const wss = WssWrapper(new WebSocket.Server({
-    path: true,
-    server,
-    perMessageDeflate: {
-      zlibDeflateOptions: {
-        // See zlib defaults.
-        chunkSize: 1024,
-        memLevel: 7,
-        level: 3
-      },
-      zlibInflateOptions: {
-        chunkSize: 10 * 1024
-      },
-      // Other options settable:
-      clientNoContextTakeover: true, // Defaults to negotiated value.
-      serverNoContextTakeover: true, // Defaults to negotiated value.
-      serverMaxWindowBits: 10, // Defaults to negotiated value.
-      // Below options specified as default values.
-      concurrencyLimit: 10, // Limits zlib concurrency for perf.
-      threshold: 1024 // Size (in bytes) below which messages
-      // should not be compressed.
-    },
-  }));
+  const wss = WssWrapper(new WebSocket.Server({ path: true, server }));
 
   wss.on('connection', (socket, req) => {
     const ws = WsWrapper(socket);
@@ -97,6 +70,11 @@ module.exports = (server) => {
         const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
         const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
 
+        if (!userId || !sessionId || !schoolName || !sessionName) {
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid authentication.' });
+          return ws.close();
+        }
+
         const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
         const userPromise = Users.findOne({ where: { id: userId }});
         const [session, user] = await Promise.all([sessionPromise, userPromise]);
@@ -108,6 +86,11 @@ module.exports = (server) => {
 
         if (schoolName !== names.schoolName || sessionName !== names.sessionName) {
           ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Session does not exist.' });
+          return ws.close();
+        }
+
+        if (!user.get(Users.COLOR) || !user.get(Users.NAME)) {
+          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'You have not provided your name. Please try refreshing.' });
           return ws.close();
         }
         return startSocket(wss, ws, session, user);

@@ -85,10 +85,7 @@
         />
       </div>
       <div class="button-wrapper marginTop small">
-        <ButtonComponent
-          type="primary"
-          size="small"
-        >
+        <ButtonComponent type="primary">
           <div class="create-button">
             <p :class="isLoading ? 'hide' : ''">
               Create
@@ -155,7 +152,7 @@ export default {
       this.isLoading = true;
       const hour = parseInt(this.hour, 10);
       const minute = parseInt(this.minute, 10);
-      const duration = hour * 60 + minute;
+      const duration = ((hour * 60) + minute) * 60;
 
       await createSession({
         duration,

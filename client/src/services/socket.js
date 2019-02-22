@@ -8,19 +8,15 @@ const addWsCallbacks = (type, cb) => {
 };
 
 export const EmptySocket = () => ({
-  sendEvent: () => {
-    // handleErrorMiddleware('You are not connected to a session.', 'socket');
-  },
+  close: () => handleErrorMiddleware('You are not connected to a session.', 'socket'),
+  pong: () => {},
+  sendEvent: () => {},
   startPingPong: () => {},
-  pong: () => {
-    // handleErrorMiddleware('You are not connected to a session.', 'socket');
-  },
-  close: () => {
-    handleErrorMiddleware('You are not connected to a session.', 'socket');
-  },
 });
 
 export const initSocket = (socket) => {
+  socket.idleTimeout = null;
+
   socket.pong = function() {
     try {
       this.send('pong');
@@ -31,8 +27,8 @@ export const initSocket = (socket) => {
 
   socket.startPingPong = function() {
     clearInterval(this.idleTimeout);
-    this.idleTimeout = setInterval(this.pong, 20000);
-  }
+    this.idleTimeout = setInterval(this.pong, 20000); // disconnects after 30 sec of idle
+  };
 
   socket.sendEvent = function(type, data = {}) {
     if (this.readyState === this.OPEN) {
@@ -45,8 +41,12 @@ export const initSocket = (socket) => {
     }
   };
 
-  socket.addEventListener('message', function(e) {
+  const onMessage = function(e) {
     if (this.readyState === this.OPEN) {
+      if (e.data === 'ping') {
+        return;
+      }
+
       let data = '';
       try {
         data = JSON.parse(e.data);
@@ -61,7 +61,12 @@ export const initSocket = (socket) => {
       });
       this.startPingPong();
     }
-  });
+  };
+
+  socket.pong = socket.pong.bind(socket);
+  socket.startPingPong = socket.startPingPong.bind(socket);
+  socket.sendEvent = socket.sendEvent.bind(socket);
+  socket.addEventListener('message', onMessage.bind(socket));
 };
 
 export const socketMixin = {

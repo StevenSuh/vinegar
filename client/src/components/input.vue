@@ -162,13 +162,10 @@ export default {
   font-weight: 300;
   height: 58px;
   padding: 18px 25px;
-  transition: border-color var(--transition-duration) var(--transition-curve);
   width: 100%;
-  will-change: border-color;
 }
 
 .input:focus {
-  border-color: var(--main-bg-color);
   z-index: 100;
 }
 

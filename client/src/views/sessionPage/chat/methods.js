@@ -86,14 +86,6 @@ export function scrollToBottom() {
   }, 0);
 }
 
-export function scrollToBottomSmoothly() {
-  const { msgs } = this.$refs;
-  msgs.scrollTo({
-    top: msgs.scrollHeight,
-    behavior: 'smooth',
-  });
-}
-
 export function updateInputHeight() {
   const { chat } = this.$refs;
   chat.removeAttribute('style');

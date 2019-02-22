@@ -28,7 +28,8 @@
         <Control :socket="socket" />
       </div>
       <div class="right">
-        <Chat :socket="socket" />
+        <People class="people-wrapper" :socket="socket" />
+        <Chat class="chat-wrapper" :socket="socket" />
       </div>
       <transition name="fadeNoDelay">
         <ErrorModal
@@ -45,6 +46,7 @@ import Chat from '@/views/sessionPage/chat';
 import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
 import ErrorModal from '@/views/sessionPage/errorModal';
+import People from '@/views/sessionPage/people';
 
 import { socketMixin } from '@/services/socket';
 import { handleErrorMiddleware } from '@/services/middleware';
@@ -59,18 +61,16 @@ export default {
     Control,
     ErrorModal,
     Editor,
+    People,
   },
   mixins: [socketMixin],
   props: {
     socket: [Object, WebSocket],
-    errorModal: {
-      default: null,
-      type: Object,
-    },
   },
   data() {
     return {
       // state
+      errorModal: null,
       school: this.$route.params.school,
       session: this.$route.params.session,
       show: false,
@@ -85,6 +85,15 @@ export default {
   sockets: {
     error(err) {
       handleErrorMiddleware(err, 'socket');
+    },
+    close() {
+      const { school, session } = this;
+      this.errorModal = {
+        header: 'An error has occurred.',
+        msg: `You have been disconnected from session: ${school}/${session}.`,
+      };
+      handleErrorMiddleware(`You have been disconnected from session: ${school}/${session}.`, 'socket');
+      this.socket = EmptySocket();
     },
     'socket:onException': function({ errorMessage }) {
       this.errorModal = {
@@ -103,8 +112,8 @@ export default {
   },
   watch: {
     errorModal(value, oldValue) {
-      if (value !== oldValue) {
-        this.errorModal = value;
+      if (value !== this.error) {
+        this.error = value;
       }
     },
   },
@@ -168,6 +177,14 @@ export default {
   height: 70%;
   width: 100%;
   min-height: 450px;
+}
+
+.chat-wrapper {
+  height: 60%;
+}
+
+.people-wrapper {
+  height: 40%;
 }
 
 @media (max-width: 1000px) {

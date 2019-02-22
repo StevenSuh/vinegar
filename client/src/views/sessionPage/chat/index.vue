@@ -65,19 +65,6 @@
       </div>
     </div>
     <div>
-      <transition name="scroll-down">
-        <div
-          v-if="isScrolling"
-          class="scroll-down"
-        >
-          <img
-            alt="arrow down"
-            :src="ArrowDownIcon"
-            class="arrow-down"
-            @click="scrollToBottomSmoothly"
-          />
-        </div>
-      </transition>
       <textarea
         id="chat"
         ref="chat"
@@ -100,7 +87,6 @@ import { socketMixin } from '@/services/socket';
 
 import Loader from '@/components/loader';
 
-import ArrowDownIcon from '@/assets/arrow_down.png';
 import NameArrowIcon from '@/assets/back.png';
 import NameCircleIcon from '!raw-loader!@/assets/name_circle.svg';
 
@@ -113,7 +99,6 @@ import {
   onScroll,
   sendChat,
   scrollToBottom,
-  scrollToBottomSmoothly,
   updateInputHeight,
 } from './methods';
 import { onEnter, onDuplicate, onChatSend, onChatScroll } from './socket';
@@ -138,7 +123,6 @@ export default {
       scrollTop: null,
 
       // assets
-      ArrowDownIcon,
       NameArrowIcon,
       NameCircleIcon,
     };
@@ -152,7 +136,6 @@ export default {
     onScroll,
     sendChat,
     scrollToBottom,
-    scrollToBottomSmoothly,
     updateInputHeight,
   },
   sockets: {
@@ -171,7 +154,6 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 60%;
   max-height: 600px;
   min-height: 300px;
   padding: 23px 29px;

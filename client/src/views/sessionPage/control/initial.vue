@@ -25,12 +25,7 @@
           start
         </p>
       </button-component>
-      <button-component
-        type="primary"
-        size="small"
-      >
-        <p>invite</p>
-      </button-component>
+      <invite-button />
     </div>
     <div class="initial-text">
       <span class="bold">Session ends in:</span>
@@ -42,6 +37,7 @@
 <script>
 import ButtonComponent from '@/components/button';
 import InputComponent from '@/components/input';
+import InviteButton from './inviteButton';
 
 import { formatDuration } from './utils';
 
@@ -51,6 +47,7 @@ export default {
   components: {
     ButtonComponent,
     InputComponent,
+    InviteButton,
   },
   props: {
     duration: Number,

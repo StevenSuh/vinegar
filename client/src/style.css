@@ -14,6 +14,7 @@
 
   --main-bg-color: #f88379;
   --main-bg-color-hover: #ee7d74;
+  --main-bg-color-active: #C66961;
   --gray-bg-color-3: #f0f0f0;
   --gray-bg-color-2: #cbd0d6;
   --gray-bg-color: #f7f7f7;
@@ -27,6 +28,7 @@
   --gray-font-color: #bac1c9;
   --black-font-color: #444444;
   --white-font-color: #ffffff;
+  --white-font-color-active: #EED2D0;
 
   --box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 16px;
 

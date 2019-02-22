@@ -46,6 +46,12 @@ export default {
   will-change: transform;
 }
 
+.loader.x-small {
+  border-width: 2px;
+  height: 18px;
+  width: 18px;
+}
+
 .loader.medium {
   border-width: 3px;
   height: 50px;
