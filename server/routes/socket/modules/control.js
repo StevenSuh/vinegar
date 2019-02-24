@@ -76,12 +76,16 @@ module.exports = (wss, ws, session, user) => {
     ws.sendEvent(CONTROL_INTERVAL);
   });
 
-  ws.on('close', async () => {
-    await session.reload();
-
-    const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
-    if (intervalManagerId) {
-      reassignInterval(intervalManagerId, userId);
-    }
+  ws.on('close', () => {
+    console.log(session.reload);
+    session.reload().then(newSession => {
+      const intervalManagerId = newSession.get(Sessions.INTERVAL_MANAGER_ID);
+      if (intervalManagerId) {
+        console.log('control: ddddddd');
+        reassignInterval(intervalManagerId, userId);
+        console.log('control: ddddddd');
+      }
+      console.log('control: ddddddd');
+    });
   });
 };

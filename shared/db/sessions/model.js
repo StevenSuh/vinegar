@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 const {
-  getFullName,
   findBySchoolAndSession,
   findAllByFullName,
 } = require('./methods');
@@ -59,9 +58,6 @@ module.exports = (dbClient) => {
         }
       },
     }, {
-      getterMethods: {
-        getFullName,
-      },
       freezeTableName: true,
       timestamps: true,
     });

@@ -21,28 +21,34 @@ const addCallback = (channel, cb) => {
   callbacks.push({ channel, cb });
 };
 
+const redisClient = redis.createClient({
+  host: redisHost,
+  port: redisPort,
+  retry_strategy: () => 1000,
+});
+
 const calculateCurrentRobin = async (client) => {
   const hasRobinId = Boolean(client.robinId);
-  const totalRobinExists = await client.existsAsync(ROBIN_TOTAL);
+  const totalRobinExists = await redisClient.existsAsync(ROBIN_TOTAL);
 
   // total
   let totalRobin = 1;
   if (totalRobinExists) {
     const incr = hasRobinId ? 0 : 1;
-    totalRobin = await client.getAsync(ROBIN_TOTAL) + incr;
+    totalRobin = await redisClient.getAsync(ROBIN_TOTAL) + incr;
   }
   if (!hasRobinId) {
     client.robinId = totalRobin;
-    await client.incrAsync(ROBIN_TOTAL);
+    await redisClient.incrAsync(ROBIN_TOTAL);
   }
 
   // rotate
   let rotateRobin = 1;
   if (totalRobinExists) {
-    rotateRobin = await client.getAsync(ROBIN_ROTATE);
+    rotateRobin = await redisClient.getAsync(ROBIN_ROTATE);
   }
   if (client.robinId === rotateRobin) {
-    await client.setAsync(ROBIN_ROTATE, (rotateRobin + 1) % totalRobin);
+    await redisClient.setAsync(ROBIN_ROTATE, (rotateRobin + 1) % totalRobin);
     return true;
   }
   return false;
@@ -76,17 +82,6 @@ const publishCheck = function(type, data) {
   this.publish(type, JSON.stringify(data));
 };
 
-const redisClient = bluebird.promisifyAll(
-  redis.createClient({
-    host: redisHost,
-    port: redisPort,
-    retry_strategy: () => 1000,
-  }),
-);
-
-redisClient.publishCheck = publishCheck.bind(redisClient);
-redisClient.on('message', onMessage.bind(redisClient));
-
 redisClient.duplicateClient = ({ pub, sub } = {}) => {
   const duplicate = redisClient.duplicate();
   if (sub) {
@@ -117,6 +112,6 @@ redisClient.duplicateClient = ({ pub, sub } = {}) => {
 
 module.exports = {
   addCallback,
-  redisClient,
+  redisClient: bluebird.promisifyAll(redisClient),
 };
 

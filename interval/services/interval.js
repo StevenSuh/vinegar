@@ -1,10 +1,12 @@
+// TODO: use node-schedule
+// https://github.com/node-schedule/node-schedule#readme
 const dbClient = require('db')();
 const Intervals = require('db/intervals/model')(dbClient);
 const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
-const redisClient = require('services/redis')();
+const { redisClient } = require('services/redis');
 
 const {
   CONTROL_IS_INTERVAL,
@@ -13,10 +15,10 @@ const {
   INTERVAL_STATUS,
   INTERVAL_UPDATE,
   SOCKET_CLOSE,
-} = require('routes/socket/defs');
+} = require('defs');
 
 class Interval {
-  constructor({ session, redisClient, publisher }) {
+  constructor({ session, publisher }) {
     this.ended = false;
 
     this.count = session.get(Sessions.PARTICIPANTS);
@@ -31,7 +33,6 @@ class Interval {
     this.timeout = this.normalizeTimeout();
     this.endTime = session.get(Sessions.END_TIME);
 
-    this.redisClient = redisClient;
     this.publisher = publisher;
 
     this.session = session;
@@ -198,6 +199,4 @@ class Interval {
   }
 }
 
-module.exports = {
-  Interval,
-};
+module.exports = Interval;

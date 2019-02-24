@@ -33,9 +33,4 @@ module.exports = {
       },
     });
   },
-
-  // getter methods
-  getFullName() {
-    return `${this.get(this.SCHOOL_NAME)} ${this.get(this.SESSION_NAME)}`;
-  },
 };

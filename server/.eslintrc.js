@@ -12,5 +12,6 @@ module.exports = {
     'node/no-missing-require': 'off',
     'func-names': 'off',
     'consistent-return': 'off',
+    'node/no-extraneous-require': 'off',
   },
 };
