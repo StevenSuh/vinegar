@@ -18,8 +18,8 @@ const {
 } = require('defs');
 
 class Interval {
-  constructor({ session, publisher }) {
-    this.ended = false;
+  constructor({ session, publisher }, managers) {
+    this.managers = managers;
 
     this.count = session.get(Sessions.PARTICIPANTS);
     this.intervals = [];
@@ -39,9 +39,8 @@ class Interval {
     this.sessionId = session.get(Sessions.ID);
     this.sessionName = `session-${this.sessionId}`;
 
-    this.intervalManager = IntervalManagers.create({
-      sessionId: this.sessionId,
-    });
+    this.intervalManager = null;
+    this.managerId = null
   }
 
   normalizeTimeout() {
@@ -67,6 +66,9 @@ class Interval {
   }
 
   async setupInterval() {
+    this.intervalManager = await IntervalManagers.create({ sessionId: this.sessionId });
+    this.managerId = this.intervalManager.get(IntervalManagers.ID);
+
     const people = await this.session.getUsers({ where: { active: true }});
     this.intervalUsers = this.shuffle(people);
 
@@ -77,8 +79,9 @@ class Interval {
       const startTime = this.endTime - ((this.count - i) * this.timeout);
 
       promises.push(Intervals.create({
-        active: i === 0,
         duration: this.timeout,
+        intervalManagerId: this.managerId,
+        sessionId: this.sessionId,
         startTime,
         endTime: startTime + this.timeout,
         username: user.get(Users.NAME),
@@ -97,6 +100,8 @@ class Interval {
   startInterval(timeout) {
     const now = Date.now();
     const currentInterval = this.intervals[this.current];
+
+    await this.session.update({ currentIntervalId: currentInterval.get(Intervals.ID) });
 
     const userIdName = `user-${currentInterval.get(Intervals.USER_ID)}`;
     this.publisher.to(userIdName).publishEvent(CONTROL_IS_INTERVAL);
@@ -123,7 +128,7 @@ class Interval {
   }
 
   endInterval() {
-    this.ended = true;
+    await this.session.update({ status: Sessions.STATUS_ENDED });
     this.publisher.to(this.sessionName).publishEvent(
       CONTROL_UPDATE_STATUS,
       { status: Sessions.STATUS_ENDED },
@@ -136,7 +141,9 @@ class Interval {
         const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
         redisClient.delAsync(schoolQuery[0], sessionQuery[0]);
 
+        delete this.managers[this.managerId];
         this.session.remove();
+
         this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
       }, 60000 * 5);
     }, 60000 * 5);

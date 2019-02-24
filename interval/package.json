@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "serve": "NODE_PATH=. nodemon index.js",
+    "serve": "NODE_PATH=. nodemon -L index.js",
     "start": "NODE_PATH=. node index.js",
     "lint": "eslint --ignore-path .gitignore ."
   },

@@ -168,6 +168,8 @@ const WssWrapper = (wss) => {
   addWsCallback(REDIS_EVENT, (data) => {
     const { _except, _target, _type } = data;
 
+    console.log(_type);
+
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         if (_except && client.id === _except) {

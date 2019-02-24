@@ -21,13 +21,19 @@ const addCallback = (channel, cb) => {
   callbacks.push({ channel, cb });
 };
 
-const redisClient = redis.createClient({
-  host: redisHost,
-  port: redisPort,
-  retry_strategy: () => 1000,
-});
+const redisClient = bluebird.promisifyAll(
+  redis.createClient({
+    host: redisHost,
+    port: redisPort,
+    retry_strategy: () => 1000,
+  }),
+);
 
 const calculateCurrentRobin = async (client) => {
+  if (process.env.NODE_ENV !== 'production') {
+    return true;
+  }
+
   const hasRobinId = Boolean(client.robinId);
   const totalRobinExists = await redisClient.existsAsync(ROBIN_TOTAL);
 
@@ -47,6 +53,7 @@ const calculateCurrentRobin = async (client) => {
   if (totalRobinExists) {
     rotateRobin = await redisClient.getAsync(ROBIN_ROTATE);
   }
+
   if (client.robinId === rotateRobin) {
     await redisClient.setAsync(ROBIN_ROTATE, (rotateRobin + 1) % totalRobin);
     return true;
@@ -54,64 +61,69 @@ const calculateCurrentRobin = async (client) => {
   return false;
 };
 
-const onMessage = async function(channel, message) {
+// publisher
+const publisher = redis.createClient({
+  host: redisHost,
+  port: redisPort,
+  retry_strategy: () => 1000,
+});
+
+publisher.publishCheck = function(type, data) {
+  if (typeof data !== 'object') {
+    throw new Error('Invalid data type.');
+  }
+  this.publish(type, JSON.stringify(data));
+}.bind(publisher);
+
+publisher.to = function(target = null) {
+  return {
+    publishEvent: (type, data = {}) => {
+      this.publishCheck(REDIS_SOCKET, {
+        ...data,
+        _target: target,
+        _type: type,
+      });
+    },
+    publishServer: (type, data = {}) => {
+      this.publishCheck(type, {
+        ...data,
+        _target: target,
+      });
+    },
+  }
+}.bind(publisher);
+
+// subscriber
+const subscriber = redis.createClient({
+  host: redisHost,
+  port: redisPort,
+  retry_strategy: () => 1000,
+});
+
+subscriber.on('message', async function(channel, message) {
+  if (roundRobinDefs.includes(channel)) {
+    const shouldProceed = await calculateCurrentRobin(this);
+    if (!shouldProceed) {
+      return;
+    }
+  }
+
   const validCbs = callbacks.filter(item => item.channel === channel);
 
   if (validCbs.length > 0) {
     const data = tryCatch(() => JSON.parse(message));
 
     for (let i = 0; i < validCbs.length; i += 1) {
-      const { channel: currChannel, cb } = validCbs[i];
-
-      if (roundRobinDefs.includes(currChannel)) {
-        const shouldProceed = await calculateCurrentRobin(this);
-
-        if (!shouldProceed) {
-          return;
-        }
-      }
+      const { cb } = validCbs[i];
       cb(data);
     }
   }
-};
-
-const publishCheck = function(type, data) {
-  if (typeof data !== 'object') {
-    throw new Error('Invalid data type.');
-  }
-  this.publish(type, JSON.stringify(data));
-};
-
-redisClient.duplicateClient = ({ pub, sub } = {}) => {
-  const duplicate = redisClient.duplicate();
-  if (sub) {
-    duplicate.on('message', onMessage.bind(duplicate));
-  }
-  if (pub) {
-    duplicate.publishCheck = publishCheck.bind(duplicate);
-    duplicate.to = function(target = null) {
-      return {
-        publishEvent: (type, data = {}) => {
-          this.publishCheck(REDIS_SOCKET, {
-            ...data,
-            _target: target,
-            _type: type,
-          });
-        },
-        publishServer: (type, data = {}) => {
-          this.publishCheck(type, {
-            ...data,
-            _target: target,
-          });
-        },
-      }
-    }.bind(duplicate);
-  }
-  return duplicate;
-};
+}.bind(subscriber));
 
 module.exports = {
   addCallback,
-  redisClient: bluebird.promisifyAll(redisClient),
+  redisClient,
+  publisher,
+  subscriber,
 };
 

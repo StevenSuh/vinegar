@@ -78,7 +78,7 @@ module.exports = async () => {
     })
     Sessions.hasOne(IntervalManagers, {
       as: 'Manager',
-      foreignKey: { allowNull: false, name: 'sessionid' },
+      foreignKey: { allowNull: false, name: 'sessionId' },
       onDelete: 'cascade',
     });
 

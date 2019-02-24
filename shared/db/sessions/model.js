@@ -69,6 +69,7 @@ module.exports = (dbClient) => {
     // class definitions
     Sessions.CONTENT = 'content';
     Sessions.CREATED_AT = 'createdAt';
+    Sessions.CURRENT_INTERVAL_ID = 'currentIntervalId';
     Sessions.DURATION = 'duration';
     Sessions.END_TIME = 'endTime';
     Sessions.ID = 'id';

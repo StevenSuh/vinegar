@@ -42,11 +42,13 @@ const startSocket = async (wss, ws, session, user) => {
 
   await initSocketChat(wss, ws, session, user);
   initSocketEditor(wss, ws, session, user);
-  initSocketControl(wss, ws, session, user);
+  await initSocketControl(wss, ws, session, user);
   await initSocketPeople(wss, ws, session, user);
 
   const diffTime = Date.now() - startTime;
   console.log('SOCKET /socket:onEnter took:', `${diffTime}ms`);
+
+  ws.sendEvent(SOCKET_ENTER);
 };
 
 // main

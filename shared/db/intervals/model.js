@@ -5,10 +5,6 @@ let Intervals = null;
 module.exports = (dbClient) => {
   if (!Intervals) {
     Intervals = dbClient.define('intervals', {
-      active: {
-        defaultValue: false,
-        type: Sequelize.BOOLEAN,
-      },
       id: {
         autoIncrement: true,
         primaryKey: true,
@@ -44,7 +40,6 @@ module.exports = (dbClient) => {
     });
 
     // class definitions
-    Intervals.ACTIVE = 'active';
     Intervals.CREATED_AT = 'createdAt';
     Intervals.DOWNVOTE = 'downvote';
     Intervals.ID = 'id';

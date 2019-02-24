@@ -2,7 +2,11 @@ const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 
-const { addCallback, redisClient } = require('services/redis');
+const {
+  addCallback,
+  publisher,
+  subscriber,
+} = require('services/redis');
 const IntervalManager = require('services/interval');
 
 const {
@@ -10,9 +14,6 @@ const {
   INTERVAL_REASSIGN,
   SUBSCRIBE_EVENTS,
 } = require('defs');
-
-const subscriber = redisClient.duplicateClient({ sub: true });
-const publisher = redisClient.duplicateClient({ pub: true });
 
 const intervalManagers = {};
 
@@ -26,7 +27,7 @@ addCallback(INTERVAL_CREATE, async ({ sessionId }) => {
   await intervalManager.setupInterval();
   intervalManager.startInterval();
 
-  const managerId = intervalManager.get(IntervalManagers.ID);
+  const { managerId } = intervalManager;
   intervalManagers[managerId] = intervalManager;
 });
 

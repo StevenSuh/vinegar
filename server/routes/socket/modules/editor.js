@@ -34,13 +34,14 @@ module.exports = (_wss, ws, session, user) => {
       ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data, userId });
     });
 
-    ws.onEvent(EDITOR_CONTENT_UPDATE, data => {
+    ws.onEvent(EDITOR_CONTENT_UPDATE, (data) => {
+      if (!data.content) {
+        ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid editor content.' });
+        return;
+      }
+
       clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(async ({ content }) => {
-        if (!content) {
-          ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid editor content.' });
-          return;
-        }
+      updateTimeout = setTimeout(({ content }) => {
         session.update({ content: deflate(content) });
       }, CONTENT_UPDATE_DUR, data);
     });

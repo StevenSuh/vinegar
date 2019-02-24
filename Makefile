@@ -16,8 +16,10 @@ delete-api:
 	docker rm $(shell docker ps -aqf "name=api")
 delete-interval:
 	docker rm $(shell docker ps -aqf "name=interval")
+clear-node-modules:
+	cd client && rm -rf node_modules && cd ../server && rm -rf node_modules && cd ../interval && rm -rf node_modules
 serve-no-cache:
-	make delete-client && make delete-api && make delete-interval && docker-compose build --no-cache && make serve
+	make clear-node-modules && make delete-client && make delete-api && make delete-interval && docker-compose build --no-cache && make serve
 serve-reset:
 	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose up --build
 reset-redis:

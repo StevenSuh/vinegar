@@ -1,6 +1,7 @@
 const { createInterval, reassignInterval } = require('services/interval');
 
 const dbClient = require('db')();
+const Intervals = require('db/intervals/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
@@ -8,6 +9,7 @@ const {
   CONTROL_ENTER,
   CONTROL_INIT,
   CONTROL_INTERVAL,
+  CONTROL_IS_INTERVAL,
   CONTROL_UPDATE_STATUS,
   CONTROL_WAIT,
   SOCKET_EXCEPTION,
@@ -15,11 +17,20 @@ const {
 
 const { getPeople } = require('routes/socket/utils');
 
-module.exports = (wss, ws, session, user) => {
+module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
 
   const userId = user.get(Users.ID);
+
+  const currentIntervalId = session.get(Sessions.CURRENT_INTERVAL_ID);
+  if (currentIntervalId) {
+    const interval = await Intervals.get({ where: { id: currentIntervalId }});
+
+    if (interval.get(Intervals.USER_ID) === userId) {
+      ws.sendEvent(CONTROL_IS_INTERVAL);
+    }
+  }
 
   ws.sendEvent(CONTROL_ENTER, {
     duration: session.get(Sessions.DURATION),
@@ -77,15 +88,11 @@ module.exports = (wss, ws, session, user) => {
   });
 
   ws.on('close', () => {
-    console.log(session.reload);
     session.reload().then(newSession => {
       const intervalManagerId = newSession.get(Sessions.INTERVAL_MANAGER_ID);
       if (intervalManagerId) {
-        console.log('control: ddddddd');
         reassignInterval(intervalManagerId, userId);
-        console.log('control: ddddddd');
       }
-      console.log('control: ddddddd');
     });
   });
 };
