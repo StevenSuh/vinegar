@@ -13,7 +13,7 @@ const {
   SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
-const { deflate } = require('utils');
+const { deflate, inflate } = require('utils');
 
 module.exports = (_wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
@@ -26,6 +26,10 @@ module.exports = (_wss, ws, session, user) => {
   let updateTimeout = null;
 
   ws.onEvent(EDITOR_ENTER, () => {
+    ws.sendEvent(EDITOR_ENTER, {
+      content: inflate(session.get(Sessions.CONTENT)),
+    });
+
     ws.onEvent(EDITOR_TEXT_UPDATE, ({ data }) => {
       ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data, userId });
     });

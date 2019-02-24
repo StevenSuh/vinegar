@@ -150,12 +150,10 @@ export default {
       }
 
       this.isLoading = true;
-      const hour = parseInt(this.hour, 10);
-      const minute = parseInt(this.minute, 10);
-      const duration = ((hour * 60) + minute) * 60;
 
       await createSession({
-        duration,
+        hour: parseInt(this.hour, 10),
+        minute: parseInt(this.minute, 10),
         password: this.password,
         schoolName: this.schoolName,
         sessionName: this.sessionName,

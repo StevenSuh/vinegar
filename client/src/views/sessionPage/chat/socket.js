@@ -1,4 +1,10 @@
-export function onEnter({ hasMore, msgs }) {
+export function onDuplicate() {
+  this.hasMore = false;
+  this.msgs = [];
+  this.$refs.chat.disabled = true;
+}
+
+export function onChatEnter({ hasMore, msgs }) {
   const msgsFormatted = msgs.map(msg => ({
     ...msg,
     date: this.formatDate(msg.date),
@@ -8,12 +14,6 @@ export function onEnter({ hasMore, msgs }) {
   this.hasMore = hasMore;
   (this.$refs.chat || document.getElementById('chat')).disabled = false;
   this.scrollToBottom();
-}
-
-export function onDuplicate() {
-  this.hasMore = false;
-  this.msgs = [];
-  this.$refs.chat.disabled = true;
 }
 
 export function onChatSend(data) {

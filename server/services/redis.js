@@ -22,6 +22,35 @@ module.exports = () => {
     redisClient.SESSION_SCHOOL = 'schoolName';
     redisClient.SESSION_NAME = 'sessionName';
     redisClient.USER_ID = 'userId';
+
+    redisClient.sessionId = ({ cookieId }, value) => {
+      const query = [cookieId, redisClient.SESSION_ID];
+      if (value) {
+        query.push(value);
+      }
+      return query;
+    };
+    redisClient.sessionSchool = ({ cookieId, sessionId }, value) => {
+      const query = [`${redisClient.SESSION_SCHOOL}-${sessionId}`, cookieId];
+      if (value) {
+        query.push(value);
+      }
+      return query;
+    };
+    redisClient.sessionName = ({ cookieId, sessionId }, value) => {
+      const query = [`${redisClient.SESSION_NAME}-${sessionId}`, cookieId];
+      if (value) {
+        query.push(value);
+      }
+      return query;
+    };
+    redisClient.userId = ({ cookieId }, value) => {
+      const query = [cookieId, redisClient.USER_ID];
+      if (value) {
+        query.push(value);
+      }
+      return query;
+    };
   }
   return redisClient;
 };

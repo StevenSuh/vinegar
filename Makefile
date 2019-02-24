@@ -14,8 +14,10 @@ delete-client:
 	docker rm $(shell docker ps -aqf "name=client")
 delete-api:
 	docker rm $(shell docker ps -aqf "name=api")
+delete-interval:
+	docker rm $(shell docker ps -aqf "name=interval")
 serve-no-cache:
-	make delete-client && make delete-api && docker-compose build --no-cache && make serve
+	make delete-client && make delete-api && make delete-interval && docker-compose build --no-cache && make serve
 serve-reset:
 	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose up --build
 reset-redis:

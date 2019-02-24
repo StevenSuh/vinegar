@@ -43,9 +43,9 @@ module.exports = {
     schoolName,
     sessionName,
   }) => {
-    await redisClient.hsetAsync(cookieId, redisClient.SESSION_ID, sessionId);
-    await redisClient.hsetAsync(cookieId, redisClient.SESSION_SCHOOL, schoolName);
-    await redisClient.hsetAsync(cookieId, redisClient.SESSION_NAME, sessionName);
+    await redisClient.hsetAsync(redisClient.sessionId({ cookieId }, sessionId));
+    await redisClient.hsetAsync(redisClient.sessionSchool({ cookieId, sessionId }, schoolName));
+    await redisClient.hsetAsync(redisClient.sessionName({ cookieId, sessionId }, sessionName));
 
     return true;
   },

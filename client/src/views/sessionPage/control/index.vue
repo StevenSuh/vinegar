@@ -49,54 +49,89 @@ export default {
   data() {
     return {
       duration: null,
-      endTime: null || Date.now() + (1000 * 60 * 60 * 2),
-      intervalUser: null || 'Steven',
+      endTime: null,
+      intervalUser: null,
       isOwner: null,
       participants: null,
       status: null,
 
       // isInterval
+      requestStartTime: null,
       isInterval: null,
-      intervalEndTime: null || Date.now() + (1000 * 60 * 60 * 2),
-      remaining: Math.floor((this.intervalEndTime - Date.now()) / 1000),
+      intervalEndTime: null,
+      remaining: null,
       intervalStartTime: null,
       targetTimestamp: 0,
+
+      // requestAnimationFrame id
+      countEndTimeId: null,
     };
   },
-  mounted() {
-    this.onIsInterval();
+  beforeDestroy() {
+    if (this.countEndTimeId) {
+      window.cancelAnimationFrame(this.countEndTimeId);
+    }
   },
   methods: {
     formatDuration,
     onCountEndTime(timestamp) {
-      const remaining = this.intervalEndTime - this.intervalStartTime - timestamp;
-      const timeout = 1000 + (this.targetTimestamp - timestamp);
+      if (!this.requestStartTime) {
+        this.requestStartTime = timestamp;
+      }
+      const actualTimestamp = timestamp - this.requestStartTime;
 
-      this.remaining = Math.floor(remaining / 1000);
-      this.targetTimestamp = timestamp + timeout;
+      const timeout = 1000 + (this.targetTimestamp - actualTimestamp);
+      this.remaining = this.intervalEndTime - this.intervalStartTime - actualTimestamp;
+      this.targetTimestamp = actualTimestamp + timeout;
 
       if (this.remaining > 0) {
-        setTimeout(window.requestAnimationFrame, timeout, this.onCountEndTime);
+        setTimeout(() => {
+          this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
+        }, timeout);
+      } else {
+        this.countEndTimeId = null;
       }
     },
     onIsInterval() {
       if (this.isInterval) {
         this.intervalStartTime = Date.now();
-        this.remaining = Math.floor((this.intervalEndTime - this.intervalStartTime) / 1000);
-        window.requestAnimationFrame(this.onCountEndTime);
+        this.remaining = this.intervalEndTime - this.intervalStartTime;
+        this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
       }
     },
   },
   sockets: {
-    'socket:onEnter': function({ duration, isOwner, participants, status }) {
+    'control:onEnter': function({
+      duration,
+      endTime,
+      isOwner,
+      participants,
+      status,
+    }) {
       this.duration = duration;
+      this.endTime = new Date(endTime).getTime();
       this.isOwner = isOwner;
       this.participants = participants;
       this.status = status;
     },
-    'control:onUpdateStatus': function({ participants, status }) {
+    'control:onIsInterval': function() {
+      this.isInterval = true;
+    },
+    'control:onUpdateStatus': function({ endTime, participants, status }) {
+      if (endTime) {
+        this.endTime = endTime;
+      }
       this.participants = participants;
       this.status = status;
+    },
+    'interval:onUpdate': function({
+      intervalUser,
+      intervalStartTime,
+      intervalEndTime,
+    }) {
+      this.intervalUser = intervalUser;
+      this.intervalStartTime = intervalStartTime;
+      this.intervalEndTime = intervalEndTime;
     },
   },
 };

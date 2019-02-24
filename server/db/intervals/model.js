@@ -6,7 +6,6 @@ module.exports = (dbClient) => {
   if (!Intervals) {
     Intervals = dbClient.define('intervals', {
       active: {
-        allowNull: false,
         defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
@@ -16,14 +15,20 @@ module.exports = (dbClient) => {
         type: Sequelize.INTEGER,
       },
       downvote: {
-        allowNull: false,
         defaultValue: 0,
         type: Sequelize.INTEGER,
       },
       upvote: {
-        allowNull: false,
         defaultValue: 0,
         type: Sequelize.INTEGER,
+      },
+      duration: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      username: {
+        allowNull: false,
+        type: Sequelize.STRING,
       },
       startTime: {
         allowNull: false,
@@ -45,6 +50,8 @@ module.exports = (dbClient) => {
     Intervals.ID = 'id';
     Intervals.UPVOTE = 'upvote';
     Intervals.UPDATED_AT = 'updatedAt';
+    Intervals.USERNAME = 'username';
+    Intervals.USER_ID = 'userId';
     Intervals.START_TIME = 'startTime';
     Intervals.END_TIME = 'endTime';
   }

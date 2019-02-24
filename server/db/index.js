@@ -8,6 +8,7 @@ const {
 } = require('config');
 const getChatsModel = require('./chats/model');
 const getIntervalsModel = require('./intervals/model');
+const getIntervalManagersModel = require('./intervalManagers/model');
 const getSessionsModel = require('./sessions/model');
 const getUsersModel = require('./users/model');
 
@@ -30,30 +31,37 @@ module.exports = async () => {
 
     const Chats = getChatsModel(dbClient);
     const Intervals = getIntervalsModel(dbClient);
+    const IntervalManagers = getIntervalManagersModel(dbClient);
     const Sessions = getSessionsModel(dbClient);
     const Users = getUsersModel(dbClient);
 
     // create tables
     await Chats.sync({ alter: false, force: false });
     await Intervals.sync({ alter: false, force: false });
+    await IntervalManagers.sync({ alter: false, force: false });
     await Sessions.sync({ alter: false, force: false });
     await Users.sync({ alter: false, force: false });
 
-    /*
-      associations
-
-      as = name for the getter method
-       - as: 'User' -> getUser
-    */
+    // associations
     Sessions.hasMany(Chats, {
       as: 'Chats',
       foreignKey: { allowNull: false, name: 'sessionId' },
+      onDelete: 'cascade',
     });
     Users.hasMany(Chats, {
       as: 'Chats',
       foreignKey: { allowNull: false, name: 'userId' },
     });
 
+    Intervals.belongsTo(Users, {
+      as: 'User',
+      foreignKey: { allowNull: false, name: 'userId' },
+    });
+    IntervalManagers.hasMany(Intervals, {
+      as: 'Intervals',
+      foreignKey: { allowNull: false, name: 'intervalManagerId' },
+      onDelete: 'cascade',
+    });
     Sessions.belongsTo(Intervals, {
       as: 'CurrentInterval',
       foreignKey: { allowNull: true, name: 'currentIntervalId' },
@@ -61,10 +69,17 @@ module.exports = async () => {
     Sessions.hasMany(Intervals, {
       as: 'Intervals',
       foreignKey: { allowNull: false, name: 'sessionId' },
+      onDelete: 'cascade',
     });
-    Users.hasMany(Intervals, {
-      as: 'Intervals',
-      foreignKey: { allowNull: false, name: 'userId' },
+
+    IntervalManagers.belongsTo(Sessions, {
+      as: 'Session',
+      foreignKey: { allowNull: false, name: 'sessionId' },
+    })
+    Sessions.hasOne(IntervalManagers, {
+      as: 'Manager',
+      foreignKey: { allowNull: false, name: 'sessionid' },
+      onDelete: 'cascade',
     });
 
     Sessions.belongsTo(Users, {
@@ -76,9 +91,10 @@ module.exports = async () => {
       foreignKey: { allowNull: true, name: 'sessionId' },
     });
 
-    // order of operation matters
-    await Intervals.sync({ alter: true, force: false });
+    // with association
     await Chats.sync({ alter: true, force: false });
+    await Intervals.sync({ alter: true, force: false });
+    await IntervalManagers.sync({ alter: true, force: false });
     await Users.sync({ alter: true, force: false });
     await Sessions.sync({ alter: true, force: false });
   }

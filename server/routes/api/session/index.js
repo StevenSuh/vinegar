@@ -43,13 +43,6 @@ module.exports = (app) => {
       const searchQuery = query.toLowerCase();
 
       const sessions = await Sessions.findAllByFullName({
-        attributes: [
-          Sessions.CREATED_AT,
-          Sessions.ID,
-          Sessions.PASSWORD,
-          Sessions.SCHOOL_NAME,
-          Sessions.SESSION_NAME,
-        ],
         limit,
         offset,
         query: searchQuery,
@@ -74,11 +67,14 @@ module.exports = (app) => {
     requireUserAuth,
     async (req, res) => {
       const {
-        duration,
+        hour,
+        minute,
         password,
         schoolName,
         sessionName,
       } = req.body;
+
+      const duration = ((hour * 60) + minute) * 60 * 1000;
 
       const validForm = (duration > 0) &&
         (!password || password.length >= MIN_PASSWORD_LENGTH) &&

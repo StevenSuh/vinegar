@@ -23,7 +23,6 @@ module.exports = (dbClient) => {
         type: Sequelize.INTEGER,
       },
       name: {
-        allowNull: false,
         defaultValue: '',
         type: Sequelize.STRING,
       },

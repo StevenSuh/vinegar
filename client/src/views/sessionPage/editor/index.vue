@@ -165,16 +165,18 @@ export default {
     textUpdate,
   },
   sockets: {
-    'socket:onEnter': function({ content }) {
-      this.active = true;
-      this.editor.clipboard.dangerouslyPasteHTML(content, 'silent');
-      this.editor.enable();
-      this.editor.history.clear();
+    'socket:onEnter': function() {
       this.socket.sendEvent('editor:onEnter');
     },
     'socket:onDuplicate': function() {
       this.editor.enable(false);
       this.editor.root.innerHTML = '';
+    },
+    'editor:onEnter': function({ content }) {
+      this.active = true;
+      this.editor.clipboard.dangerouslyPasteHTML(content, 'silent');
+      this.editor.enable();
+      this.editor.history.clear();
     },
     'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
       const range = new Range(data.index, data.length);

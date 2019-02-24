@@ -21,11 +21,12 @@ module.exports = (app) => {
     }
 
     let validSession = false;
-    const sessionExists = await redisClient.hexistsAsync(cookieId, redisClient.SESSION_ID);
+    const sessionExists = await redisClient.hexistsAsync(redisClient.sessionId({ cookieId }));
 
     if (sessionExists) {
-      const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
-      const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
+      const sessionId = await redisClient.hgetAsync(redisClient.sessionId({ cookieId }));
+      const schoolName = await redisClient.hgetAsync(redisClient.sessionSchool({ cookieId, sessionId }));
+      const sessionName = await redisClient.hgetAsync(redisClient.sessionName({ cookieId, sessionId }));
 
       const names = getNamesByReferer(req.headers.referer);
       const sessionsPage = names.schoolName && names.sessionName;
@@ -39,7 +40,7 @@ module.exports = (app) => {
       }
     }
 
-    const userIdExists = await redisClient.hexistsAsync(cookieId, redisClient.USER_ID);
+    const userIdExists = await redisClient.hexistsAsync(redisClient.userId({ cookieId }));
     if (!userIdExists) {
       await createUser(res);
     }

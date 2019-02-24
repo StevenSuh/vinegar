@@ -21,6 +21,7 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.16.4",
     "morgan": "^1.9.1",
+    "nodemon": "^1.18.10",
     "path-to-regexp": "^3.0.0",
     "pg": "^7.8.0",
     "pg-hstore": "^2.3.2",
@@ -34,7 +35,6 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
-    "nodemon": "^1.18.9"
+    "eslint-plugin-node": "^8.0.1"
   }
 }

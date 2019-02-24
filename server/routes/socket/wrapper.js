@@ -48,7 +48,7 @@ const WsWrapper = (ws) => {
     }
   });
 
-  ws.onEventServer = (type, cb) => {
+  ws.onServer = (type, cb) => {
     addWsCallback(type, (data) => {
       const { _except, _target } = data;
 
@@ -111,7 +111,7 @@ const WsWrapper = (ws) => {
 };
 
 const WssWrapper = (wss) => {
-  wss.onEventServer = (type, cb) => {
+  wss.onServer = (type, cb) => {
     addWsCallback(type, (data) => {
       const { _except, _target } = data;
 

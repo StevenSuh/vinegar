@@ -79,17 +79,17 @@ export default {
     },
   },
   sockets: {
-    'socket:onEnter': function({ isOwner, participants, people, status }) {
+    'control:onUpdateStatus': function({ participants, status }) {
+      this.participants = participants;
+      this.status = status;
+    },
+    'people:onEnter': function({ isOwner, participants, people, status }) {
       this.isOwner = isOwner;
       this.participants = participants;
       this.people = people;
       this.status = status;
     },
-    'control:onUpdateStatus': function({ participants, status }) {
-      this.participants = participants;
-      this.status = status;
-    },
-    'people:onEnter': function(person) {
+    'people:onJoin': function(person) {
       if (!person.isOwner) {
         this.people.push(person);
         return;

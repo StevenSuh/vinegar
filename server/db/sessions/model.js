@@ -5,7 +5,7 @@ const {
   findAllByFullName,
 } = require('./methods');
 
-const STATUS = ['initial', 'waiting', 'active'];
+const STATUS = ['initial', 'waiting', 'active', 'ended'];
 let Sessions = null;
 
 module.exports = (dbClient) => {
@@ -16,14 +16,14 @@ module.exports = (dbClient) => {
         defaultValue: '',
         type: Sequelize.TEXT,
       },
-      // seconds
+      // milliseconds
       duration: {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
       endTime: {
         allowNull: true,
-        type: Sequelize.STRING,
+        type: Sequelize.DATE,
       },
       id: {
         autoIncrement: true,
@@ -87,6 +87,7 @@ module.exports = (dbClient) => {
     Sessions.STATUS_INITIAL = 'initial';
     Sessions.STATUS_WAITING = 'waiting';
     Sessions.STATUS_ACTIVE = 'active';
+    Sessions.STATUS_ENDED = 'active';
   }
   return Sessions;
 };

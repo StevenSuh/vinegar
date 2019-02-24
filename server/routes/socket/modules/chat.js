@@ -3,8 +3,15 @@ const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
+const { getChats } = require('routes/socket/utils');
+
 const { DEFAULT_ENTER_MSG } = require('defs');
-const { CHAT_SEND, CHAT_SCROLL, SOCKET_EXCEPTION } = require('routes/socket/defs');
+const {
+  CHAT_ENTER,
+  CHAT_SEND,
+  CHAT_SCROLL,
+  SOCKET_EXCEPTION,
+} = require('routes/socket/defs');
 
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
@@ -31,6 +38,12 @@ module.exports = async (wss, ws, session, user) => {
   const { createdAt: date, message: msg, type: chatType } = enterChat.get();
   ws.to(sessionName).sendEvent(CHAT_SEND,
     { color, msg, name, date, type: chatType, userId });
+
+  const messages = await getChats(session);
+  ws.sendEvent(CHAT_ENTER, {
+    hasMore: messages.length > 10,
+    msgs: (messages.length > 10) ? messages.slice(1) : messages,
+  });
 
   ws.onEvent(CHAT_SEND, async (data) => {
     wss.to(sessionName).sendEvent(CHAT_SEND, {

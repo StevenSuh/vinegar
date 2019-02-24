@@ -41,27 +41,43 @@ export default {
   },
   data() {
     return {
-      remaining: Math.floor((this.endTime - Date.now()) / 1000),
+      requestStartTime: null,
+      remaining: this.endTime - Date.now(),
       startTime: null,
       targetTimestamp: 0,
+
+      // requestAnimationFrame id
+      countEndTimeId: null,
     };
   },
   mounted() {
     this.startTime = Date.now();
-    this.remaining = Math.floor((this.endTime - this.startTime) / 1000);
-    window.requestAnimationFrame(this.onCountEndTime);
+    this.remaining = this.endTime - this.startTime;
+    this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
+  },
+  beforeDestroy() {
+    if (this.countEndTimeId) {
+      window.cancelAnimationFrame(this.countEndTimeId);
+    }
   },
   methods: {
     formatDuration,
     onCountEndTime(timestamp) {
-      const remaining = this.endTime - this.startTime - timestamp;
-      const timeout = 1000 + (this.targetTimestamp - timestamp);
+      if (!this.requestStartTime) {
+        this.requestStartTime = timestamp;
+      }
+      const actualTimestamp = timestamp - this.requestStartTime;
 
-      this.remaining = Math.floor(remaining / 1000);
-      this.targetTimestamp = timestamp + timeout;
+      const timeout = 1000 + (this.targetTimestamp - actualTimestamp);
+      this.remaining = this.endTime - this.startTime - actualTimestamp;
+      this.targetTimestamp = actualTimestamp + timeout;
 
       if (this.remaining > 0) {
-        setTimeout(window.requestAnimationFrame, timeout, this.onCountEndTime);
+        setTimeout(() => {
+          this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
+        }, timeout);
+      } else {
+        this.countEndTimeId = null;
       }
     },
   },

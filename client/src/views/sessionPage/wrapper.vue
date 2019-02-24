@@ -31,12 +31,6 @@
         <People class="people-wrapper" :socket="socket" />
         <Chat class="chat-wrapper" :socket="socket" />
       </div>
-      <transition name="fadeNoDelay">
-        <ErrorModal
-          v-if="errorModal"
-          :error-modal="errorModal"
-        />
-      </transition>
     </div>
   </transition>
 </template>
@@ -45,7 +39,6 @@
 import Chat from '@/views/sessionPage/chat';
 import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
-import ErrorModal from '@/views/sessionPage/errorModal';
 import People from '@/views/sessionPage/people';
 
 import { socketMixin } from '@/services/socket';
@@ -59,7 +52,6 @@ export default {
   components: {
     Chat,
     Control,
-    ErrorModal,
     Editor,
     People,
   },
@@ -70,7 +62,6 @@ export default {
   data() {
     return {
       // state
-      errorModal: null,
       school: this.$route.params.school,
       session: this.$route.params.session,
       show: false,
@@ -88,26 +79,14 @@ export default {
     },
     close() {
       const { school, session } = this;
-      this.errorModal = {
-        header: 'An error has occurred.',
-        msg: `You have been disconnected from session: ${school}/${session}.`,
-      };
       handleErrorMiddleware(`You have been disconnected from session: ${school}/${session}.`, 'socket');
       this.socket = EmptySocket();
     },
     'socket:onException': function({ errorMessage }) {
-      this.errorModal = {
-        header: 'An error has occurred.',
-        msg: errorMessage,
-      };
       handleErrorMiddleware(errorMessage, 'socket');
     },
     'socket:onDuplicate': function(data) {
-      this.errorModal = {
-        header: DUPLICATE_HEADER,
-        msg: DUPLICATE_MSG,
-      };
-      this.socket.close();
+      handleErrorMiddleware(DUPLICATE_MSG, 'socket');
     },
   },
   watch: {

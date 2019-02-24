@@ -14,12 +14,23 @@
         :on-show="onShow"
       />
     </transition>
+    <transition name="fadeNoDelay">
+      <ErrorModal
+        v-if="errorModal"
+        :error-modal="errorModal"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
+import ErrorModal from '@/views/sessionPage/errorModal';
+
 import { initSocket, EmptySocket } from '@/services/socket';
-import { handleErrorMiddleware } from '@/services/middleware';
+import {
+  connectErrorMiddlewareWithCallback,
+  disconnectErrorMiddleware,
+} from '@/services/middleware';
 
 import Welcome from '@/views/sessionPage/welcomeModal';
 
@@ -27,11 +38,13 @@ import SessionPageWrapper from './wrapper';
 
 export default {
   components: {
-    Welcome,
+    ErrorModal,
     SessionPageWrapper,
+    Welcome,
   },
   data() {
     return {
+      errorModal: null,
       isWelcome: true,
       socket: null,
       show: false,
@@ -41,13 +54,22 @@ export default {
     const { school, session } = this.$route.params;
     document.title = `Vinegar - ${school}/${session}`;
   },
+  created() {
+    connectErrorMiddlewareWithCallback(this, this.onError);
+  },
   beforeDestroy() {
+    disconnectErrorMiddleware(this, this.onError);
+
     if (this.socket) {
       this.socket.close();
       this.socket = null;
     }
   },
   methods: {
+    onError(msg) {
+      this.errorModal = { header: 'An error has occurred.', msg };
+      this.show = true;
+    },
     onInit(callback) {
       if (!this.socket) {
         const { host, pathname } = window.location;

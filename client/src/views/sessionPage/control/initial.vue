@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper paddingTop">
-    <div class="initial-wrapper">
+    <form class="initial-wrapper" @submit="onStart">
       <input-component
         id="participantsNumId"
         autocomplete="off"
@@ -26,7 +26,7 @@
         </p>
       </button-component>
       <invite-button />
-    </div>
+    </form>
     <div class="initial-text">
       <span class="bold">Session ends in:</span>
       {{ formatDuration(duration) }}
@@ -64,7 +64,8 @@ export default {
     onChangeParticipants(value) {
       this.participants = value;
     },
-    onStart() {
+    onStart(e) {
+      e.preventDefault();
       if (this.isOwner) {
         const hasError = this.onValidateParticipants();
 

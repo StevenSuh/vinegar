@@ -12,11 +12,11 @@ const redisClient = require('services/redis')();
 const initSocketEditor = require('./modules/editor');
 const initSocketChat = require('./modules/chat');
 const initSocketControl = require('./modules/control');
+const initSocketPeople = require('./modules/people');
 
 const {
   getCookieIds,
   getSchoolAndSession,
-  sendEnterEvent,
   shouldHandle,
   setupSocketDuplicate,
 } = require('./utils');
@@ -41,8 +41,7 @@ const startSocket = async (wss, ws, session, user) => {
   await initSocketChat(wss, ws, session, user);
   initSocketEditor(wss, ws, session, user);
   initSocketControl(wss, ws, session, user);
-
-  await sendEnterEvent(ws, session, user);
+  await initSocketPeople(wss, ws, session, user);
 
   const diffTime = Date.now() - startTime;
   console.log('SOCKET /socket:onEnter took:', `${diffTime}ms`);
@@ -65,15 +64,18 @@ module.exports = (server) => {
       }
 
       ws.onEvent(SOCKET_ENTER, async () => {
-        const userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
-        const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
-        const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
-        const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
+        const userIdExists = await redisClient.hexistsAsync(redisClient.userId({ cookieId }));
+        const sessionIdExists = await redisClient.hexistsAsync(redisClient.sessionId({ cookieId }));
 
-        if (!userId || !sessionId || !schoolName || !sessionName) {
+        if (!userIdExists || !sessionIdExists) {
           ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid authentication.' });
           return ws.close();
         }
+
+        const userId = await redisClient.hgetAsync(redisClient.userId({ cookieId }));
+        const sessionId = await redisClient.hgetAsync(redisClient.sessionId({ cookieId }));
+        const schoolName = await redisClient.hgetAsync(redisClient.sessionSchool({ cookieId, sessionId }));
+        const sessionName = await redisClient.hgetAsync(redisClient.sessionName({ cookieId, sessionId }));
 
         const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
         const userPromise = Users.findOne({ where: { id: userId }});

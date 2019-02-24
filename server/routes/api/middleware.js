@@ -18,7 +18,7 @@ const createUser = async (res) => {
     secure: false, // TODO: change to true
   });
 
-  await redisClient.hsetAsync(cookieId, redisClient.USER_ID, user.get(Users.ID));
+  await redisClient.hsetAsync(redisClient.userId({ cookieId }, user.get(Users.ID)));
   redisClient.expireAsync(cookieId, 60 * 60 * 24 * 30); // 1 month
 
   return user;
@@ -30,7 +30,7 @@ const requireUserAuth = async (req, res, next = Function) => {
 
   const { cookieId } = req.cookies;
   if (cookieId) {
-    userId = await redisClient.hgetAsync(cookieId, redisClient.USER_ID);
+    userId = await redisClient.hgetAsync(redisClient.userId({ cookieId }));
     if (userId) {
       user = true;
     } else {
@@ -85,9 +85,9 @@ const requireSessionAuth = async (req, res, next = Function) => {
     return false;
   }
 
-  const sessionId = await redisClient.hgetAsync(cookieId, redisClient.SESSION_ID);
-  const schoolName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_SCHOOL);
-  const sessionName = await redisClient.hgetAsync(cookieId, redisClient.SESSION_NAME);
+  const sessionId = await redisClient.hgetAsync(redisClient.sessionId({ cookieId }));
+  const schoolName = await redisClient.hgetAsync(redisClient.sessionSchool({ cookieId, sessionId }));
+  const sessionName = await redisClient.hgetAsync(redisClient.sessionName({ cookieId, sessionId }));
   if (!sessionId || !schoolName || !sessionName) {
     res.status(400).send('Invalid session.');
     return false;

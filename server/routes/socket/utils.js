@@ -4,11 +4,10 @@ const pathToRegexp = require('path-to-regexp');
 const dbClient = require('db')();
 const Chats = require('db/chats/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
 
-const { inflate, tryCatch } = require('utils');
+const { tryCatch } = require('utils');
 
-const { EDITOR_CONTENT_UPDATE, SOCKET_DUPLICATE, SOCKET_ENTER } = require('./defs');
+const { EDITOR_CONTENT_UPDATE, SOCKET_DUPLICATE } = require('./defs');
 
 const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
 
@@ -81,35 +80,12 @@ const getChats = async (session) => {
 
 const getPeople = async (session) => {
   const people = await session.getUsers({ where: { active: true }});
+
   return people.map(person => {
     const { id, name } = person.get();
     const isOwner = id === session.get(Sessions.OWNER_ID);
 
     return { id, name, isOwner };
-  });
-};
-
-const sendEnterEvent = async (ws, session, user) => {
-  const messages = await getChats(session);
-
-  const content = inflate(session.get(Sessions.CONTENT));
-  const duration = session.get(Sessions.DURATION);
-  const hasMore = messages.length > 10;
-  const isOwner = session.get(Sessions.OWNER_ID) === user.get(Users.ID);
-  const msgs = (messages.length > 10) ? messages.slice(1) : messages;
-  const participants = session.get(Sessions.PARTICIPANTS);
-  const people = await getPeople(session);
-  const status = session.get(Sessions.STATUS);
-
-  ws.sendEvent(SOCKET_ENTER, {
-    content,
-    duration,
-    hasMore,
-    isOwner,
-    msgs,
-    participants,
-    people,
-    status,
   });
 };
 
@@ -130,7 +106,6 @@ module.exports = {
   getPeople,
   getSchoolAndSession,
   shouldHandle,
-  sendEnterEvent,
   setupSocketDuplicate,
   socketLogger,
 };
