@@ -22,11 +22,11 @@ services:
       driver: none
   api:
     build:
-      dockerfile: Dockerfile.dev
-      context: ./server
+      dockerfile: ./server/Dockerfile.dev
+      context: ./
     volumes:
-      - /app/node_modules
-      - ./server:/app
+      - /app/server/node_modules
+      - ./server:/app/server
     environment:
       # get these from owner
       - REDIS_HOST=redis
@@ -46,11 +46,11 @@ services:
       - ./client:/app
   interval:
     build:
-      dockerfile: Dockerfile.dev
-      context: ./interval
+      dockerfile: ./interval/Dockerfile.dev
+      context: ./
     volumes:
-      - /app/node_modules
-      - ./interval:/app
+      - /app/interval/node_modules
+      - ./interval:/app/interval
     depends_on:
       - api
     environment:

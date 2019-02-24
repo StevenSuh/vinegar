@@ -1,40 +1,46 @@
 const dbClient = require('db')();
 const Intervals = require('db/intervals/model')(dbClient);
+const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
 const redisClient = require('services/redis')();
 
-const { getPeople } = require('routes/socket/utils');
-
 const {
   CONTROL_IS_INTERVAL,
   CONTROL_UPDATE_STATUS,
   INTERVAL_REMIND,
+  INTERVAL_STATUS,
   INTERVAL_UPDATE,
+  SOCKET_CLOSE,
 } = require('routes/socket/defs');
 
 class Interval {
-  constructor({ people, session, wss, ws }) {
+  constructor({ session, redisClient, publisher }) {
     this.ended = false;
 
     this.count = session.get(Sessions.PARTICIPANTS);
-    this.people = people;
     this.intervals = [];
     this.intervalUsers = [];
     this.intervalTimeout = null;
     this.current = 0;
+    this.timestamp = null;
+    this.targetTimestamp = null;
 
     this.totalDuration = session.get(Sessions.DURATION);
     this.timeout = this.normalizeTimeout();
     this.endTime = session.get(Sessions.END_TIME);
 
-    this.wss = wss;
-    this.ws = ws;
+    this.redisClient = redisClient;
+    this.publisher = publisher;
 
     this.session = session;
     this.sessionId = session.get(Sessions.ID);
     this.sessionName = `session-${this.sessionId}`;
+
+    this.intervalManager = IntervalManagers.create({
+      sessionId: this.sessionId,
+    });
   }
 
   normalizeTimeout() {
@@ -56,22 +62,13 @@ class Interval {
         a[i] = a[randIdx];
         a[randIdx] = temp;
     }
-    this.intervalUsers = a;
-  }
-
-  async reshuffle() {
-    this.people = await getPeople(this.sessionId);
-
-    let newUsers = this.people;
-    if (newUsers.length > this.count) {
-      newUsers = this.people.filter(person =>
-        !this.intervals.find(interval =>
-          interval.get(Intervals.USER_ID) === person.get(Users.ID)));
-    }
+    return a;
   }
 
   async setupInterval() {
-    this.shuffle(this.people);
+    const people = await this.session.getUsers({ where: { active: true }});
+    this.intervalUsers = this.shuffle(people);
+
     const promises = [];
 
     for (let i = 0; i < this.count; i += 1) {
@@ -86,6 +83,11 @@ class Interval {
         username: user.get(Users.NAME),
         userId: user.get(Users.ID),
       }));
+
+      if (i > 0) {
+        const userIdName = `user-${user.get(Users.USER_ID)}`;
+        this.publisher.to(userIdName).publishEvent(INTERVAL_STATUS, { startTime });
+      }
     }
 
     this.intervals = await Promise.all(promises);
@@ -96,22 +98,24 @@ class Interval {
     const currentInterval = this.intervals[this.current];
 
     const userIdName = `user-${currentInterval.get(Intervals.USER_ID)}`;
-    this.wss.to(userIdName).sendServer(CONTROL_IS_INTERVAL);
+    this.publisher.to(userIdName).publishEvent(CONTROL_IS_INTERVAL);
 
-    this.wss.to(this.sessionName).sendEvent(INTERVAL_UPDATE, {
+    this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
       intervalUser: currentInterval.get(Intervals.USERNAME),
       intervalStartTime: currentInterval.get(Intervals.START_TIME),
       intervalEndTime: currentInterval.get(Intervals.END_TIME),
     });
 
     if (this.current < this.count - 1) {
-      const expectedTimestamp = this.timestamp + this.timeout;
+      const expectedTimestamp = (this.timestamp || now) + this.timeout;
       const remaining = expectedTimestamp - now;
+      const timeoutDuration = (timeout || this.timeout + remaining);
 
       this.current += 1;
       this.timestamp = now;
-      this.intervalTimeout = setTimeout(this.startInterval,
-        timeout || this.timeout + remaining);
+      this.targetTimestamp = now + timeoutDuration;
+
+      this.intervalTimeout = setTimeout(this.startInterval, timeoutDuration);
     } else {
       this.endInterval();
     }
@@ -119,63 +123,81 @@ class Interval {
 
   endInterval() {
     this.ended = true;
-    this.wss.to(this.sessionName).sendEvent(CONTROL_UPDATE_STATUS,
-      { status: Sessions.STATUS_ENDED });
+    this.publisher.to(this.sessionName).publishEvent(
+      CONTROL_UPDATE_STATUS,
+      { status: Sessions.STATUS_ENDED },
+    );
 
     setTimeout(() => {
-      this.wss.to(this.sessionName).sendEvent(INTERVAL_REMIND);
+      this.publisher.to(this.sessionName).publishEvent(INTERVAL_REMIND);
       setTimeout(() => {
         const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
         const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
         redisClient.delAsync(schoolQuery[0], sessionQuery[0]);
 
         this.session.remove();
-        this.ws.close();
+        this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
       }, 60000 * 5);
     }, 60000 * 5);
   }
 
-  reassignInterval(user) {
-    setTimeout(async () => {
-      await user.reload();
+  async reassignInterval(userId) {
+    if (this.targetTimestamp - Date.now() < 60000) {
+      return;
+    }
 
-      // give 30 seconds of leaway til relogin
-      if (!user.get(Users.ACTIVE)) {
+    const user = Users.findOne({ where: { id: userId }});
+    if (user) {
+      setTimeout(async () => {
+        await user.reload();
+        if (user.get(Users.ACTIVE)) {
+          return;
+        }
+
         const userId = user.get(Users.ID);
         const targetIndex = this.intervals.findIndex(interval =>
           userId === interval.get(Intervals.USER_ID));
 
         if (targetIndex !== -1) {
-          const interval = this.intervals[targetIndex];
-          const intervalId = interval.get(Intervals.ID);
-          const isCurrent = targetIndex === this.current;
+          const candidate = await this.getRandomCandidate();
 
-          const newUserId = this.reshuffle();
+          if (candidate) {
+            const interval = this.intervals[targetIndex];
 
-          if (isCurrent) {
-            // need to cancel this.intervalTimeout and redo it
+            await interval.update({ userId: candidate.get(Users.ID) });
 
-            // const userIdName = `user-${currentInterval.get(Intervals.USER_ID)}`;
-            // this.wss.to(userIdName).sendServer(CONTROL_IS_INTERVAL);
+            if (targetIndex === this.current) {
+              const diff = this.targetTimestamp - Date.now();
 
-            // this.wss.to(this.sessionName).sendEvent(INTERVAL_UPDATE, {
-            //   intervalUser: currentInterval.get(Intervals.USERNAME),
-            //   intervalStartTime: currentInterval.get(Intervals.START_TIME),
-            //   intervalEndTime: currentInterval.get(Intervals.END_TIME),
-            // });
-            this.wss.to(this.sessionName).sendEvent()
+              clearTimeout(this.intervalTimeout);
+              this.startInterval(diff);
+            } else {
+              const userIdName = `user-${userId}`;
+              this.publisher.to(userIdName).publishEvent(
+                INTERVAL_STATUS,
+                { startTime: interval.get(Intervals.START_TIME) },
+              );
+            }
           }
         }
-      }
-    }, 30000);
+      }, 30000);
+    }
+  }
+
+  async getRandomCandidate() {
+    const people = await this.session.getUsers({ where: { active: true }});
+
+    let intervals = (people.length > this.count) ?
+      this.intervals :
+      this.intervals.slice(0, this.current + 1);
+
+    const candidates = people.filter(person =>
+      !intervals.find(interval => interval.get(Intervals.USER_ID) === person.get(Users.ID)));
+
+    return this.shuffle(candidates)[0];
   }
 }
 
-module.exports = async (session, people, wss, ws) => {
-  const interval = new Interval({ session, people, wss, ws});
-
-  await interval.setupInterval();
-  interval.startInterval();
-
-  return interval;
+module.exports = {
+  Interval,
 };

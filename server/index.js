@@ -17,7 +17,7 @@ app.use(enableResBody);
 app.use(customMorgan());
 
 require('./routes/api')(app);
-require('./db')();
+require('db')();
 require('./services/redis')();
 
 if (process.env.NODE_ENV === 'production') {

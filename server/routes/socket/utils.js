@@ -7,7 +7,7 @@ const Sessions = require('db/sessions/model')(dbClient);
 
 const { tryCatch } = require('utils');
 
-const { EDITOR_CONTENT_UPDATE, SOCKET_DUPLICATE } = require('./defs');
+const { EDITOR_CONTENT_UPDATE, SOCKET_CLOSE, SOCKET_DUPLICATE } = require('./defs');
 
 const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
 
@@ -89,10 +89,16 @@ const getPeople = async (session) => {
   });
 };
 
+const setupSocketClose = (ws) => {
+  ws.onServer(SOCKET_CLOSE, () => {
+    ws.close();
+  });
+};
+
 const setupSocketDuplicate = (ws, userSessionName) => {
   ws.to(userSessionName).sendServer(SOCKET_DUPLICATE, { id: ws.id });
 
-  ws.onEventServer(SOCKET_DUPLICATE, ({ id: newWsId }) => {
+  ws.onServer(SOCKET_DUPLICATE, ({ id: newWsId }) => {
     if (newWsId !== ws.id) {
       ws.sendEvent(SOCKET_DUPLICATE);
       ws.close();
@@ -106,6 +112,7 @@ module.exports = {
   getPeople,
   getSchoolAndSession,
   shouldHandle,
+  setupSocketClose,
   setupSocketDuplicate,
   socketLogger,
 };

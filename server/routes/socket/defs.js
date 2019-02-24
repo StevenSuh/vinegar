@@ -20,7 +20,10 @@ module.exports = {
   EDITOR_SELECTION_UPDATE: 'editor:onEditorSelectionUpdate',
   EDITOR_SELECTION_REMOVE: 'editor:onEditorSelectionRemove',
 
+  INTERVAL_CREATE: 'interval:onCreate',
+  INTERVAL_REASSIGN: 'interval:onReassign',
   INTERVAL_REMIND: 'interval:onRemind',
+  INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
   PEOPLE_JOIN: 'people:onJoin',
@@ -29,6 +32,7 @@ module.exports = {
   REDIS_EVENT: 'redis:websocket',
 
   SUBSCRIBE_EVENTS: {
+    SOCKET_CLOSE: 'socket:onClose',
     SOCKET_DUPLICATE: 'socket:onDuplicate',
 
     CHAT_SEND: 'chat:onChatSend',

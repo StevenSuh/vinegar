@@ -1,4 +1,4 @@
-const startInterval = require('services/interval');
+const { createInterval, reassignInterval } = require('services/interval');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
@@ -47,7 +47,7 @@ module.exports = (wss, ws, session, user) => {
     await session.update(update);
 
     if (isFull) {
-      intervalClient.startInterval(sessionId);
+      createInterval(sessionId);
     }
 
     wss.to(sessionName).sendEvent(CONTROL_UPDATE_STATUS, update);
@@ -68,7 +68,7 @@ module.exports = (wss, ws, session, user) => {
     };
 
     await session.update(update);
-    intervalClient.startInterval(sessionId);
+    createInterval(sessionId);
     wss.to(sessionName).sendEvent(CONTROL_UPDATE_STATUS, update);
   });
 
@@ -76,10 +76,12 @@ module.exports = (wss, ws, session, user) => {
     ws.sendEvent(CONTROL_INTERVAL);
   });
 
-  ws.on('close', () => {
+  ws.on('close', async () => {
+    await session.reload();
+
     const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
     if (intervalManagerId) {
-      intervalClient.reassignInterval(intervalManagerId, userId);
+      reassignInterval(intervalManagerId, userId);
     }
   });
 };

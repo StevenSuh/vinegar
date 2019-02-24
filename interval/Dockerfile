@@ -1,7 +1,12 @@
 FROM node:alpine
 WORKDIR "/app"
-COPY ./package.json ./
+RUN mkdir shared
+COPY ./shared ./shared
+RUN mkdir interval
+
+WORKDIR "/app/interval"
+COPY ./interval/package.json ./
 RUN yarn
-COPY . .
+COPY ./interval .
 RUN yarn add global forever
 CMD ["forever", "start", "-c", "'yarn start'", "./"]

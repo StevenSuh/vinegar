@@ -18,6 +18,7 @@ const {
   getCookieIds,
   getSchoolAndSession,
   shouldHandle,
+  setupSocketClose,
   setupSocketDuplicate,
 } = require('./utils');
 
@@ -36,6 +37,7 @@ const startSocket = async (wss, ws, session, user) => {
   ws.join(`session-${session.get(Sessions.ID)}`);
   ws.join(`user-${user.get(Users.ID)}`);
 
+  setupSocketClose(ws);
   setupSocketDuplicate(ws, `user-${user.get(Users.ID)}`);
 
   await initSocketChat(wss, ws, session, user);
