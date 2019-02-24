@@ -14,10 +14,10 @@ module.exports = {
       return null;
     }
   },
-  deflate: (input) => {
+  deflate: input => {
     return zlib.deflateSync(input).toString('base64');
   },
-  inflate: (text) => {
+  inflate: text => {
     if (text) {
       return zlib.inflateSync(Buffer.from(text, 'base64')).toString();
     }

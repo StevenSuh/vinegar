@@ -1,15 +1,9 @@
 <template>
-  <div>
-    Modal
-  </div>
+  <div>Modal</div>
 </template>
 
 <script>
-export default {
-
-}
+export default {};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

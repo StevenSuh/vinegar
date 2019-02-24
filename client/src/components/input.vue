@@ -6,9 +6,9 @@
       class="input"
       :autocomplete="autocomplete"
       :class="{
-        'error': errorMessage,
+        error: errorMessage,
         [size]: true,
-        'hasLabel': label,
+        hasLabel: label,
       }"
       :maxlength="maxLen"
       :name="name"

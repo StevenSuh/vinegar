@@ -54,7 +54,8 @@ export default {
 .primary > * {
   background-color: var(--main-bg-color);
   color: var(--white-font-color);
-  transition: background-color var(--transition-duration) var(--transition-curve),
+  transition: background-color var(--transition-duration)
+      var(--transition-curve),
     color var(--transition-duration) var(--transition-curve);
 }
 

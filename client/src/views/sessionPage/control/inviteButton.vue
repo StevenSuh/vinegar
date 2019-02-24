@@ -31,24 +31,22 @@ export default {
     };
   },
   methods: {
-    onCopyClipboard(e) {
-      const dummy = document.createElement("input");
-      dummy.value = location.href;
+    onCopyClipboard() {
+      const dummy = document.createElement('input');
+      dummy.value = window.location.href;
 
       document.body.appendChild(dummy);
       dummy.select();
-      document.execCommand("copy");
+      document.execCommand('copy');
       document.body.removeChild(dummy);
 
       this.clipboardMsg = 'Copied!';
     },
-    onResetClipboard(e) {
+    onResetClipboard() {
       this.clipboardMsg = 'Click to Copy Link';
     },
   },
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

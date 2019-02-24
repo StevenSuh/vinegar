@@ -101,12 +101,7 @@ import {
   scrollToBottom,
   updateInputHeight,
 } from './methods';
-import {
-  onDuplicate,
-  onChatEnter,
-  onChatSend,
-  onChatScroll,
-} from './socket';
+import { onDuplicate, onChatEnter, onChatSend, onChatScroll } from './socket';
 
 export default {
   components: {

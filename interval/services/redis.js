@@ -61,9 +61,9 @@ const onMessage = async function(channel, message) {
     const data = tryCatch(() => JSON.parse(message));
 
     for (let i = 0; i < validCbs.length; i += 1) {
-      const { channel, cb } = validCbs[i];
+      const { channel: currChannel, cb } = validCbs[i];
 
-      if (roundRobinDefs.includes(channel)) {
+      if (roundRobinDefs.includes(currChannel)) {
         const shouldProceed = await calculateCurrentRobin(this);
 
         if (!shouldProceed) {

@@ -28,8 +28,14 @@
         <Control :socket="socket" />
       </div>
       <div class="right">
-        <People class="people-wrapper" :socket="socket" />
-        <Chat class="chat-wrapper" :socket="socket" />
+        <People
+          class="people-wrapper"
+          :socket="socket"
+        />
+        <Chat
+          class="chat-wrapper"
+          :socket="socket"
+        />
       </div>
     </div>
   </transition>
@@ -41,12 +47,12 @@ import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
 import People from '@/views/sessionPage/people';
 
-import { socketMixin } from '@/services/socket';
+import { EmptySocket, socketMixin } from '@/services/socket';
 import { handleErrorMiddleware } from '@/services/middleware';
 
 import backImage from '@/assets/back.png';
 
-import { DUPLICATE_HEADER, DUPLICATE_MSG } from '@/defs';
+import { DUPLICATE_MSG } from '@/defs';
 
 export default {
   components: {
@@ -70,6 +76,13 @@ export default {
       backImage,
     };
   },
+  watch: {
+    errorModal(value) {
+      if (value !== this.error) {
+        this.error = value;
+      }
+    },
+  },
   mounted() {
     this.show = true;
   },
@@ -79,21 +92,17 @@ export default {
     },
     close() {
       const { school, session } = this;
-      handleErrorMiddleware(`You have been disconnected from session: ${school}/${session}.`, 'socket');
+      handleErrorMiddleware(
+        `You have been disconnected from session: ${school}/${session}.`,
+        'socket',
+      );
       this.socket = EmptySocket();
     },
     'socket:onException': function({ errorMessage }) {
       handleErrorMiddleware(errorMessage, 'socket');
     },
-    'socket:onDuplicate': function(data) {
+    'socket:onDuplicate': function() {
       handleErrorMiddleware(DUPLICATE_MSG, 'socket');
-    },
-  },
-  watch: {
-    errorModal(value, oldValue) {
-      if (value !== this.error) {
-        this.error = value;
-      }
     },
   },
 };

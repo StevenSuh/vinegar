@@ -30,7 +30,10 @@
         <ToolbarConfig />
       </div>
     </div>
-    <div ref="editor" @click="onFocusEditor" />
+    <div
+      ref="editor"
+      @click="onFocusEditor"
+    />
   </div>
 </template>
 

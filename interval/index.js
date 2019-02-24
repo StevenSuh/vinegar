@@ -17,9 +17,12 @@ const publisher = redisClient.duplicateClient({ pub: true });
 const intervalManagers = {};
 
 addCallback(INTERVAL_CREATE, async ({ sessionId }) => {
-  const session = await Sessions.findOne({ where: { id: sessionId }});
+  const session = await Sessions.findOne({ where: { id: sessionId } });
 
-  const intervalManager = new IntervalManager({ session, publisher }, intervalManagers);
+  const intervalManager = new IntervalManager(
+    { session, publisher },
+    intervalManagers,
+  );
   await intervalManager.setupInterval();
   intervalManager.startInterval();
 

@@ -32,8 +32,8 @@
       </p>
     </div>
     <div
-      class="result-empty paddingTop paddingBottom small"
       v-if="data.length === 0"
+      class="result-empty paddingTop paddingBottom small"
     >
       No session found :(
     </div>

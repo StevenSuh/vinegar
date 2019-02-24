@@ -20,7 +20,9 @@
       <invite-button />
     </div>
     <div class="initial-text">
-      <span class="bold">Session ends in:</span>
+      <span class="bold">
+        Session ends in:
+      </span>
       {{ formatDuration(duration) }}
     </div>
   </div>
@@ -67,17 +69,17 @@ export default {
 }
 
 .start {
-  background-color: #798E91;
+  background-color: #798e91;
 }
 
 .start:hover,
 .start.disabled {
-  background-color: #798E91;
+  background-color: #798e91;
 }
 
 .participants {
   background-color: #696969;
-  color: #B4B4B4;
+  color: #b4b4b4;
   cursor: not-allowed;
   padding: 6px 12px !important;
 }
@@ -97,7 +99,7 @@ export default {
 }
 
 .disabled {
-  color: #C9D2D3;
+  color: #c9d2d3;
   cursor: not-allowed;
 }
 </style>

@@ -2,12 +2,16 @@
   <div class="wrapper paddingTop small">
     <div class="left">
       <p class="interval-msg">
-        <span class="interval-user">{{ intervalUser }}</span>
+        <span class="interval-user">
+          {{ intervalUser }}
+        </span>
         {{ ' is currently typing...' }}
       </p>
-      <!-- <div class="rate-wrapper">
-        <p class="rate-msg">Rate this Notetaker</p>
-      </div> -->
+      <!--
+        <div class="rate-wrapper">
+          <p class="rate-msg">Rate this Notetaker</p>
+        </div>
+      -->
     </div>
     <div class="right">
       <div class="button-wrapper">
@@ -15,7 +19,9 @@
         <invite-button />
       </div>
       <div class="end-text">
-        <span class="bold">Session ends in:</span>
+        <span class="bold">
+          Session ends in:
+        </span>
         {{ formatDuration(remaining) }}
       </div>
     </div>
@@ -74,7 +80,9 @@ export default {
 
       if (this.remaining > 0) {
         setTimeout(() => {
-          this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
+          this.countEndTimeId = window.requestAnimationFrame(
+            this.onCountEndTime,
+          );
         }, timeout);
       } else {
         this.countEndTimeId = null;

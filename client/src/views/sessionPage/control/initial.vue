@@ -1,7 +1,11 @@
 <template>
   <div class="wrapper paddingTop">
-    <form class="initial-wrapper" @submit="onStart">
+    <form
+      class="initial-wrapper"
+      @submit="onStart"
+    >
       <input-component
+        v-if="isOwner"
         id="participantsNumId"
         autocomplete="off"
         name="participants"
@@ -11,7 +15,6 @@
         :value="participants"
         :on-validate="onValidateNumber"
         @onChange="onChangeParticipants"
-        v-if="isOwner"
       />
       <button-component
         type="primary"
@@ -28,7 +31,9 @@
       <invite-button />
     </form>
     <div class="initial-text">
-      <span class="bold">Session ends in:</span>
+      <span class="bold">
+        Session ends in:
+      </span>
       {{ formatDuration(duration) }}
     </div>
   </div>
@@ -40,8 +45,6 @@ import InputComponent from '@/components/input';
 import InviteButton from './inviteButton';
 
 import { formatDuration } from './utils';
-
-const numRegex = new RegExp('^$|^[0-9]+$');
 
 export default {
   components: {
@@ -115,12 +118,12 @@ export default {
 }
 
 .start {
-  background-color: #1FA2B8;
+  background-color: #1fa2b8;
 }
 
 .start:hover,
 .start.disabled {
-  background-color: #1C92A6;
+  background-color: #1c92a6;
 }
 
 .initial-text {
@@ -134,7 +137,7 @@ export default {
 }
 
 .disabled {
-  color: #A4D3DB;
+  color: #a4d3db;
   cursor: not-allowed;
 }
 </style>

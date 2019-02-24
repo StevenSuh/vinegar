@@ -155,7 +155,6 @@ class Interval {
           return;
         }
 
-        const userId = user.get(Users.ID);
         const targetIndex = this.intervals.findIndex(interval =>
           userId === interval.get(Intervals.USER_ID));
 
@@ -188,7 +187,7 @@ class Interval {
   async getRandomCandidate() {
     const people = await this.session.getUsers({ where: { active: true }});
 
-    let intervals = (people.length > this.count) ?
+    const intervals = (people.length > this.count) ?
       this.intervals :
       this.intervals.slice(0, this.current + 1);
 

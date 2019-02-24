@@ -26,7 +26,7 @@
 <script>
 import ErrorModal from '@/views/sessionPage/errorModal';
 
-import { initSocket, EmptySocket } from '@/services/socket';
+import { initSocket } from '@/services/socket';
 import {
   connectErrorMiddlewareWithCallback,
   disconnectErrorMiddleware,

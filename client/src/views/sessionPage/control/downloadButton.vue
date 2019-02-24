@@ -1,16 +1,22 @@
 <template>
   <div class="download">
-    <img class="hover" :src="DownloadIcon" alt="download icon" />
+    <img
+      class="hover"
+      :src="DownloadIcon"
+      alt="download icon"
+    />
     <Tooltip
       position="top"
       :force-show="isDownloading"
       :on-click="onStartDownload"
     >
-      <p v-if="!isDownloading">Download Current Doc</p>
+      <p v-if="!isDownloading">
+        Download Current Doc
+      </p>
       <Loader
+        v-else
         color="white"
         size="x-small"
-        v-else
       />
     </Tooltip>
   </div>
@@ -44,7 +50,7 @@ export default {
       }
     },
   },
-}
+};
 </script>
 
 <style scoped>

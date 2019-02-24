@@ -2,19 +2,19 @@
   <div class="wrapper">
     <div class="people">
       <div
-        class="person"
         v-for="person in people"
         :key="person.userId"
+        class="person"
       >
         <span
+          v-if="!person.isOwner && isInterval"
           class="person-icon interval"
           v-html="IntervalIcon"
-          v-if="!person.isOwner && isInterval"
         />
         <span
+          v-else-if="person.isOwner"
           class="person-icon"
           v-html="OwnerIcon"
-          v-else-if="person.isOwner"
         />
         <p
           class="person-name"
@@ -23,19 +23,21 @@
           {{ person.name }}
         </p>
         <span
-          class="person-remove"
-          @click="onRemove(person.userId)"
-          v-html="RemoveIcon"
           v-if="isOwner"
+          class="person-remove"
+          @click="onRemove(person.userId);"
+          v-html="RemoveIcon"
         />
       </div>
     </div>
     <p
-      class="waiting-msg marginBottom"
       v-if="status === 'waiting' && participants > people.length"
+      class="waiting-msg marginBottom"
     >
       {{ 'Waiting for ' }}
-      <span class="bold">{{ participants - people.length }}</span>
+      <span class="bold">
+        {{ participants - people.length }}
+      </span>
       {{ ' more people to begin session...' }}
     </p>
   </div>
@@ -48,13 +50,16 @@ import OwnerIcon from '!raw-loader!@/assets/owner.svg';
 import IntervalIcon from '!raw-loader!@/assets/interval.svg';
 import RemoveIcon from '!raw-loader!@/assets/x.svg';
 
-import DeleteModal from './delete';
+// import DeleteModal from './delete';
 
 export default {
   components: {
-    DeleteModal,
+    // DeleteModal,
   },
   mixins: [socketMixin],
+  props: {
+    socket: [Object, WebSocket],
+  },
   data() {
     return {
       // state
@@ -70,12 +75,10 @@ export default {
       IntervalIcon,
     };
   },
-  props: {
-    socket: [Object, WebSocket],
-  },
   methods: {
-    onRemove(userId) {
-      console.log(userId);
+    onRemove(/* userId */) {
+      // should pop up a modal
+      // console.log(userId);
     },
   },
   sockets: {
@@ -196,4 +199,3 @@ export default {
   width: 39px;
 }
 </style>
-

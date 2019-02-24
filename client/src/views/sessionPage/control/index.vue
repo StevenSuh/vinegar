@@ -1,8 +1,13 @@
 <template>
   <div class="control">
-    <div class="interval-wrapper marginTop" v-if="isInterval">
+    <div
+      v-if="isInterval"
+      class="interval-wrapper marginTop"
+    >
       <div class="interval-text">
-        <p class="bold">Turn ending in:</p>
+        <p class="bold">
+          Turn ending in:
+        </p>
         <p>{{ formatDuration(remaining) }}</p>
       </div>
     </div>
@@ -81,12 +86,15 @@ export default {
       const actualTimestamp = timestamp - this.requestStartTime;
 
       const timeout = 1000 + (this.targetTimestamp - actualTimestamp);
-      this.remaining = this.intervalEndTime - this.intervalStartTime - actualTimestamp;
+      this.remaining =
+        this.intervalEndTime - this.intervalStartTime - actualTimestamp;
       this.targetTimestamp = actualTimestamp + timeout;
 
       if (this.remaining > 0) {
         setTimeout(() => {
-          this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
+          this.countEndTimeId = window.requestAnimationFrame(
+            this.onCountEndTime,
+          );
         }, timeout);
       } else {
         this.countEndTimeId = null;

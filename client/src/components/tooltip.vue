@@ -1,8 +1,8 @@
 <template>
   <div
+    ref="tooltip"
     class="tooltip"
     :class="{ show: show || forceShow, [position]: true }"
-    ref="tooltip"
   >
     <slot />
   </div>
@@ -10,12 +10,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      reset: false,
-      show: false,
-    };
-  },
   props: {
     forceShow: {
       default: false,
@@ -28,32 +22,14 @@ export default {
     },
     onResetClick: {
       default: null,
-      type: Function
+      type: Function,
     },
   },
-  methods: {
-    onClickParent(e) {
-      this.onClick();
-
-      if (this.onResetClick) {
-        this.reset = true;
-      }
-    },
-    onMouseEnter() {
-      if (!this.show) {
-        this.show = true;
-
-        if (this.reset) {
-          this.onResetClick();
-          this.reset = false;
-        }
-      }
-    },
-    onMouseLeave() {
-      if (this.show) {
-        this.show = false;
-      }
-    },
+  data() {
+    return {
+      reset: false,
+      show: false,
+    };
   },
   mounted() {
     const { tooltip } = this.$refs;
@@ -81,7 +57,31 @@ export default {
     tooltip.parentElement.removeEventListener('mouseenter', this.onMouseEnter);
     tooltip.parentElement.removeEventListener('mouseleave', this.onMouseLeave);
   },
-}
+  methods: {
+    onClickParent() {
+      this.onClick();
+
+      if (this.onResetClick) {
+        this.reset = true;
+      }
+    },
+    onMouseEnter() {
+      if (!this.show) {
+        this.show = true;
+
+        if (this.reset) {
+          this.onResetClick();
+          this.reset = false;
+        }
+      }
+    },
+    onMouseLeave() {
+      if (this.show) {
+        this.show = false;
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
