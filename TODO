@@ -1,7 +1,12 @@
 Sort of a wish list
 In the order of importance ASC -> DESC
 
+engineering:
 1. Use node-schedule for `interval` worker
 2. Unit tests
 3. Clean up a lot of code - create utilities, refactor repeated logic (focus socket, interval)
 4. Separate socket out of api
+
+product:
+1. If kicked out 3 times, block the user's ip address from session
+

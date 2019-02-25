@@ -1,4 +1,5 @@
 module.exports = {
+  SOCKET_CLOSE: 'socket:onClose',
   SOCKET_DUPLICATE: 'socket:onDuplicate',
   SOCKET_ENTER: 'socket:onEnter',
   SOCKET_EXCEPTION: 'socket:onException',
@@ -26,6 +27,7 @@ module.exports = {
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
+  PEOPLE_DELETE: 'people:onDelete',
   PEOPLE_ENTER: 'people:onEnter',
   PEOPLE_JOIN: 'people:onJoin',
   PEOPLE_LEAVE: 'people:onLeave',

@@ -19,7 +19,10 @@ const socketLogger = (message, ws) => {
       return;
     }
 
-    const data = tryCatch(() => JSON.parse(message));
+    let data = message;
+    if (typeof data !== 'object') {
+      data = tryCatch(() => JSON.parse(message));
+    }
 
     if (data) {
       const { type } = data;
@@ -90,7 +93,12 @@ const getPeople = async (session) => {
 };
 
 const setupSocketClose = (ws) => {
-  ws.onServer(SOCKET_CLOSE, () => {
+  ws.onServer(SOCKET_CLOSE, ({ type }) => {
+    if (type) {
+      ws.sendEvent(type);
+    } else {
+      ws.sendEvent(SOCKET_CLOSE);
+    }
     ws.close();
   });
 };

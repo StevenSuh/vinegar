@@ -3,9 +3,11 @@ const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
 const {
+  PEOPLE_DELETE,
   PEOPLE_ENTER,
   PEOPLE_JOIN,
   PEOPLE_LEAVE,
+  SOCKET_CLOSE,
 } = require('routes/socket/defs');
 
 const { getPeople } = require('routes/socket/utils');
@@ -16,6 +18,7 @@ module.exports = async (_wss, ws, session, user) => {
 
   const userId = user.get(Users.ID);
   const name = user.get(Users.NAME);
+  const isOwner = userId === session.get(Sessions.OWNER_ID);
 
   ws.sendEvent(PEOPLE_ENTER, {
     isOwner: session.get(Sessions.OWNER_ID) === userId,
@@ -27,7 +30,14 @@ module.exports = async (_wss, ws, session, user) => {
   ws.to(sessionName).sendEvent(PEOPLE_JOIN, {
     id: userId,
     name,
-    isOwner: userId === session.get(Sessions.OWNER_ID),
+    isOwner,
+  });
+
+  ws.onEvent(PEOPLE_DELETE, ({ id }) => {
+    if (isOwner) {
+      const targetSessionName = `user-${id}`;
+      ws.to(targetSessionName).sendServer(SOCKET_CLOSE, { type: PEOPLE_DELETE });
+    }
   });
 
   ws.on('close', () => {

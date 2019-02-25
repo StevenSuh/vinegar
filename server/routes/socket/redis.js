@@ -2,6 +2,7 @@
 const redis = require('redis');
 const { tryCatch } = require('utils');
 const { SUBSCRIBE_EVENTS } = require('./defs');
+const { socketLogger } = require('./utils');
 
 const wsRedisPub = redis.createClient({
   host: process.env.REDIS_HOST,
@@ -32,7 +33,7 @@ const redisPubWrapper = (redisClient) => {
 redisPubWrapper(wsRedisPub);
 
 wsRedisSub.on('message', (channel, message) => {
-  console.log('receiving', channel);
+  socketLogger({ type: channel, message }, { sessions: ['redis'] });
 
   const validCbs = wsCallbacks.filter(item => item.channel === channel);
 
@@ -41,7 +42,7 @@ wsRedisSub.on('message', (channel, message) => {
 
     validCbs.forEach(({ cb }) => {
       cb(data);
-    })
+    });
   }
 });
 

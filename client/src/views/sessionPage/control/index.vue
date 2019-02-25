@@ -1,16 +1,11 @@
 <template>
   <div class="control">
-    <div
-      v-if="isInterval"
-      class="interval-wrapper marginTop"
-    >
-      <div class="interval-text">
-        <p class="bold">
-          Turn ending in:
-        </p>
-        <p>{{ formatDuration(remaining) }}</p>
-      </div>
-    </div>
+    <Ended v-if="status === 'initial'" />
+    <IsInterval
+      v-else-if="isInterval"
+      :is-interval="isInterval"
+      :interval-end-time="intervalEndTime"
+    />
     <Initial
       v-else-if="status === 'initial'"
       :duration="duration"
@@ -34,17 +29,19 @@
 
 <script>
 import Active from './active';
+import Ended from './ended';
 import Initial from './initial';
+import IsInterval from './isInterval';
 import Waiting from './waiting';
 
 import { socketMixin } from '@/services/socket';
 
-import { formatDuration } from './utils';
-
 export default {
   components: {
     Active,
+    Ended,
     Initial,
+    IsInterval,
     Waiting,
   },
   mixins: [socketMixin],
@@ -61,53 +58,9 @@ export default {
       status: null,
 
       // isInterval
-      requestStartTime: null,
       isInterval: null,
       intervalEndTime: null,
-      remaining: null,
-      intervalStartTime: null,
-      targetTimestamp: 0,
-
-      // requestAnimationFrame id
-      countEndTimeId: null,
     };
-  },
-  beforeDestroy() {
-    if (this.countEndTimeId) {
-      window.cancelAnimationFrame(this.countEndTimeId);
-    }
-  },
-  methods: {
-    formatDuration,
-    onCountEndTime(timestamp) {
-      if (!this.requestStartTime) {
-        this.requestStartTime = timestamp;
-      }
-      const actualTimestamp = timestamp - this.requestStartTime;
-
-      const timeout = 1000 + (this.targetTimestamp - actualTimestamp);
-      this.remaining =
-        this.intervalEndTime - this.intervalStartTime - actualTimestamp;
-      this.targetTimestamp = actualTimestamp + timeout;
-
-      if (this.remaining > 0) {
-        setTimeout(() => {
-          this.countEndTimeId = window.requestAnimationFrame(
-            this.onCountEndTime,
-          );
-        }, timeout);
-      } else {
-        this.remaining = 0;
-        this.countEndTimeId = null;
-      }
-    },
-    onIsInterval() {
-      if (this.isInterval && this.intervalEndTime) {
-        this.intervalStartTime = Date.now();
-        this.remaining = this.intervalEndTime - this.intervalStartTime;
-        this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
-      }
-    },
   },
   sockets: {
     'control:onEnter': function({
@@ -126,10 +79,8 @@ export default {
       this.status = status;
     },
     'control:onInterval': function({ isInterval, intervalEndTime }) {
-      console.log(isInterval, intervalEndTime);
       this.isInterval = isInterval;
       this.intervalEndTime = new Date(intervalEndTime).getTime();
-      this.onIsInterval();
     },
     'control:onUpdateStatus': function({ endTime, participants, status }) {
       if (endTime) {
@@ -148,20 +99,5 @@ export default {
 <style scoped>
 .control {
   display: flex;
-}
-
-.interval-wrapper {
-  width: 100%;
-}
-
-.interval-text {
-  font-size: 18px;
-  text-align: center;
-}
-
-.bold {
-  color: var(--main-font-color);
-  font-weight: 500;
-  margin-bottom: 15px;
 }
 </style>

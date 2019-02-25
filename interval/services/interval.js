@@ -23,6 +23,7 @@ const { sleep } = require('utils');
 class Interval {
   constructor({ session, publisher }, managers) {
     this.managers = managers;
+    this.ended = false;
 
     this.count = session.get(Sessions.PARTICIPANTS);
     this.intervals = [];
@@ -66,6 +67,22 @@ class Interval {
         a[randIdx] = temp;
     }
     return a;
+  }
+
+  async findUserInInterval(userId, fromStart) {
+    for (
+      let i = fromStart ? 0 : this.current;
+      i < this.intervals.length;
+      i += 1
+    ) {
+      const interval = this.intervals[i];
+
+      if (interval.get(Intervals.USER_ID) === userId) {
+        const user = await Users.findOne({ where: { id: userId } });
+        return user;
+      }
+    }
+    return null;
   }
 
   notifyUser(interval, isInterval) {
@@ -152,12 +169,8 @@ class Interval {
   }
 
   async endInterval() {
+    this.ended = true;
     await this.session.update({ status: Sessions.STATUS_ENDED });
-
-    const currInterval = this.intervals[this.current];
-    this.notifyUser(currInterval, false);
-
-    this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE);
     this.publisher.to(this.sessionName).publishEvent(
       CONTROL_UPDATE_STATUS,
       { status: Sessions.STATUS_ENDED },
@@ -177,18 +190,21 @@ class Interval {
     delete this.managers[this.managerId];
     this.session.destroy();
 
-    this.publisher.to(this.sessionName).publishEvent(SOCKET_CLOSE);
     this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
     console.log('SOCKET CLOSED!!!!!!!!!!!!!!!!!!!!');
   }
 
   async reassignInterval(userId) {
+    if (this.ended) {
+      return;
+    }
+
     // if ending soon, cancel reassignment
     if (this.targetTimestamp - Date.now() < 60000) {
       return;
     }
 
-    const user = Users.findOne({ where: { id: userId }});
+    const user = await this.findUserInInterval(userId);
     if (!user) {
       return;
     }
@@ -202,9 +218,6 @@ class Interval {
 
     const targetIndex = this.intervals.findIndex(interval =>
       userId === interval.get(Intervals.USER_ID));
-    if (targetIndex === -1) {
-      return;
-    }
 
     const candidate = await this.getRandomCandidate();
     if (!candidate) {

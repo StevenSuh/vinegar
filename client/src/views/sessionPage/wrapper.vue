@@ -99,6 +99,11 @@ export default {
       this.socket.close();
       this.socket = EmptySocket();
     },
+    'people:onDelete': function() {
+      handleErrorMiddleware('You have been removed from the session.', 'socket');
+      this.socket.close();
+      this.socket = EmptySocket();
+    },
     'socket:onClose': function() {
       const { school, session } = this;
       handleErrorMiddleware(

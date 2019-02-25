@@ -99,11 +99,12 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.on('close', () => {
-    tryCatch(() => session.reload().then(newSession => {
-      const intervalManagerId = newSession.get(Sessions.INTERVAL_MANAGER_ID);
+    tryCatch(async () => {
+      await session.reload();
+      const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
       if (intervalManagerId) {
         reassignInterval(intervalManagerId, userId);
       }
-    }));
+    });
   });
 };

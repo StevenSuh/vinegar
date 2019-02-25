@@ -23,9 +23,9 @@
           {{ person.name }}
         </p>
         <span
-          v-if="isOwner"
+          v-if="isOwner && !person.isOwner"
           class="person-remove"
-          @click="onRemove(person.userId);"
+          @click="onOpenModal(person);"
           v-html="RemoveIcon"
         />
       </div>
@@ -40,6 +40,13 @@
       </span>
       {{ ' more people to begin session...' }}
     </p>
+    <delete-modal
+      :id="clickedUserId"
+      :name="clickedUserName"
+      :on-close="onCloseModal"
+      :on-delete="onDeleteUser"
+      :is-open="isModalOpen"
+    />
   </div>
 </template>
 
@@ -50,11 +57,11 @@ import OwnerIcon from '!raw-loader!@/assets/owner.svg';
 import IntervalIcon from '!raw-loader!@/assets/interval.svg';
 import RemoveIcon from '!raw-loader!@/assets/x.svg';
 
-// import DeleteModal from './delete';
+import DeleteModal from './delete';
 
 export default {
   components: {
-    // DeleteModal,
+    DeleteModal,
   },
   mixins: [socketMixin],
   props: {
@@ -69,6 +76,11 @@ export default {
       people: [],
       status: null,
 
+      // delete modal
+      clickedUserName: null,
+      clickedUserId: null,
+      isModalOpen: false,
+
       // asset
       RemoveIcon,
       OwnerIcon,
@@ -76,10 +88,6 @@ export default {
     };
   },
   methods: {
-    onRemove(/* userId */) {
-      // should pop up a modal
-      // console.log(userId);
-    },
     sortByOwner(arr) {
       const array = arr.filter(
         (item, index) => arr.findIndex(item2 => item2.id === item.id) === index,
@@ -89,6 +97,18 @@ export default {
       const [owner] = array.splice(ownerIndex, 1);
       array.splice(0, 0, owner);
       return array;
+    },
+    onOpenModal({ id, name }) {
+      this.clickedUserId = id;
+      this.clickedUserName = name;
+      this.isModalOpen = true;
+    },
+    onCloseModal() {
+      this.isModalOpen = false;
+    },
+    onDeleteUser(id) {
+      this.socket.sendEvent('people:onDelete', { id });
+      this.isModalOpen = false;
     },
   },
   sockets: {

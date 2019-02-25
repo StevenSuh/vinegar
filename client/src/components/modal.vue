@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    class="will-hide"
+    :class="!open ? 'hide' : ''"
+  >
     <div
       class="bg-overlay"
       @click="onClose"
@@ -16,7 +19,7 @@
       </div>
     </transition>
     <div
-      class="content-wrapper"
+      class="content-wrapper will-hide"
       :class="!show ? 'hide' : ''"
     >
       <div
@@ -78,6 +81,10 @@ export default {
       default: 0,
       type: Number,
     },
+    open: {
+      default: true,
+      type: Boolean,
+    },
     show: {
       default: true,
       type: Boolean,
@@ -95,7 +102,12 @@ export default {
     },
     show(value, oldValue) {
       if (value && value !== oldValue) {
-        this.onEnter(this.$refs.content[this.currentStep], 200);
+        this.onEnter(this.$refs.content[this.currentStep], 600);
+      }
+    },
+    open(value, oldValue) {
+      if (value && value !== oldValue) {
+        this.onEnter(this.$refs.content[this.currentStep], 0);
       }
     },
     currentStep(value, oldValue) {
@@ -110,7 +122,7 @@ export default {
     window.addEventListener('keyup', this.onKeyup);
   },
   mounted() {
-    if (!this.isLoading && this.show) {
+    if (!this.isLoading && this.open && this.show) {
       this.onEnter(this.$refs.content[this.currentStep], 200);
     }
   },
@@ -131,8 +143,8 @@ export default {
         el.style.userSelect = 'auto';
 
         let timing = enterTiming;
-        if (delay) {
-          timing = { ...timing, delay: enterTiming.delay + delay };
+        if (delay !== undefined) {
+          timing = { ...timing, delay };
         }
         const animation = el.animate(enterAnim, timing);
         animation.onfinish = () => {
@@ -190,11 +202,13 @@ export default {
   z-index: 1001;
 }
 
-.content-wrapper {
+.will-hide {
   transition: opacity var(--transition-duration) var(--transition-curve);
+  will-change: opacity;
+  z-index: 1001;
 }
 
-.content-wrapper.hide {
+.hide {
   opacity: 0 !important;
   pointer-events: none;
   user-select: none;
