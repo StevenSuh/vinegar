@@ -1,5 +1,7 @@
 module.exports = {
-  CONTROL_IS_INTERVAL: 'control:onIsInterval',
+  SESSION_END_DURATION: 6000,
+
+  CONTROL_INTERVAL: 'control:onInterval',
   CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
 
   INTERVAL_CREATE: 'interval:onCreate',

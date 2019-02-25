@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper paddingTop small">
     <div class="left">
-      <p class="interval-msg">
+      <p class="interval-msg" v-if="intervalUser">
         <span class="interval-user">
           {{ intervalUser }}
         </span>
@@ -85,6 +85,7 @@ export default {
           );
         }, timeout);
       } else {
+        this.remaining = 0;
         this.countEndTimeId = null;
       }
     },

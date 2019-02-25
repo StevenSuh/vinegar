@@ -29,6 +29,24 @@ const redisClient = bluebird.promisifyAll(
   }),
 );
 
+redisClient.SESSION_SCHOOL = 'schoolName';
+redisClient.SESSION_NAME = 'sessionName';
+
+redisClient.sessionSchool = ({ cookieId, sessionId }, value) => {
+  const query = [`${redisClient.SESSION_SCHOOL}-${sessionId}`, cookieId];
+  if (value) {
+    query.push(value);
+  }
+  return query;
+};
+redisClient.sessionName = ({ cookieId, sessionId }, value) => {
+  const query = [`${redisClient.SESSION_NAME}-${sessionId}`, cookieId];
+  if (value) {
+    query.push(value);
+  }
+  return query;
+};
+
 const calculateCurrentRobin = async (client) => {
   if (process.env.NODE_ENV !== 'production') {
     return true;

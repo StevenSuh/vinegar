@@ -9,6 +9,7 @@
         error: errorMessage,
         [size]: true,
         hasLabel: label,
+        hasValue: currentValue,
       }"
       :maxlength="maxLen"
       :name="name"
@@ -225,11 +226,13 @@ export default {
   opacity: 0;
 }
 
-.input.hasLabel:focus::placeholder {
+.input.hasLabel:focus::placeholder,
+.input.hasLabel.hasValue::placeholder {
   transform: translateY(-18px);
 }
 
-.input.hasLabel.small:focus::placeholder {
+.input.hasLabel.small:focus::placeholder,
+.input.hasLabel.hasValue.small::placeholder {
   transform: translateY(-16px);
 }
 
@@ -238,22 +241,30 @@ export default {
   color: var(--main-font-color);
 }
 
-.input.hasLabel:focus {
+.input.hasLabel:focus,
+.input.hasLabel.hasValue {
   padding-top: 27px;
   padding-bottom: 9px;
 }
 
-.input.hasLabel.small:focus {
+.input.hasLabel.small:focus,
+.input.hasLabel.hasValue.small {
   padding-top: 22px;
   padding-bottom: 6px;
 }
 
-.input.hasLabel:focus + .label {
+.input.hasLabel:focus + .label,
+.input.hasLabel.hasValue + .label {
   opacity: 1;
   transform: translateY(8px);
 }
 
-.input.hasLabel.small:focus + .label {
+.input.hasLabel:focus + .label {
+  color: var(--main-font-color);
+}
+
+.input.hasLabel.small:focus + .label,
+.input.hasLabel.hasValue.small + .label {
   opacity: 1;
   transform: translateY(5px);
 }
@@ -263,7 +274,7 @@ export default {
 }
 
 .label {
-  color: var(--main-font-color);
+  color: var(--gray-font-color);
   font-size: 14px;
   font-weight: 400;
   left: 26px;

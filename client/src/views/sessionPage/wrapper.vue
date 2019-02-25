@@ -96,6 +96,16 @@ export default {
         `You have been disconnected from session: ${school}/${session}.`,
         'socket',
       );
+      this.socket.close();
+      this.socket = EmptySocket();
+    },
+    'socket:onClose': function() {
+      const { school, session } = this;
+      handleErrorMiddleware(
+        `You have been disconnected from session: ${school}/${session}.`,
+        'socket',
+      );
+      this.socket.close();
       this.socket = EmptySocket();
     },
     'socket:onException': function({ errorMessage }) {

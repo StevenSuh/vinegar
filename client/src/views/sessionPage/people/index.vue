@@ -2,8 +2,8 @@
   <div class="wrapper">
     <div class="people">
       <div
-        v-for="person in people"
-        :key="person.userId"
+        v-for="(person, index) in people"
+        :key="index"
         class="person"
       >
         <span
@@ -80,6 +80,15 @@ export default {
       // should pop up a modal
       // console.log(userId);
     },
+    sortByOwner(arr) {
+      const array = arr.filter((item, index) =>
+        arr.findIndex((item2) => item2.id === item.id) === index);
+
+      const ownerIndex = array.findIndex(item => item.isOwner);
+      const [owner] = array.splice(ownerIndex, 1);
+      array.splice(0, 0, owner);
+      return array;
+    },
   },
   sockets: {
     'control:onUpdateStatus': function({ participants, status }) {
@@ -87,12 +96,24 @@ export default {
       this.status = status;
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {
+      if (
+        status === 'waiting' &&
+        this.people.length === this.participants
+      ) {
+        this.socket.sendEvent('control:onWait');
+      }
+
       this.isOwner = isOwner;
       this.participants = participants;
-      this.people = people;
+      this.people = this.sortByOwner(people);
       this.status = status;
     },
     'people:onJoin': function(person) {
+      console.log('people join', person);
+      if (this.people.length + 1 === this.participants) {
+        this.socket.sendEvent('control:onWait');
+      }
+
       if (!person.isOwner) {
         this.people.push(person);
         return;

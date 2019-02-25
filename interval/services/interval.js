@@ -9,7 +9,8 @@ const Users = require('db/users/model')(dbClient);
 const { redisClient } = require('services/redis');
 
 const {
-  CONTROL_IS_INTERVAL,
+  SESSION_END_DURATION,
+  CONTROL_INTERVAL,
   CONTROL_UPDATE_STATUS,
   INTERVAL_REMIND,
   INTERVAL_STATUS,
@@ -65,6 +66,14 @@ class Interval {
     return a;
   }
 
+  notifyUser(interval, isInterval) {
+    const userIdName = `user-${interval.get(Intervals.USER_ID)}`;
+    this.publisher.to(userIdName).publishEvent(CONTROL_INTERVAL, {
+      isInterval,
+      intervalEndTime: interval.get(Intervals.END_TIME),
+    });
+  }
+
   async setupInterval() {
     this.intervalManager = await IntervalManagers.create({ sessionId: this.sessionId });
     this.managerId = this.intervalManager.get(IntervalManagers.ID);
@@ -97,38 +106,56 @@ class Interval {
     this.intervals = await Promise.all(promises);
   }
 
-  startInterval(timeout) {
-    const now = Date.now();
+  async startInterval(timeout, initial) {
     const currentInterval = this.intervals[this.current];
-
     await this.session.update({ currentIntervalId: currentInterval.get(Intervals.ID) });
 
-    const userIdName = `user-${currentInterval.get(Intervals.USER_ID)}`;
-    this.publisher.to(userIdName).publishEvent(CONTROL_IS_INTERVAL);
+    // update current user view
+    this.notifyUser(currentInterval, true);
+
+    if (!initial) {
+      // reset previous user view
+      const prevInterval = this.intervals[this.current - 1];
+      this.notifyUser(prevInterval, false);
+    }
 
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
       intervalUser: currentInterval.get(Intervals.USERNAME),
-      intervalStartTime: currentInterval.get(Intervals.START_TIME),
-      intervalEndTime: currentInterval.get(Intervals.END_TIME),
     });
 
+    if (initial) {
+      this.publisher.to(this.sessionName).publishEvent(CONTROL_UPDATE_STATUS, {
+        endTime: this.session.get(Sessions.END_TIME),
+        status: this.session.get(Sessions.STATUS),
+      });
+    }
+    console.log(this.current + ':', currentInterval.get(), initial, this.count - 1);
+
+    const now = Date.now();
+    const expectedTimestamp = this.timestamp ? this.timestamp + this.timeout : now;
+    const remaining = expectedTimestamp - now;
+    const timeoutDuration = (timeout || this.timeout + remaining);
+
+    console.log(this.count - 1, (timeout || this.timeout + remaining));
+
+    this.timestamp = now;
+    this.targetTimestamp = now + timeoutDuration;
+
     if (this.current < this.count - 1) {
-      const expectedTimestamp = (this.timestamp || now) + this.timeout;
-      const remaining = expectedTimestamp - now;
-      const timeoutDuration = (timeout || this.timeout + remaining);
-
       this.current += 1;
-      this.timestamp = now;
-      this.targetTimestamp = now + timeoutDuration;
-
-      this.intervalTimeout = setTimeout(this.startInterval, timeoutDuration);
+      this.intervalTimeout = setTimeout(this.startInterval.bind(this), timeoutDuration);
     } else {
-      this.endInterval();
+      this.intervalTimeout = setTimeout(this.endInterval.bind(this), timeoutDuration);
     }
   }
 
-  endInterval() {
+  async endInterval() {
     await this.session.update({ status: Sessions.STATUS_ENDED });
+
+    const currInterval = this.intervals[this.current];
+    this.notifyUser(currInterval, false);
+
+    this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE);
     this.publisher.to(this.sessionName).publishEvent(
       CONTROL_UPDATE_STATUS,
       { status: Sessions.STATUS_ENDED },
@@ -142,11 +169,15 @@ class Interval {
         redisClient.delAsync(schoolQuery[0], sessionQuery[0]);
 
         delete this.managers[this.managerId];
-        this.session.remove();
+        this.session.destroy();
 
         this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
-      }, 60000 * 5);
-    }, 60000 * 5);
+        this.publisher.to(this.sessionName).publishEvent(SOCKET_CLOSE);
+
+        console.log('SOCKET CLOSED!!!!!!!!!!!!!!!!!!!!');
+      }, SESSION_END_DURATION);
+      console.log('SOCKET CLOSING SOON!!!!!!!!!!!!!!!!!!!!');
+    }, SESSION_END_DURATION);
   }
 
   async reassignInterval(userId) {
@@ -177,7 +208,7 @@ class Interval {
               const diff = this.targetTimestamp - Date.now();
 
               clearTimeout(this.intervalTimeout);
-              this.startInterval(diff);
+              await this.startInterval(diff);
             } else {
               const userIdName = `user-${userId}`;
               this.publisher.to(userIdName).publishEvent(

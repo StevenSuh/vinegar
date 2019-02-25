@@ -32,6 +32,8 @@ const redisPubWrapper = (redisClient) => {
 redisPubWrapper(wsRedisPub);
 
 wsRedisSub.on('message', (channel, message) => {
+  console.log('receiving', channel);
+
   const validCbs = wsCallbacks.filter(item => item.channel === channel);
 
   if (validCbs.length > 0) {

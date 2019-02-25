@@ -28,11 +28,11 @@ module.exports = (dbClient) => {
       },
       startTime: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.DATE,
       },
       endTime: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.DATE,
       },
     }, {
       freezeTableName: true,

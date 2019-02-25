@@ -25,7 +25,7 @@ module.exports = async (_wss, ws, session, user) => {
   });
 
   ws.to(sessionName).sendEvent(PEOPLE_JOIN, {
-    userId,
+    id: userId,
     name,
     isOwner: userId === session.get(Sessions.OWNER_ID),
   });

@@ -1,6 +1,5 @@
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
-const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 
 const {
   addCallback,
@@ -25,13 +24,14 @@ addCallback(INTERVAL_CREATE, async ({ sessionId }) => {
     intervalManagers,
   );
   await intervalManager.setupInterval();
-  intervalManager.startInterval();
+  await intervalManager.startInterval(null, true);
 
   const { managerId } = intervalManager;
   intervalManagers[managerId] = intervalManager;
 });
 
 addCallback(INTERVAL_REASSIGN, async ({ managerId, userId }) => {
+  console.log(INTERVAL_REASSIGN, managerId, userId);
   const intervalManager = intervalManagers[managerId];
 
   if (intervalManager) {

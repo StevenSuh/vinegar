@@ -97,11 +97,12 @@ export default {
           );
         }, timeout);
       } else {
+        this.remaining = 0;
         this.countEndTimeId = null;
       }
     },
     onIsInterval() {
-      if (this.isInterval) {
+      if (this.isInterval && this.intervalEndTime) {
         this.intervalStartTime = Date.now();
         this.remaining = this.intervalEndTime - this.intervalStartTime;
         this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
@@ -112,34 +113,33 @@ export default {
     'control:onEnter': function({
       duration,
       endTime,
+      intervalUser,
       isOwner,
       participants,
       status,
     }) {
       this.duration = duration;
       this.endTime = new Date(endTime).getTime();
+      this.intervalUser = intervalUser;
       this.isOwner = isOwner;
       this.participants = participants;
       this.status = status;
     },
-    'control:onIsInterval': function() {
-      this.isInterval = true;
+    'control:onInterval': function({ isInterval, intervalEndTime }) {
+      console.log(isInterval, intervalEndTime);
+      this.isInterval = isInterval;
+      this.intervalEndTime = new Date(intervalEndTime).getTime();
+      this.onIsInterval();
     },
     'control:onUpdateStatus': function({ endTime, participants, status }) {
       if (endTime) {
-        this.endTime = endTime;
+        this.endTime = new Date(endTime).getTime();
       }
       this.participants = participants;
       this.status = status;
     },
-    'interval:onUpdate': function({
-      intervalUser,
-      intervalStartTime,
-      intervalEndTime,
-    }) {
+    'interval:onUpdate': function({ intervalUser }) {
       this.intervalUser = intervalUser;
-      this.intervalStartTime = intervalStartTime;
-      this.intervalEndTime = intervalEndTime;
     },
   },
 };

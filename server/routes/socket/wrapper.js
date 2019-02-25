@@ -64,6 +64,7 @@ const WsWrapper = (ws) => {
 
   ws.sendEvent = (type, data = {}) => {
     if (ws.readyState === WebSocket.OPEN) {
+      console.log('sending', type);
       const json = JSON.stringify({ ...data, _type: type });
       ws.send(json);
     }
@@ -167,8 +168,6 @@ const WssWrapper = (wss) => {
 
   addWsCallback(REDIS_EVENT, (data) => {
     const { _except, _target, _type } = data;
-
-    console.log(_type);
 
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {

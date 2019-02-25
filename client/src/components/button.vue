@@ -2,6 +2,7 @@
   <button
     class="button"
     :class="[type, size]"
+    @click="onClick"
   >
     <slot />
   </button>
@@ -10,6 +11,10 @@
 <script>
 export default {
   props: {
+    prevent: {
+      type: Boolean,
+      default: false,
+    },
     size: {
       type: String,
       default: '',
@@ -22,6 +27,13 @@ export default {
   beforeCreate() {
     if (!this.$slots.default[0].tag) {
       throw new Error('Slot/child is missing a tag');
+    }
+  },
+  methods: {
+    onClick(e) {
+      if (this.prevent) {
+        e.preventDefault();
+      }
     }
   },
 };

@@ -26,6 +26,7 @@ module.exports = {
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
+  PEOPLE_ENTER: 'people:onEnter',
   PEOPLE_JOIN: 'people:onJoin',
   PEOPLE_LEAVE: 'people:onLeave',
 

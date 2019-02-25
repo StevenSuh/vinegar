@@ -71,11 +71,13 @@ export default {
       this.show = true;
     },
     onInit(callback) {
+      console.log(this.socket);
       if (!this.socket) {
         const { host, pathname } = window.location;
         const url = `ws://${host}/ws${pathname}`;
 
         this.socket = new WebSocket(url);
+        console.log('????????????????????????????');
         initSocket(this.socket);
         this.socket.addEventListener('open', () => {
           this.socket.startPingPong();

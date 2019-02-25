@@ -24,13 +24,13 @@ serve-reset:
 	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose up --build
 reset-redis:
 	docker exec -it $(shell docker ps -qf "name=redis") redis-cli FLUSHALL
+sh-redis:
+	docker exec -it $(shell docker ps -qf "name=redis") redis-cli
 delete-psql:
-	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "DROP DATABASE vinegar"
-create-psql:
-	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "CREATE DATABASE vinegar"
-create-user:
-	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "CREATE USER random WITH CREATEDB LOGIN PASSWORD 'somepw'"
+	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "DROP DATABASE postgres; CREATE DATABASE postgres;"
+sh-psql:
+	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres
 reset-psql:
-	make delete-psql && make create-psql
+	make delete-psql
 reset-db:
 	make reset-redis && make reset-psql

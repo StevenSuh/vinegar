@@ -2,6 +2,7 @@
   <button-component
     type="primary"
     size="small"
+    :prevent="true"
   >
     <div class="invite">
       <p>invite</p>
