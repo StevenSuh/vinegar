@@ -18,6 +18,8 @@ const {
   SOCKET_CLOSE,
 } = require('defs');
 
+const { sleep } = require('utils');
+
 class Interval {
   constructor({ session, publisher }, managers) {
     this.managers = managers;
@@ -161,64 +163,68 @@ class Interval {
       { status: Sessions.STATUS_ENDED },
     );
 
-    setTimeout(() => {
-      this.publisher.to(this.sessionName).publishEvent(INTERVAL_REMIND);
-      setTimeout(() => {
-        const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
-        const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
-        redisClient.delAsync(schoolQuery[0], sessionQuery[0]);
+    // warning
+    await sleep(SESSION_END_DURATION);
+    this.publisher.to(this.sessionName).publishEvent(INTERVAL_REMIND);
+    console.log('SOCKET CLOSING SOON!!!!!!!!!!!!!!!!!!!!');
 
-        delete this.managers[this.managerId];
-        this.session.destroy();
+    // terminate session
+    await sleep(SESSION_END_DURATION);
+    const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
+    const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
+    redisClient.delAsync(schoolQuery[0], sessionQuery[0]);
 
-        this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
-        this.publisher.to(this.sessionName).publishEvent(SOCKET_CLOSE);
+    delete this.managers[this.managerId];
+    this.session.destroy();
 
-        console.log('SOCKET CLOSED!!!!!!!!!!!!!!!!!!!!');
-      }, SESSION_END_DURATION);
-      console.log('SOCKET CLOSING SOON!!!!!!!!!!!!!!!!!!!!');
-    }, SESSION_END_DURATION);
+    this.publisher.to(this.sessionName).publishEvent(SOCKET_CLOSE);
+    this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
+    console.log('SOCKET CLOSED!!!!!!!!!!!!!!!!!!!!');
   }
 
   async reassignInterval(userId) {
+    // if ending soon, cancel reassignment
     if (this.targetTimestamp - Date.now() < 60000) {
       return;
     }
 
     const user = Users.findOne({ where: { id: userId }});
-    if (user) {
-      setTimeout(async () => {
-        await user.reload();
-        if (user.get(Users.ACTIVE)) {
-          return;
-        }
+    if (!user) {
+      return;
+    }
 
-        const targetIndex = this.intervals.findIndex(interval =>
-          userId === interval.get(Intervals.USER_ID));
+    // leaway for accidental close
+    await sleep(30000);
+    await user.reload();
+    if (user.get(Users.ACTIVE)) {
+      return;
+    }
 
-        if (targetIndex !== -1) {
-          const candidate = await this.getRandomCandidate();
+    const targetIndex = this.intervals.findIndex(interval =>
+      userId === interval.get(Intervals.USER_ID));
+    if (targetIndex === -1) {
+      return;
+    }
 
-          if (candidate) {
-            const interval = this.intervals[targetIndex];
+    const candidate = await this.getRandomCandidate();
+    if (!candidate) {
+      return;
+    }
 
-            await interval.update({ userId: candidate.get(Users.ID) });
+    const interval = this.intervals[targetIndex];
+    await interval.update({ userId: candidate.get(Users.ID) });
 
-            if (targetIndex === this.current) {
-              const diff = this.targetTimestamp - Date.now();
+    if (targetIndex === this.current) {
+      const diff = this.targetTimestamp - Date.now();
 
-              clearTimeout(this.intervalTimeout);
-              await this.startInterval(diff);
-            } else {
-              const userIdName = `user-${userId}`;
-              this.publisher.to(userIdName).publishEvent(
-                INTERVAL_STATUS,
-                { startTime: interval.get(Intervals.START_TIME) },
-              );
-            }
-          }
-        }
-      }, 30000);
+      clearTimeout(this.intervalTimeout);
+      await this.startInterval(diff);
+    } else {
+      const userIdName = `user-${userId}`;
+      this.publisher.to(userIdName).publishEvent(
+        INTERVAL_STATUS,
+        { startTime: interval.get(Intervals.START_TIME) },
+      );
     }
   }
 
