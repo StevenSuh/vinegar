@@ -1,11 +1,7 @@
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 
-const {
-  addCallback,
-  publisher,
-  subscriber,
-} = require('services/redis');
+const { addCallback, publisher, subscriber } = require('services/redis');
 const IntervalManager = require('services/interval');
 
 const {

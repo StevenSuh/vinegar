@@ -1,6 +1,5 @@
 module.exports = {
-  sleep: (timeout) =>
-    new Promise(resolve => setTimeout(resolve, timeout)),
+  sleep: timeout => new Promise(resolve => setTimeout(resolve, timeout)),
   tryCatch: (fn, errCb) => {
     try {
       return fn();

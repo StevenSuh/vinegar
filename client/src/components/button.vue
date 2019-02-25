@@ -34,7 +34,7 @@ export default {
       if (this.prevent) {
         e.preventDefault();
       }
-    }
+    },
   },
 };
 </script>

@@ -1,7 +1,10 @@
 <template>
   <div class="wrapper paddingTop small">
     <div class="left">
-      <p class="interval-msg" v-if="intervalUser">
+      <p
+        v-if="intervalUser"
+        class="interval-msg"
+      >
         <span class="interval-user">
           {{ intervalUser }}
         </span>

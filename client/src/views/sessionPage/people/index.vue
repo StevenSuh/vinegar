@@ -81,8 +81,9 @@ export default {
       // console.log(userId);
     },
     sortByOwner(arr) {
-      const array = arr.filter((item, index) =>
-        arr.findIndex((item2) => item2.id === item.id) === index);
+      const array = arr.filter(
+        (item, index) => arr.findIndex(item2 => item2.id === item.id) === index,
+      );
 
       const ownerIndex = array.findIndex(item => item.isOwner);
       const [owner] = array.splice(ownerIndex, 1);
@@ -96,10 +97,7 @@ export default {
       this.status = status;
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {
-      if (
-        status === 'waiting' &&
-        this.people.length === this.participants
-      ) {
+      if (status === 'waiting' && this.people.length === this.participants) {
         this.socket.sendEvent('control:onWait');
       }
 

@@ -2,8 +2,7 @@ const morgan = require('morgan');
 const zlib = require('zlib');
 
 module.exports = {
-  sleep: (timeout) =>
-    new Promise(resolve => setTimeout(resolve, timeout)),
+  sleep: timeout => new Promise(resolve => setTimeout(resolve, timeout)),
   tryCatch: (fn, errCb) => {
     try {
       return fn();

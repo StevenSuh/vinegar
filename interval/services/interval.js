@@ -131,7 +131,7 @@ class Interval {
         status: this.session.get(Sessions.STATUS),
       });
     }
-    console.log(this.current + ':', currentInterval.get(), initial, this.count - 1);
+    console.log(`${this.current  }:`, currentInterval.get(), initial, this.count - 1);
 
     const now = Date.now();
     const expectedTimestamp = this.timestamp ? this.timestamp + this.timeout : now;
