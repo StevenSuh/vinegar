@@ -21,7 +21,7 @@
                   tag="a"
                   to="/app/find"
                 >
-                  Start
+                  Join
                 </router-link>
               </ButtonComponent>
             </div>

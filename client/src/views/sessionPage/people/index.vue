@@ -89,13 +89,25 @@ export default {
   },
   methods: {
     sortByOwner(arr) {
-      const array = arr.filter(
-        (item, index) => arr.findIndex(item2 => item2.id === item.id) === index,
-      );
+      let owner = null;
+      const array = [];
+      const map = {};
 
-      const ownerIndex = array.findIndex(item => item.isOwner);
-      const [owner] = array.splice(ownerIndex, 1);
-      array.splice(0, 0, owner);
+      arr.forEach(item => {
+        if (item.isOwner) {
+          owner = item;
+          return;
+        }
+        if (map[item.id]) {
+          return;
+        }
+        array.push(item);
+        map[item.id] = true;
+      });
+
+      if (owner) {
+        array.splice(0, 0, owner);
+      }
       return array;
     },
     onOpenModal({ id, name }) {
@@ -127,7 +139,6 @@ export default {
       this.status = status;
     },
     'people:onJoin': function(person) {
-      console.log('people join', person);
       if (this.people.length + 1 === this.participants) {
         this.socket.sendEvent('control:onWait');
       }

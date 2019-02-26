@@ -69,7 +69,15 @@ class PlainClipboard extends Clipboard {
     };
 
     Object.keys(attribute).forEach((key) => {
-      attribute[key] = current[key] || leftSide[key] || rightSide[key];
+      if (current[key]) {
+        attribute[key] = current[key];
+      }
+      if (
+        (leftSide[key] && rightSide[key]) &&
+        (leftSide[key] === rightSide[key])
+      ) {
+        attribute[key] = leftSide[key];
+      }
     });
 
     const delta = new Delta()
