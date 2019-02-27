@@ -100,7 +100,10 @@ export default {
       this.socket = EmptySocket();
     },
     'people:onDelete': function() {
-      handleErrorMiddleware('You have been removed from the session.', 'socket');
+      handleErrorMiddleware(
+        'You have been removed from the session.',
+        'socket',
+      );
       this.socket.close();
       this.socket = EmptySocket();
     },

@@ -28,7 +28,7 @@
           type="primary"
           size="small"
         >
-          <p @click="onDelete(id)">
+          <p @click="onDelete(id);">
             Remove
           </p>
         </ButtonComponent>

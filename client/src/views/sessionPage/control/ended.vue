@@ -1,8 +1,7 @@
 <template>
   <div class="wrapper">
     <p class="msg">
-      {{ 'Session has ' }}
-      <span class="bold">
+      {{ 'Session has ' }} <span class="bold">
         {{ 'ended.' }}
       </span>
     </p>

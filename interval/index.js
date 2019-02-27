@@ -38,7 +38,9 @@ addCallback(INTERVAL_REASSIGN, async ({ managerId, userId }) => {
   if (intervalManager) {
     await intervalManager.reassignInterval(userId);
   } else {
-    throw new Error(`Interval Manager: ${managerId} does not exist in this robin: ${getRoundRobinId()}`);
+    throw new Error(
+      `Interval Manager: ${managerId} does not exist in this robin: ${getRoundRobinId()}`,
+    );
   }
 });
 

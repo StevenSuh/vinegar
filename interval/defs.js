@@ -35,6 +35,6 @@ module.exports = {
   REDIS_SOCKET,
   SOCKET_CLOSE,
   SUBSCRIBE_EVENTS,
-  getRoundRobinEvents: (robinId) =>
+  getRoundRobinEvents: robinId =>
     ROUND_ROBIN_EVENTS.map(event => `${event}-${robinId}`),
 };

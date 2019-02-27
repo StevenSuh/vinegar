@@ -14,7 +14,7 @@ module.exports = {
       return null;
     }
   },
-  exitHandler: (managers) => {
+  exitHandler: managers => {
     // do something when app is closing
     const exitFn = () => {
       redisClient.setAsync('temporary', 100);
