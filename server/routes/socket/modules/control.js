@@ -68,7 +68,7 @@ module.exports = async (wss, ws, session, user) => {
     await session.update(update);
 
     if (isFull) {
-      createInterval(sessionId);
+      await createInterval(sessionId);
     } else {
       wss.to(sessionName).sendEvent(CONTROL_UPDATE_STATUS, update);
     }
@@ -95,7 +95,7 @@ module.exports = async (wss, ws, session, user) => {
     };
 
     await session.update(update);
-    createInterval(sessionId);
+    await createInterval(sessionId);
   });
 
   ws.on('close', () => {
@@ -103,7 +103,7 @@ module.exports = async (wss, ws, session, user) => {
       await session.reload();
       const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
       if (intervalManagerId) {
-        reassignInterval(intervalManagerId, userId);
+        await reassignInterval(intervalManagerId, userId);
       }
     });
   });

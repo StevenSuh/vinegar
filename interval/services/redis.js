@@ -5,17 +5,11 @@ const {
 const redis = require('redis');
 const bluebird = require('bluebird');
 
-const {
-  INTERVAL_CREATE,
-  REDIS_SOCKET,
-  ROBIN_ROTATE,
-  ROBIN_TOTAL,
-} = require('defs');
+const { REDIS_SOCKET, ROBIN_TOTAL } = require('defs');
 
 const { tryCatch } = require('utils');
 
 const callbacks = [];
-const roundRobinDefs = [INTERVAL_CREATE];
 
 const addCallback = (channel, cb) => {
   callbacks.push({ channel, cb });
@@ -29,9 +23,20 @@ const redisClient = bluebird.promisifyAll(
   }),
 );
 
+redisClient.incrAsync(ROBIN_TOTAL).then(index => {
+  redisClient.robinId = index;
+});
+
+redisClient.ROBIN_MANAGER = 'robin-manager';
 redisClient.SESSION_SCHOOL = 'schoolName';
 redisClient.SESSION_NAME = 'sessionName';
 
+redisClient.robinQuery = ({ managerId }, value) => {
+  if (value) {
+    return [`${redisClient.ROBIN_MANAGER}-${managerId}`, value];
+  }
+  return `${redisClient.ROBIN_MANAGER}-${managerId}`;
+};
 redisClient.sessionSchool = ({ cookieId, sessionId }, value) => {
   const query = [`${redisClient.SESSION_SCHOOL}-${sessionId}`, cookieId];
   if (value) {
@@ -46,38 +51,11 @@ redisClient.sessionName = ({ cookieId, sessionId }, value) => {
   }
   return query;
 };
+redisClient.intervalQuery = ({ sessionId }, value, expiration) =>
+  [`${redisClient.INTERVAL}-${sessionId}`, value, 'PX', expiration];
 
-const calculateCurrentRobin = async (client) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return true;
-  }
-
-  const hasRobinId = Boolean(client.robinId);
-  const totalRobinExists = await redisClient.existsAsync(ROBIN_TOTAL);
-
-  // total
-  let totalRobin = 1;
-  if (totalRobinExists) {
-    const incr = hasRobinId ? 0 : 1;
-    totalRobin = await redisClient.getAsync(ROBIN_TOTAL) + incr;
-  }
-  if (!hasRobinId) {
-    client.robinId = totalRobin;
-    await redisClient.incrAsync(ROBIN_TOTAL);
-  }
-
-  // rotate
-  let rotateRobin = 1;
-  if (totalRobinExists) {
-    rotateRobin = await redisClient.getAsync(ROBIN_ROTATE);
-  }
-
-  if (client.robinId === rotateRobin) {
-    await redisClient.setAsync(ROBIN_ROTATE, (rotateRobin + 1) % totalRobin);
-    return true;
-  }
-  return false;
-};
+const getRoundRobinId = () =>
+  redisClient.robinId;
 
 // publisher
 const publisher = redis.createClient({
@@ -119,13 +97,6 @@ const subscriber = redis.createClient({
 });
 
 subscriber.on('message', async function(channel, message) {
-  if (roundRobinDefs.includes(channel)) {
-    const shouldProceed = await calculateCurrentRobin(this);
-    if (!shouldProceed) {
-      return;
-    }
-  }
-
   const validCbs = callbacks.filter(item => item.channel === channel);
 
   if (validCbs.length > 0) {
@@ -136,10 +107,11 @@ subscriber.on('message', async function(channel, message) {
       cb(data);
     }
   }
-}.bind(subscriber));
+});
 
 module.exports = {
   addCallback,
+  getRoundRobinId,
   redisClient,
   publisher,
   subscriber,

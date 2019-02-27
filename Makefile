@@ -6,6 +6,8 @@ prettier:
 	prettier --write **/*.js **/*.vue
 lint:
 	make prettier && cd client && yarn lint --fix && cd ../server && yarn lint --fix && cd ../interval && yarn lint --fix
+
+
 serve:
 	docker-compose up
 serve-build:
@@ -21,16 +23,22 @@ clear-node-modules:
 serve-no-cache:
 	make delete-client && make delete-api && make delete-interval && docker-compose build --no-cache && make serve
 serve-reset:
-	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose up --build
-reset-redis:
+	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose build --no-cache && make serve
+
+
+start-redis:
+	docker container start $(shell docker ps -aqf "name=redis")
+stop-redis:
+	docker container stop $(shell docker ps -aqf "name=redis")
+clear-redis:
 	docker exec -it $(shell docker ps -qf "name=redis") redis-cli FLUSHALL
+reset-redis:
+	make start-redis && make clear-redis && make stop-redis
 sh-redis:
 	docker exec -it $(shell docker ps -qf "name=redis") redis-cli
-delete-psql:
+clear-psql:
 	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres -c "DROP DATABASE postgres; CREATE DATABASE postgres;"
 sh-psql:
 	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres
-reset-psql:
-	make delete-psql
 reset-db:
-	make reset-redis && make reset-psql
+	make clear-redis && make clear-psql

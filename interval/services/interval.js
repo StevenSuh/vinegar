@@ -1,12 +1,12 @@
-// TODO: use node-schedule
-// https://github.com/node-schedule/node-schedule#readme
+const schedule = require('node-schedule');
+
 const dbClient = require('db')();
 const Intervals = require('db/intervals/model')(dbClient);
 const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
-const { redisClient } = require('services/redis');
+const { getRoundRobinId, redisClient } = require('services/redis');
 
 const {
   SESSION_END_DURATION,
@@ -15,6 +15,7 @@ const {
   INTERVAL_REMIND,
   INTERVAL_STATUS,
   INTERVAL_UPDATE,
+  REASSIGN_WAIT_DURATION,
   SOCKET_CLOSE,
 } = require('defs');
 
@@ -25,13 +26,11 @@ class Interval {
     this.managers = managers;
     this.ended = false;
 
+    this.current = -1;
     this.count = session.get(Sessions.PARTICIPANTS);
+    this.jobs = [];
     this.intervals = [];
     this.intervalUsers = [];
-    this.intervalTimeout = null;
-    this.current = 0;
-    this.timestamp = null;
-    this.targetTimestamp = null;
 
     this.totalDuration = session.get(Sessions.DURATION);
     this.timeout = this.normalizeTimeout();
@@ -43,8 +42,8 @@ class Interval {
     this.sessionId = session.get(Sessions.ID);
     this.sessionName = `session-${this.sessionId}`;
 
-    this.intervalManager = null;
-    this.managerId = null
+    this.manager = null;
+    this.managerId = null;
   }
 
   normalizeTimeout() {
@@ -69,22 +68,6 @@ class Interval {
     return a;
   }
 
-  async findUserInInterval(userId, fromStart) {
-    for (
-      let i = fromStart ? 0 : this.current;
-      i < this.intervals.length;
-      i += 1
-    ) {
-      const interval = this.intervals[i];
-
-      if (interval.get(Intervals.USER_ID) === userId) {
-        const user = await Users.findOne({ where: { id: userId } });
-        return user;
-      }
-    }
-    return null;
-  }
-
   notifyUser(interval, isInterval) {
     const userIdName = `user-${interval.get(Intervals.USER_ID)}`;
     this.publisher.to(userIdName).publishEvent(CONTROL_INTERVAL, {
@@ -93,18 +76,69 @@ class Interval {
     });
   }
 
-  async setupInterval() {
-    this.intervalManager = await IntervalManagers.create({ sessionId: this.sessionId });
-    this.managerId = this.intervalManager.get(IntervalManagers.ID);
+  async setupExisting(manager) {
+    this.manager = manager;
+    this.managerId = manager.get(IntervalManagers.ID);
 
+    this.intervals = await this.manager.getIntervals();
+
+    const currIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
+    const currInterval = this.intervals.findIndex(interval =>
+      currIntervalId === interval.get(Intervals.ID));
+
+    const jobs = [];
+
+    for (let i = currInterval + 1; i < this.intervals.length; i += 1) {
+      const initial = i === 0;
+      const startTime = this.intervals[i].get(Intervals.START_TIME);
+
+      jobs.push(schedule.scheduleJob(
+        new Date(startTime),
+        () => this.startInterval(initial),
+      ));
+    }
+
+    jobs.push(schedule.scheduleJob(
+      new Date(this.endTime),
+      () => this.endInterval(),
+    ));
+
+    this.jobs = jobs;
+  }
+
+  async setupInterval() {
+    const manager = await this.session.getManager();
+    if (manager) {
+      this.setupExisting(manager);
+      return;
+    }
+
+    // create manager
+    this.manager = await IntervalManagers.create({ sessionId: this.sessionId });
+    this.managerId = this.manager.get(IntervalManagers.ID);
+
+    await redisClient.setAsync(redisClient.robinQuery(
+      { managerId: this.managerId },
+      getRoundRobinId(),
+    ));
+
+    // shuffle people
     const people = await this.session.getUsers({ where: { active: true }});
     this.intervalUsers = this.shuffle(people);
 
+    const jobs = [];
     const promises = [];
 
+    // create jobs and intervals
     for (let i = 0; i < this.count; i += 1) {
+      const initial = i === 0;
       const user = this.intervalUsers[i];
       const startTime = this.endTime - ((this.count - i) * this.timeout);
+
+      jobs.push(schedule.scheduleJob(
+        new Date(startTime),
+        () => this.startInterval(initial),
+      ));
 
       promises.push(Intervals.create({
         duration: this.timeout,
@@ -116,59 +150,49 @@ class Interval {
         userId: user.get(Users.ID),
       }));
 
-      if (i > 0) {
+      if (!initial) {
         const userIdName = `user-${user.get(Users.USER_ID)}`;
         this.publisher.to(userIdName).publishEvent(INTERVAL_STATUS, { startTime });
       }
     }
 
+    jobs.push(schedule.scheduleJob(
+      new Date(this.endTime),
+      () => this.endInterval(),
+    ));
+
+    this.jobs = jobs;
     this.intervals = await Promise.all(promises);
   }
 
-  async startInterval(timeout, initial) {
+  async startInterval(initial) {
+    this.current += 1;
+
     const currentInterval = this.intervals[this.current];
     await this.session.update({ currentIntervalId: currentInterval.get(Intervals.ID) });
 
     // update current user view
     this.notifyUser(currentInterval, true);
 
-    if (!initial) {
-      // reset previous user view
-      const prevInterval = this.intervals[this.current - 1];
-      this.notifyUser(prevInterval, false);
-    }
-
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
       intervalUser: currentInterval.get(Intervals.USERNAME),
     });
 
-    if (initial) {
+    if (!initial) {
+      // reset previous user view
+      const prevInterval = this.intervals[this.current - 1];
+      this.notifyUser(prevInterval, false);
+    } else {
       this.publisher.to(this.sessionName).publishEvent(CONTROL_UPDATE_STATUS, {
         endTime: this.session.get(Sessions.END_TIME),
         status: this.session.get(Sessions.STATUS),
       });
     }
     console.log(`${this.current  }:`, currentInterval.get(), initial, this.count - 1);
-
-    const now = Date.now();
-    const expectedTimestamp = this.timestamp ? this.timestamp + this.timeout : now;
-    const remaining = expectedTimestamp - now;
-    const timeoutDuration = (timeout || this.timeout + remaining);
-
-    console.log(this.count - 1, (timeout || this.timeout + remaining));
-
-    this.timestamp = now;
-    this.targetTimestamp = now + timeoutDuration;
-
-    if (this.current < this.count - 1) {
-      this.current += 1;
-      this.intervalTimeout = setTimeout(this.startInterval.bind(this), timeoutDuration);
-    } else {
-      this.intervalTimeout = setTimeout(this.endInterval.bind(this), timeoutDuration);
-    }
   }
 
   async endInterval() {
+    // session has ended
     this.ended = true;
     await this.session.update({ status: Sessions.STATUS_ENDED });
     this.publisher.to(this.sessionName).publishEvent(
@@ -176,63 +200,66 @@ class Interval {
       { status: Sessions.STATUS_ENDED },
     );
 
-    // warning
+    // warning before session is terminated
     await sleep(SESSION_END_DURATION);
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_REMIND);
-    console.log('SOCKET CLOSING SOON!!!!!!!!!!!!!!!!!!!!');
 
     // terminate session
     await sleep(SESSION_END_DURATION);
+    const robinQuery = redisClient.robinQuery({ managerId: this.managerId });
     const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
     const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
-    redisClient.delAsync(schoolQuery[0], sessionQuery[0]);
+    redisClient.delAsync(schoolQuery[0], sessionQuery[0], robinQuery);
 
     delete this.managers[this.managerId];
     this.session.destroy();
-
     this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
-    console.log('SOCKET CLOSED!!!!!!!!!!!!!!!!!!!!');
   }
 
+  /**
+   * Reassigns the user's interval if:
+   *  - session is active
+   *  - user has an interval
+   *  - user is inactive (has left the session)
+   *  - user's interval is about to end
+   * @param {string} userId - id of user in session
+   */
   async reassignInterval(userId) {
-    if (this.ended) {
+    const targetIndex = this.intervals.findIndex(interval =>
+      userId === interval.get(Intervals.USER_ID));
+
+    if (this.ended || targetIndex === -1) {
       return;
     }
 
-    // if ending soon, cancel reassignment
-    if (this.targetTimestamp - Date.now() < 60000) {
-      return;
-    }
-
-    const user = await this.findUserInInterval(userId);
-    if (!user) {
+    const interval = this.intervals[targetIndex];
+    if (interval.get(Intervals.END_TIME) - Date.now() < 60000) {
       return;
     }
 
     // leaway for accidental close
-    await sleep(30000);
-    await user.reload();
+    await sleep(REASSIGN_WAIT_DURATION);
+    const user = await Users.findOne({ where: { id: userId }});
     if (user.get(Users.ACTIVE)) {
       return;
     }
-
-    const targetIndex = this.intervals.findIndex(interval =>
-      userId === interval.get(Intervals.USER_ID));
 
     const candidate = await this.getRandomCandidate();
     if (!candidate) {
       return;
     }
 
-    const interval = this.intervals[targetIndex];
     await interval.update({ userId: candidate.get(Users.ID) });
 
     if (targetIndex === this.current) {
-      const diff = this.targetTimestamp - Date.now();
-
-      clearTimeout(this.intervalTimeout);
-      await this.startInterval(diff);
+      this.startInterval();
     } else {
+      this.jobs[targetIndex].cancel();
+      this.jobs[targetIndex] = schedule.scheduleJob(
+        new Date(interval.get(Intervals.START_TIME)),
+        () => this.startInterval(false),
+      );
+
       const userIdName = `user-${userId}`;
       this.publisher.to(userIdName).publishEvent(
         INTERVAL_STATUS,

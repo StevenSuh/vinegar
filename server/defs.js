@@ -6,4 +6,6 @@ module.exports = {
   DEFAULT_CREATE_MSG: ' has been created.',
   DEFAULT_LEAVE_MSG: ' has left the room.',
   MIN_PASSWORD_LENGTH: 4,
+  ROBIN_ROTATE: 'robin:rotate',
+  ROBIN_TOTAL: 'robin:total',
 };

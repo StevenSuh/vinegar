@@ -18,11 +18,14 @@ module.exports = () => {
     );
 
     // definitions
+    redisClient.ROBIN_MANAGER = 'robin-manager';
     redisClient.SESSION_ID = 'sessionId';
     redisClient.SESSION_SCHOOL = 'schoolName';
     redisClient.SESSION_NAME = 'sessionName';
     redisClient.USER_ID = 'userId';
 
+    redisClient.robinQuery = ({ managerId }) =>
+      `${redisClient.ROBIN_MANAGER}-${managerId}`;
     redisClient.sessionId = ({ cookieId }, value) => {
       const query = [cookieId, redisClient.SESSION_ID];
       if (value) {
