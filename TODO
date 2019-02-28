@@ -6,6 +6,9 @@ engineering:
 2. Unit tests
 3. Clean up a lot of code - create utilities, refactor repeated logic (focus socket, interval)
 4. Separate socket out of api
+5. Note that Sequelize.INTEGER hits a limit at around 2 billion. Consider using BIGINT data type for Id primary key.
+6. Look into adding logging for deployment. So far, I've found Stackdriver logging for GCP.
+7. Rate limiting through express-rate-limit (needs manual limiting for socket connections)
 
 product:
 1. If kicked out 3 times, block the user's ip address from session
