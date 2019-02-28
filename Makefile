@@ -1,7 +1,7 @@
 dev:
 	cd client && yarn serve >/dev/null & cd server && yarn serve >/dev/null
 install:
-	cd client && yarn && cd ../server && yarn
+	cd client && yarn && cd ../server && yarn && cd ../interval && yarn
 prettier:
 	prettier --write **/*.js **/*.vue
 lint:
