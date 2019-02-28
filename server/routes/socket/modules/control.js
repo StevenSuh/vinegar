@@ -102,13 +102,11 @@ module.exports = async (wss, ws, session, user) => {
     await createInterval(sessionId);
   });
 
-  ws.on('close', () => {
-    tryCatch(async () => {
-      await session.reload();
-      const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
-      if (intervalManagerId) {
-        await reassignInterval(intervalManagerId, userId);
-      }
-    }, () => {});
+  ws.on('close', async () => {
+    await tryCatch(session.reload, () => {});
+    const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
+    if (intervalManagerId) {
+      reassignInterval(intervalManagerId, userId);
+    }
   });
 };

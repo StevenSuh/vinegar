@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import DownloadButton from './downloadButton';
+import DownloadButton from '@/views/sessionPage/control/components/downloadButton';
 
 export default {
   components: {

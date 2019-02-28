@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { formatDuration } from './utils';
+import { formatDuration } from '@/views/sessionPage/control/utils';
 
 export default {
   props: {

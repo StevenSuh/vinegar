@@ -30,9 +30,9 @@
 
 <script>
 import ButtonComponent from '@/components/button';
-import InviteButton from './inviteButton';
+import InviteButton from '@/views/sessionPage/control/components/inviteButton';
 
-import { formatDuration } from './utils';
+import { formatDuration } from '@/views/sessionPage/control/utils';
 
 export default {
   components: {

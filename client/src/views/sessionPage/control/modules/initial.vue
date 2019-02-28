@@ -6,6 +6,7 @@
     >
       <input-component
         v-if="isOwner"
+        class="participants-input"
         id="participantsNumId"
         autocomplete="off"
         name="participants"
@@ -42,9 +43,9 @@
 <script>
 import ButtonComponent from '@/components/button';
 import InputComponent from '@/components/input';
-import InviteButton from './inviteButton';
+import InviteButton from '@/views/sessionPage/control/components/inviteButton';
 
-import { formatDuration } from './utils';
+import { formatDuration } from '@/views/sessionPage/control/utils';
 
 export default {
   components: {
@@ -139,5 +140,9 @@ export default {
 .disabled {
   color: #a4d3db;
   cursor: not-allowed;
+}
+
+.participants-input {
+  width: 124px;
 }
 </style>

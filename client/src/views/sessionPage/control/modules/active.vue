@@ -32,10 +32,10 @@
 </template>
 
 <script>
-import DownloadButton from './downloadButton';
-import InviteButton from './inviteButton';
+import DownloadButton from '@/views/sessionPage/control/components/downloadButton';
+import InviteButton from '@/views/sessionPage/control/components/inviteButton';
 
-import { formatDuration } from './utils';
+import { formatDuration } from '@/views/sessionPage/control/utils';
 
 export default {
   components: {

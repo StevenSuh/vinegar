@@ -28,11 +28,11 @@
 </template>
 
 <script>
-import Active from './active';
-import Ended from './ended';
-import Initial from './initial';
-import IsInterval from './isInterval';
-import Waiting from './waiting';
+import Active from './modules/active';
+import Ended from './modules/ended';
+import Initial from './modules/initial';
+import IsInterval from './modules/isInterval';
+import Waiting from './modules/waiting';
 
 import { socketMixin } from '@/services/socket';
 
@@ -83,8 +83,6 @@ export default {
       this.intervalEndTime = new Date(intervalEndTime).getTime();
     },
     'control:onUpdateStatus': function({ endTime, participants, status }) {
-      console.log(endTime, participants, status);
-
       if (endTime) {
         this.endTime = new Date(endTime).getTime();
       }
