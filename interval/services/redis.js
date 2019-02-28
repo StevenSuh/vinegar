@@ -23,10 +23,6 @@ const redisClient = bluebird.promisifyAll(
   }),
 );
 
-redisClient.incrAsync(ROBIN_TOTAL).then(index => {
-  redisClient.robinId = index;
-});
-
 redisClient.ROBIN_MANAGER = 'robin-manager';
 redisClient.SESSION_SCHOOL = 'schoolName';
 redisClient.SESSION_NAME = 'sessionName';
@@ -54,8 +50,15 @@ redisClient.sessionName = ({ cookieId, sessionId }, value) => {
 redisClient.intervalQuery = ({ sessionId }, value, expiration) =>
   [`${redisClient.INTERVAL}-${sessionId}`, value, 'PX', expiration];
 
-const getRoundRobinId = () =>
-  redisClient.robinId;
+const getRoundRobinId = async () => {
+  if (redisClient.robinId !== undefined) {
+    return redisClient.robinId;
+  }
+  const index = parseInt(await redisClient.incrAsync(ROBIN_TOTAL), 10);
+  redisClient.robinId = index;
+  return index;
+};
+getRoundRobinId();
 
 // publisher
 const publisher = redis.createClient({

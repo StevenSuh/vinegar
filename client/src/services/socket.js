@@ -7,21 +7,36 @@ const addWsCallbacks = (type, cb) => {
   wsCallbacks.push({ type, cb });
 };
 
-export const EmptySocket = () => ({
+const EmptySocket = {
+  empty: true,
   close: () => handleErrorMiddleware('You are not connected to a session.', 'socket'),
   pong: () => {},
   sendEvent: () => {},
   startPingPong: () => {},
-});
+};
 
 export const initSocket = (socket) => {
   socket.idleTimeout = null;
 
+  socket.closeSocket = function() {
+    clearInterval(this.idleTimeout);
+    this.close();
+
+    Object.keys(EmptySocket).forEach(key => {
+      this[key] = EmptySocket[key];
+    });
+  };
+
   socket.pong = function() {
-    try {
-      this.send('pong');
-    } catch (e) {
-      handleErrorMiddleware(e, 'socket');
+    if (this.readyState === this.OPEN) {
+      try {
+        this.send('pong');
+      } catch (e) {
+        handleErrorMiddleware(e, 'socket');
+      }
+    } else {
+      clearInterval(this.idleTimeout);
+      this.dispatchEvent(new Event('close'));
     }
   };
 
@@ -38,6 +53,8 @@ export const initSocket = (socket) => {
         handleErrorMiddleware(e, 'socket');
       }
       this.startPingPong();
+    } else {
+      this.dispatchEvent(new Event('close'));
     }
   };
 
@@ -63,18 +80,26 @@ export const initSocket = (socket) => {
     }
   };
 
+  socket.closeSocket = socket.closeSocket.bind(socket);
   socket.pong = socket.pong.bind(socket);
   socket.startPingPong = socket.startPingPong.bind(socket);
   socket.sendEvent = socket.sendEvent.bind(socket);
   socket.addEventListener('message', onMessage.bind(socket));
 };
 
+const defaultEvents = ['error', 'open', 'message', 'close'];
+
 export const socketMixin = {
   mounted() {
     if (this.$options.sockets) {
       Object.keys(this.$options.sockets).forEach(event => {
         const cb = this.$options.sockets[event];
-        addWsCallbacks(event, cb.bind(this));
+
+        if (defaultEvents.includes(event)) {
+          this.socket.addEventListener(event, cb.bind(this));
+        } else {
+          addWsCallbacks(event, cb.bind(this));
+        }
       });
     }
   },

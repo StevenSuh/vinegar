@@ -12,16 +12,23 @@ const IntervalManager = require('services/interval');
 const {
   INTERVAL_CREATE,
   INTERVAL_REASSIGN,
-  getRoundRobinEvents,
+  ROUND_ROBIN_EVENTS,
   SUBSCRIBE_EVENTS,
 } = require('defs');
 const { exitHandler } = require('utils');
 
 const intervalManagers = {};
 
-addCallback(INTERVAL_CREATE, async ({ sessionId }) => {
-  const session = await Sessions.findOne({ where: { id: sessionId } });
+addCallback(INTERVAL_CREATE, async ({ robinId, sessionId }) => {
+  if (!robinId) {
+    throw new Error('RobinId must be defined');
+  }
+  const clientRobinId = await getRoundRobinId();
+  if (robinId !== clientRobinId) {
+    return;
+  }
 
+  const session = await Sessions.findOne({ where: { id: sessionId } });
   const intervalManager = new IntervalManager(
     { session, publisher },
     intervalManagers,
@@ -32,20 +39,28 @@ addCallback(INTERVAL_CREATE, async ({ sessionId }) => {
   intervalManagers[managerId] = intervalManager;
 });
 
-addCallback(INTERVAL_REASSIGN, async ({ managerId, userId }) => {
+addCallback(INTERVAL_REASSIGN, async ({ managerId, robinId, userId }) => {
+  if (!robinId) {
+    throw new Error('RobinId must be defined');
+  }
+  const clientRobinId = await getRoundRobinId();
+  if (robinId !== clientRobinId) {
+    return;
+  }
+
   const intervalManager = intervalManagers[managerId];
 
   if (intervalManager) {
     await intervalManager.reassignInterval(userId);
   } else {
     throw new Error(
-      `Interval Manager: ${managerId} does not exist in this robin: ${getRoundRobinId()}`,
+      `Interval Manager: ${managerId} does not exist in this robin: ${await getRoundRobinId()}`,
     );
   }
 });
 
 subscriber.subscribe(
-  ...getRoundRobinEvents(getRoundRobinId()),
+  ...Object.values(ROUND_ROBIN_EVENTS),
   ...Object.values(SUBSCRIBE_EVENTS),
 );
 

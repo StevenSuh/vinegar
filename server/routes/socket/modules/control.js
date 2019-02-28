@@ -24,9 +24,13 @@ module.exports = async (wss, ws, session, user) => {
 
   const userId = user.get(Users.ID);
 
-  const currentIntervalId = session.get(Sessions.CURRENT_INTERVAL_ID);
-  const interval = !currentIntervalId ? null :
-    await Intervals.findOne({ where: { id: currentIntervalId }});
+  if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
+    await createInterval(sessionId);
+  }
+
+  const currIntervalId = session.get(Sessions.CURRENT_INTERVAL_ID);
+  const interval = !currIntervalId ? null :
+    await Intervals.findOne({ where: { id: currIntervalId }});
 
   if (interval && interval.get(Intervals.USER_ID) === userId) {
     ws.sendEvent(CONTROL_INTERVAL, {
@@ -48,12 +52,12 @@ module.exports = async (wss, ws, session, user) => {
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_INITIAL) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
-      return;
+      return ws.close();
     }
 
     if (!participants || participants === 0) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid number of participants.' });
-      return;
+      return ws.close();
     }
 
     const people = await getPeople(session);
@@ -105,6 +109,6 @@ module.exports = async (wss, ws, session, user) => {
       if (intervalManagerId) {
         await reassignInterval(intervalManagerId, userId);
       }
-    });
+    }, () => {});
   });
 };

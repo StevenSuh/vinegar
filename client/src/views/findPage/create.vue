@@ -167,7 +167,7 @@ export default {
         this.schoolNameError = regex.test(this.schoolName)
           ? ''
           : `You may only use characters from this set: ${ALLOWED_CHARACTERS.join(
-              ', ',
+              ' ',
             )}.`;
       } else {
         this.schoolNameError = 'This field is required.';
@@ -177,7 +177,7 @@ export default {
         this.sessionNameError = regex.test(this.sessionName)
           ? ''
           : `You may only use characters from this set: ${ALLOWED_CHARACTERS.join(
-              ', ',
+              ' ',
             )}.`;
       } else {
         this.sessionNameError = 'This field is required.';

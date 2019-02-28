@@ -7,15 +7,16 @@ const Sessions = require('db/sessions/model')(dbClient);
 
 const { tryCatch } = require('utils');
 
-const { EDITOR_CONTENT_UPDATE, SOCKET_CLOSE, SOCKET_DUPLICATE } = require('./defs');
+const { SOCKET_CLOSE, SOCKET_DUPLICATE } = require('./defs');
 
 const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
 
 const socketLogger = (message, ws) => {
   if (process.env.NODE_ENV !== 'production') {
+    const now = new Date().toTimeString().split(' ')[0];
     if (message === 'pong') {
       // eslint-disable-next-line no-console
-      console.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message}`);
+      console.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message} - ${now}`);
       return;
     }
 
@@ -26,15 +27,11 @@ const socketLogger = (message, ws) => {
 
     if (data) {
       const { type } = data;
-      const msg = { ...data };
-      if (type === EDITOR_CONTENT_UPDATE) {
-        delete msg.content;
-      }
       // eslint-disable-next-line no-console
-      console.log(`SOCKET /${type} ${ws.sessions.join(', ')} - ${JSON.stringify(msg)}`);
+      console.log(`SOCKET /${type} ${ws.sessions.join(', ')} - ${type} - ${now}`);
     } else {
       // eslint-disable-next-line no-console
-      console.log(`SOCKET error - ${message}`);
+      console.log(`SOCKET error - ${message} - ${now}`);
     }
   }
 };
@@ -93,12 +90,7 @@ const getPeople = async (session) => {
 };
 
 const setupSocketClose = (ws) => {
-  ws.onServer(SOCKET_CLOSE, ({ type }) => {
-    if (type) {
-      ws.sendEvent(type);
-    } else {
-      ws.sendEvent(SOCKET_CLOSE);
-    }
+  ws.onServer(SOCKET_CLOSE, () => {
     ws.close();
   });
 };

@@ -5,11 +5,16 @@ const Users = require('db/users/model')(dbClient);
 
 const { getChats } = require('routes/socket/utils');
 
-const { DEFAULT_ENTER_MSG } = require('defs');
+const {
+  DEFAULT_COLOR,
+  DEFAULT_ENTER_MSG,
+  DEFAULT_REMIND_MSG,
+} = require('defs');
 const {
   CHAT_ENTER,
   CHAT_SEND,
   CHAT_SCROLL,
+  INTERVAL_REMIND,
   SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
@@ -30,10 +35,6 @@ module.exports = async (wss, ws, session, user) => {
     type: Chats.TYPE_SYSTEM,
     userId,
   });
-
-  if (!enterChat) {
-    throw new Error('Failed to create enter chat');
-  }
 
   const { createdAt: date, message: msg, type: chatType } = enterChat.get();
   ws.to(sessionName).sendEvent(CHAT_SEND,
@@ -100,6 +101,29 @@ module.exports = async (wss, ws, session, user) => {
     ws.sendEvent(CHAT_SCROLL, {
       hasMore: (msgs.length > 10),
       msgs: (msgs.length > 10) ? msgs.slice(1) : msgs,
+    });
+  });
+
+  ws.onServer(INTERVAL_REMIND, async () => {
+    const schoolEnding = session.get(Sessions.SCHOOL_NAME);
+    const sessionEnding = session.get(Sessions.SESSION_NAME);
+
+    wss.to(sessionName).sendEvent(CHAT_SEND, {
+      color: DEFAULT_COLOR,
+      msg: DEFAULT_REMIND_MSG,
+      name: `${schoolEnding}/${sessionEnding}`,
+      date: Date.now(),
+      type: Chats.TYPE_SYSTEM,
+      userId,
+    });
+
+    await Chats.create({
+      color: DEFAULT_COLOR,
+      message: DEFAULT_REMIND_MSG,
+      name: `${schoolEnding}/${sessionEnding}`,
+      sessionId: session.get(Sessions.ID),
+      type: Chats.TYPE_SYSTEM,
+      userId,
     });
   });
 };

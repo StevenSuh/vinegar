@@ -107,6 +107,11 @@ export default {
     },
     open(value, oldValue) {
       if (value && value !== oldValue) {
+        if (value) {
+          document.body.classList.add('overflow');
+        } else {
+          document.body.classList.remove('overflow');
+        }
         this.onEnter(this.$refs.content[this.currentStep], 0);
       }
     },
@@ -118,8 +123,12 @@ export default {
     },
   },
   beforeCreate() {
-    document.body.classList.add('overflow');
     window.addEventListener('keyup', this.onKeyup);
+  },
+  created() {
+    if (this.open) {
+      document.body.classList.add('overflow');
+    }
   },
   mounted() {
     if (!this.isLoading && this.open && this.show) {

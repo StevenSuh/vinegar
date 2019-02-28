@@ -17,7 +17,6 @@ module.exports = {
   exitHandler: managers => {
     // do something when app is closing
     const exitFn = () => {
-      redisClient.setAsync('temporary', 100);
       Object.keys(managers).forEach(managerId => {
         const robinQuery = redisClient.robinQuery({ managerId });
         redisClient.delAsync(robinQuery);

@@ -84,7 +84,7 @@ module.exports = (dbClient) => {
     Sessions.STATUS_INITIAL = 'initial';
     Sessions.STATUS_WAITING = 'waiting';
     Sessions.STATUS_ACTIVE = 'active';
-    Sessions.STATUS_ENDED = 'active';
+    Sessions.STATUS_ENDED = 'ended';
   }
   return Sessions;
 };

@@ -9,7 +9,7 @@ lint:
 
 
 serve:
-	docker-compose up
+	make reset-redis && docker-compose up
 serve-build:
 	docker-compose up --build
 delete-client:
@@ -23,7 +23,7 @@ clear-node-modules:
 serve-no-cache:
 	make delete-client && make delete-api && make delete-interval && docker-compose build --no-cache && make serve
 serve-reset:
-	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose build --no-cache && make serve
+	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose build --no-cache && docker-compose up
 
 
 start-redis:
@@ -42,3 +42,7 @@ sh-psql:
 	docker exec -it $(shell docker ps -qf "name=postgres") psql -d postgres -U postgres
 reset-db:
 	make clear-redis && make clear-psql
+
+
+setup-test:
+	docker exec -it $(shell docker ps -qf "name=postgres") sh && psql -d postgres -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'test_postgres'" || grep -q 1 || psql -d postgres -U postgres -c "CREATE DATABASE test_postgres"

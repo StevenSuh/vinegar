@@ -33,7 +33,7 @@ const redisPubWrapper = (redisClient) => {
 redisPubWrapper(wsRedisPub);
 
 wsRedisSub.on('message', (channel, message) => {
-  socketLogger({ type: channel, message }, { sessions: ['redis'] });
+  socketLogger({ type: channel }, { sessions: ['redis'] });
 
   const validCbs = wsCallbacks.filter(item => item.channel === channel);
 

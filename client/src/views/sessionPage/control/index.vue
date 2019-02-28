@@ -1,6 +1,6 @@
 <template>
   <div class="control">
-    <Ended v-if="status === 'initial'" />
+    <Ended v-if="status === 'ended'" />
     <IsInterval
       v-else-if="isInterval"
       :is-interval="isInterval"
@@ -83,6 +83,8 @@ export default {
       this.intervalEndTime = new Date(intervalEndTime).getTime();
     },
     'control:onUpdateStatus': function({ endTime, participants, status }) {
+      console.log(endTime, participants, status);
+
       if (endTime) {
         this.endTime = new Date(endTime).getTime();
       }

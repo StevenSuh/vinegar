@@ -80,21 +80,25 @@ class Interval {
     this.manager = manager;
     this.managerId = manager.get(IntervalManagers.ID);
 
+    if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED) {
+      this.endInterval();
+      return;
+    }
+
     this.intervals = await this.manager.getIntervals();
 
     const currIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
     const currInterval = this.intervals.findIndex(interval =>
       currIntervalId === interval.get(Intervals.ID));
+    this.current = currInterval;
 
     const jobs = [];
 
     for (let i = currInterval + 1; i < this.intervals.length; i += 1) {
-      const initial = i === 0;
       const startTime = this.intervals[i].get(Intervals.START_TIME);
-
       jobs.push(schedule.scheduleJob(
         new Date(startTime),
-        () => this.startInterval(initial),
+        () => this.startInterval(),
       ));
     }
 
@@ -104,9 +108,13 @@ class Interval {
     ));
 
     this.jobs = jobs;
+
+    this.startInterval(true);
   }
 
   async setupInterval() {
+    this.current = -1;
+
     const manager = await this.session.getManager();
     if (manager) {
       this.setupExisting(manager);
@@ -119,7 +127,7 @@ class Interval {
 
     await redisClient.setAsync(redisClient.robinQuery(
       { managerId: this.managerId },
-      getRoundRobinId(),
+      await getRoundRobinId(),
     ));
 
     // shuffle people
@@ -135,11 +143,6 @@ class Interval {
       const user = this.intervalUsers[i];
       const startTime = this.endTime - ((this.count - i) * this.timeout);
 
-      jobs.push(schedule.scheduleJob(
-        new Date(startTime),
-        () => this.startInterval(initial),
-      ));
-
       promises.push(Intervals.create({
         duration: this.timeout,
         intervalManagerId: this.managerId,
@@ -151,6 +154,11 @@ class Interval {
       }));
 
       if (!initial) {
+        jobs.push(schedule.scheduleJob(
+          new Date(startTime),
+          () => this.startInterval(),
+        ));
+
         const userIdName = `user-${user.get(Users.USER_ID)}`;
         this.publisher.to(userIdName).publishEvent(INTERVAL_STATUS, { startTime });
       }
@@ -163,6 +171,8 @@ class Interval {
 
     this.jobs = jobs;
     this.intervals = await Promise.all(promises);
+
+    this.startInterval(true);
   }
 
   async startInterval(initial) {
@@ -178,17 +188,18 @@ class Interval {
       intervalUser: currentInterval.get(Intervals.USERNAME),
     });
 
-    if (!initial) {
+    if (this.current > 0) {
       // reset previous user view
       const prevInterval = this.intervals[this.current - 1];
       this.notifyUser(prevInterval, false);
-    } else {
+    }
+
+    if (initial) {
       this.publisher.to(this.sessionName).publishEvent(CONTROL_UPDATE_STATUS, {
         endTime: this.session.get(Sessions.END_TIME),
         status: this.session.get(Sessions.STATUS),
       });
     }
-    console.log(`${this.current  }:`, currentInterval.get(), initial, this.count - 1);
   }
 
   async endInterval() {
@@ -202,7 +213,8 @@ class Interval {
 
     // warning before session is terminated
     await sleep(SESSION_END_DURATION);
-    this.publisher.to(this.sessionName).publishEvent(INTERVAL_REMIND);
+    const ownerIdName = `user-${this.session.get(Sessions.OWNER_ID)}`;
+    this.publisher.to(ownerIdName).publishServer(INTERVAL_REMIND);
 
     // terminate session
     await sleep(SESSION_END_DURATION);

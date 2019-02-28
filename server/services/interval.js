@@ -19,19 +19,18 @@ publisher.publishEvent = (type, data) => {
 };
 
 const createInterval = async (sessionId) => {
-  const total = await redisClient.getAsync(ROBIN_TOTAL);
-  const value = await redisClient.getAsync(ROBIN_ROTATE);
-  const rotateId = (value || 0) + 1;
+  const total = parseInt(await redisClient.getAsync(ROBIN_TOTAL), 10);
+  const robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE), 10);
 
-  redisClient.setAsync(ROBIN_ROTATE, rotateId % total);
-  publisher.publishEvent(`${INTERVAL_CREATE}-${rotateId}`, { sessionId });
+  redisClient.setAsync(ROBIN_ROTATE, robinId % total);
+  publisher.publishEvent(INTERVAL_CREATE, { robinId, sessionId });
 };
 
 const reassignInterval = async (managerId, userId) => {
-  const id = await redisClient.getAsync(redisClient.robinQuery({ managerId }));
+  const robinId = await redisClient.getAsync(redisClient.robinQuery({ managerId }));
 
-  if (id !== null) {
-    publisher.publishEvent(`${INTERVAL_REASSIGN}-${id}`, { managerId, userId });
+  if (robinId !== null) {
+    publisher.publishEvent(INTERVAL_REASSIGN, { managerId, robinId, userId });
   }
 };
 

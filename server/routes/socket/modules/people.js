@@ -35,8 +35,8 @@ module.exports = async (_wss, ws, session, user) => {
 
   ws.onEvent(PEOPLE_DELETE, ({ id }) => {
     if (isOwner) {
-      const targetSessionName = `user-${id}`;
-      ws.to(targetSessionName).sendServer(SOCKET_CLOSE, { type: PEOPLE_DELETE });
+      const targetUser = `user-${id}`;
+      ws.to(targetUser).sendServer(SOCKET_CLOSE);
     }
   });
 

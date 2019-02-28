@@ -40,9 +40,11 @@ export default {
   created() {
     connectErrorMiddlewareWithCallback(this, msg => {
       const id = Date.now();
-      this.items.push({ id, msg });
 
-      this.timeouts[id] = setTimeout(this.closeItem, 5000, id);
+      if (!this.timeouts[id]) {
+        this.items.push({ id, msg });
+        this.timeouts[id] = setTimeout(this.closeItem, 5000, id);
+      }
     });
   },
   methods: {

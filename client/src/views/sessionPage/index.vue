@@ -60,7 +60,7 @@ export default {
   beforeDestroy() {
     disconnectErrorMiddleware(this, this.onError);
 
-    if (this.socket) {
+    if (!this.socket.empty) {
       this.socket.close();
       this.socket = null;
     }

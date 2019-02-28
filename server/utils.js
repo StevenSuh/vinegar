@@ -58,6 +58,7 @@ module.exports = {
   customMorgan: () => {
     morgan.token('reqBody', req => JSON.stringify(req.body));
     morgan.token('resBody', res => JSON.stringify(res.body));
+    morgan.token('shortDate', () => new Date().toTimeString().split(' ')[0]);
 
     return morgan((tokens, req, res) => {
       // :method :url :status :res[content-length] - :response-time ms
@@ -71,6 +72,8 @@ module.exports = {
         'ms',
         tokens.resBody(req),
         tokens.reqBody(res),
+        '-',
+        tokens.shortDate(),
       ].join(' ');
     });
   },

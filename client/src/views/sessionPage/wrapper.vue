@@ -47,7 +47,7 @@ import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
 import People from '@/views/sessionPage/people';
 
-import { EmptySocket, socketMixin } from '@/services/socket';
+import { socketMixin } from '@/services/socket';
 import { handleErrorMiddleware } from '@/services/middleware';
 
 import backImage from '@/assets/back.png';
@@ -96,25 +96,7 @@ export default {
         `You have been disconnected from session: ${school}/${session}.`,
         'socket',
       );
-      this.socket.close();
-      this.socket = EmptySocket();
-    },
-    'people:onDelete': function() {
-      handleErrorMiddleware(
-        'You have been removed from the session.',
-        'socket',
-      );
-      this.socket.close();
-      this.socket = EmptySocket();
-    },
-    'socket:onClose': function() {
-      const { school, session } = this;
-      handleErrorMiddleware(
-        `You have been disconnected from session: ${school}/${session}.`,
-        'socket',
-      );
-      this.socket.close();
-      this.socket = EmptySocket();
+      this.socket.closeSocket();
     },
     'socket:onException': function({ errorMessage }) {
       handleErrorMiddleware(errorMessage, 'socket');
