@@ -6,8 +6,8 @@
     >
       <input-component
         v-if="isOwner"
-        class="participants-input"
         id="participantsNumId"
+        class="participants-input"
         autocomplete="off"
         name="participants"
         placeholder="# of participants"
