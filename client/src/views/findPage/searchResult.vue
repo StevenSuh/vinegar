@@ -19,7 +19,7 @@
         />
       </div>
       <p class="detail">
-        {{ 'Created at ' + formatDate(item.createdAt) }}
+        {{ `Created at ${formatDate(item.createdAt)} - ${item.status}` }}
         <span
           v-if="item.password"
           class="protected"

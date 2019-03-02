@@ -19,8 +19,7 @@
         <h1 class="name-wrapper">
           <span class="school-name">
             {{ school }}
-          </span>
-          {{ ' / ' }}
+          </span> {{ ' / ' }}
           <span class="session-name">
             {{ session }}
           </span>

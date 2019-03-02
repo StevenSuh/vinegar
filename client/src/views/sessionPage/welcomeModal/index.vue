@@ -34,7 +34,10 @@
           />
         </div>
         <div class="button-wrapper marginTop">
-          <ButtonComponent type="primary" :has-form="true">
+          <ButtonComponent
+            type="primary"
+            :has-form="true"
+          >
             <div class="button">
               <p :class="isLoading ? 'hide' : ''">
                 Submit
@@ -132,7 +135,10 @@
           </p>
         </div>
         <div class="button-wrapper marginTop">
-          <ButtonComponent type="primary" :has-form="true">
+          <ButtonComponent
+            type="primary"
+            :has-form="true"
+          >
             <div class="button">
               <p :class="isLoading ? 'hide' : ''">
                 Continue

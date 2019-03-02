@@ -115,12 +115,18 @@ export async function onWelcomeFormSubmit(e) {
     case 1:
     default: {
       this.isLoading = true;
-      await enterSession({
+      const { validName } = await enterSession({
         name: this.name,
         phone: this.phone,
       });
 
       this.isLoading = false;
+
+      if (!validName) {
+        this.nameError = 'The name is already taken for this session.';
+        return;
+      }
+
       return this.onClose();
     }
   }

@@ -53,11 +53,13 @@ module.exports = (app) => {
         password,
         schoolName,
         sessionName,
+        status,
       }) => ({
         createdAt,
         password: Boolean(password),
         schoolName,
         sessionName,
+        status,
       })));
     },
   );
@@ -191,12 +193,16 @@ module.exports = (app) => {
         }
       }
 
-      const { name, phone } = req.body;
-      const color = generateColor();
-
       const { session } = req;
       const sessionId = session.get(Sessions.ID);
 
+      const { name, phone } = req.body;
+      const person = await Users.findOne({ where: { name, sessionId }});
+      if (person) {
+        return res.json({ validName: false });
+      }
+
+      const color = generateColor();
       const updateItem = { color, name };
       if (phone) {
         updateItem.phone = phone;
@@ -219,7 +225,7 @@ module.exports = (app) => {
         return res.status(400).send('Invalid user.');
       }
 
-      return res.end();
+      return res.json({ validName: true });
     },
   );
 };
