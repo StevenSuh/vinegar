@@ -5,7 +5,7 @@
         {{ 'ended.' }}
       </span>
     </p>
-    <download-button />
+    <download-button :socket="socket" />
   </div>
 </template>
 
@@ -15,6 +15,9 @@ import DownloadButton from '@/views/sessionPage/control/components/downloadButto
 export default {
   components: {
     DownloadButton,
+  },
+  props: {
+    socket: [Object, WebSocket],
   },
 };
 </script>

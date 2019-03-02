@@ -11,6 +11,7 @@ const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
 const {
+  CONTROL_DOWNLOAD,
   CONTROL_ENTER,
   CONTROL_INIT,
   CONTROL_INTERVAL,
@@ -20,6 +21,8 @@ const {
 } = require('routes/socket/defs');
 
 const { getPeople } = require('routes/socket/utils');
+
+const { inflate, sleep } = require('utils');
 
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
@@ -54,6 +57,14 @@ module.exports = async (wss, ws, session, user) => {
     isOwner: session.get(Sessions.OWNER_ID) === userId,
     participants: session.get(Sessions.PARTICIPANTS),
     status: session.get(Sessions.STATUS),
+  });
+
+  ws.onEvent(CONTROL_DOWNLOAD, async () => {
+    await session.reload();
+    console.log(inflate(session.get(Sessions.CONTENT)));
+
+    await sleep(3000);
+    ws.sendEvent(CONTROL_DOWNLOAD);
   });
 
   ws.onEvent(CONTROL_INIT, async ({ participants }) => {

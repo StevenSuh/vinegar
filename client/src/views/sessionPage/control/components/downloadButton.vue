@@ -1,5 +1,9 @@
 <template>
-  <div class="download">
+  <div
+    class="download"
+    @mouseenter="onResetDownload"
+    @mouseleave="onMouseLeave"
+  >
     <img
       class="hover"
       :src="DownloadIcon"
@@ -10,7 +14,7 @@
       :force-show="isDownloading"
       :on-click="onStartDownload"
     >
-      <p v-if="!isDownloading">
+      <p v-if="!isLoading">
         Download Current Doc
       </p>
       <Loader
@@ -23,6 +27,8 @@
 </template>
 
 <script>
+import { socketMixin } from '@/services/socket';
+
 import Loader from '@/components/loader';
 import Tooltip from '@/components/tooltip';
 
@@ -33,20 +39,46 @@ export default {
     Loader,
     Tooltip,
   },
+  mixins: [socketMixin],
+  props: {
+    socket: [Object, WebSocket],
+  },
   data() {
     return {
       DownloadIcon,
       isDownloading: false,
+      isLoading: false,
+      mouseover: false,
     };
   },
   methods: {
     onStartDownload() {
       if (!this.isDownloading) {
         this.isDownloading = true;
+        this.isLoading = true;
+        this.socket.sendEvent('control:onDownload');
+      }
+    },
+    onResetDownload() {
+      this.mouseover = true;
 
-        setTimeout(() => {
-          this.isDownloading = false;
-        }, 1000);
+      if (this.reset) {
+        this.isLoading = false;
+        this.reset = false;
+      }
+    },
+    onMouseLeave() {
+      this.mouseover = false;
+    },
+  },
+  sockets: {
+    'control:onDownload': function() {
+      this.isDownloading = false;
+
+      if (!this.mouseover) {
+        this.reset = true;
+      } else {
+        this.isLoading = false;
       }
     },
   },

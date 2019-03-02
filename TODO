@@ -1,24 +1,28 @@
 Sort of a wish list
-In the order of importance ASC -> DESC
+
+immediate:
+- Make download function work
+- Finish adding interval status and help modal UI
+- Make redis a mediator between client and db
 
 engineering:
-1. Use node-schedule for `interval` worker - DONE
-2. Unit tests
+- Unit tests
   - Most likely Jest
-3. Clean up a lot of code - create utilities, refactor repeated logic (focus socket, interval)
-4. Separate socket out of api to a different service/container
-5. Note that Sequelize.INTEGER hits a limit at around 2 billion. Consider using BIGINT data type for Id primary key.
-6. Look into adding logging for deployment. So far, I've found Stackdriver logging for GCP.
-7. Rate limiting through express-rate-limit (needs manual limiting for socket connections)
-8. Paginate searching for join session on '/app/find'
-9. Normalizing data schemas (requests, sockets, db, redis) to simpler convention (specifically, dates have been hard to deal with - time in ms vs. date string?)
+- Clean up a lot of code - create utilities, refactor repeated logic (focus socket, interval)
+- Separate socket out of api to a different service/container
+- Note that Sequelize.INTEGER hits a limit at around 2 billion. Consider using BIGINT data type for Id primary key.
+- Look into adding logging for deployment. So far, I've found Stackdriver logging for GCP.
+- Rate limiting through express-rate-limit (needs manual limiting for socket connections)
+- Paginate searching for join session on '/app/find'
+- Normalizing data schemas (requests, sockets, db, redis) to simpler convention (specifically, dates have been hard to deal with - time in ms vs. date string?)
+- Use redis as R/W cache in between interacting with DB for socket (optimization task, to be housed in /shared/db)
 
 product:
-1. If kicked out 3 times, block the user's ip address from session
-2. Separate join & create routes out of '/app/find'
-3. Add writing icon on intervalUser
-4. Tooltip on owner icon and writing icon
-5. Download feature - probably through adding another worker > generating PDF > uploading to CDN
+- If kicked out 3 times, block the user's ip address from session
+- Separate join & create routes out of '/app/find'
+- Add writing icon on intervalUser
+- Tooltip on owner icon and writing icon
+- Download feature - probably through adding another worker > generating PDF > uploading to CDN
   - Set expiration
   - If given time and flexibility, set up the worker with different stack? since communication will be done through redis pub/sub (maybe explore RCP?)
-6. Maybe play around with github's issues tracker? (rather than tracking through this file)
+- Maybe play around with github's issues tracker? (rather than tracking through this file)

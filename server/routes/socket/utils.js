@@ -27,7 +27,7 @@ const socketLogger = (message, ws) => {
 
     if (data) {
       const { type } = data;
-      delete data[type];
+      delete data.type;
       // eslint-disable-next-line no-console
       console.log(`SOCKET /${type} ${ws.sessions.join(', ')} - ${JSON.stringify(data)} - ${now}`);
     } else {
