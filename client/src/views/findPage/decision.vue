@@ -68,7 +68,6 @@ export default {
 
 <style scoped>
 .find-wrapper {
-  position: absolute;
   text-align: center;
   width: 100%;
 }

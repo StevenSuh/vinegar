@@ -186,7 +186,8 @@ export default {
 .msgs-wrapper {
   margin-bottom: 10px;
   padding-right: 20px;
-  overflow: hidden auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .item-wrapper {

@@ -1,7 +1,12 @@
-const { createInterval, reassignInterval } = require('services/interval');
+const {
+  createInterval,
+  createExistingInterval,
+  reassignInterval,
+} = require('services/interval');
 
 const dbClient = require('db')();
 const Intervals = require('db/intervals/model')(dbClient);
+const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
@@ -16,8 +21,6 @@ const {
 
 const { getPeople } = require('routes/socket/utils');
 
-const { tryCatch } = require('utils');
-
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
@@ -25,7 +28,12 @@ module.exports = async (wss, ws, session, user) => {
   const userId = user.get(Users.ID);
 
   if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
-    await createInterval(sessionId);
+    const manager = await IntervalManagers.findOne({ where: { sessionId }});
+
+    if (manager) {
+      const managerId = manager.get(IntervalManagers.ID);
+      await createExistingInterval(managerId, sessionId);
+    }
   }
 
   const currIntervalId = session.get(Sessions.CURRENT_INTERVAL_ID);
@@ -42,7 +50,7 @@ module.exports = async (wss, ws, session, user) => {
   ws.sendEvent(CONTROL_ENTER, {
     duration: session.get(Sessions.DURATION),
     endTime: session.get(Sessions.END_TIME),
-    intervalUser: interval && interval.get(Intervals.USERNAME),
+    intervalUser: interval ? interval.get(Intervals.USERNAME) : '',
     isOwner: session.get(Sessions.OWNER_ID) === userId,
     participants: session.get(Sessions.PARTICIPANTS),
     status: session.get(Sessions.STATUS),
@@ -103,9 +111,10 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.on('close', async () => {
-    await tryCatch(session.reload, () => {});
-    const intervalManagerId = session.get(Sessions.INTERVAL_MANAGER_ID);
-    if (intervalManagerId) {
+    const manager = await IntervalManagers.findOne({ where: { sessionId }});
+
+    if (manager) {
+      const intervalManagerId = manager.get(IntervalManagers.ID);
       reassignInterval(intervalManagerId, userId);
     }
   });

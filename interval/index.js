@@ -12,7 +12,6 @@ const IntervalManager = require('services/interval');
 const {
   INTERVAL_CREATE,
   INTERVAL_REASSIGN,
-  ROUND_ROBIN_EVENTS,
   SUBSCRIBE_EVENTS,
 } = require('defs');
 const { exitHandler } = require('utils');
@@ -49,7 +48,6 @@ addCallback(INTERVAL_REASSIGN, async ({ managerId, robinId, userId }) => {
   }
 
   const intervalManager = intervalManagers[managerId];
-
   if (intervalManager) {
     await intervalManager.reassignInterval(userId);
   } else {
@@ -59,9 +57,6 @@ addCallback(INTERVAL_REASSIGN, async ({ managerId, robinId, userId }) => {
   }
 });
 
-subscriber.subscribe(
-  ...Object.values(ROUND_ROBIN_EVENTS),
-  ...Object.values(SUBSCRIBE_EVENTS),
-);
+subscriber.subscribe(...Object.values(SUBSCRIBE_EVENTS));
 
 exitHandler(intervalManagers);

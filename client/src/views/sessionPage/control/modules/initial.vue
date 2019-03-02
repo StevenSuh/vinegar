@@ -20,6 +20,7 @@
       <button-component
         type="primary"
         size="small"
+        :has-form="true"
       >
         <p
           class="start"

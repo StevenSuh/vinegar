@@ -50,18 +50,13 @@ export default {
   },
   data() {
     return {
-      requestStartTime: null,
-      remaining: this.endTime - Date.now(),
-      startTime: null,
-      targetTimestamp: 0,
-
-      // requestAnimationFrame id
+      remaining: null,
       countEndTimeId: null,
     };
   },
   mounted() {
     this.startTime = Date.now();
-    this.remaining = this.endTime - this.startTime;
+    this.remaining = this.endTime - Date.now();
     this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
   },
   beforeDestroy() {
@@ -71,22 +66,15 @@ export default {
   },
   methods: {
     formatDuration,
-    onCountEndTime(timestamp) {
-      if (!this.requestStartTime) {
-        this.requestStartTime = timestamp;
-      }
-      const actualTimestamp = timestamp - this.requestStartTime;
-
-      const timeout = 1000 + (this.targetTimestamp - actualTimestamp);
-      this.remaining = this.endTime - this.startTime - actualTimestamp;
-      this.targetTimestamp = actualTimestamp + timeout;
+    onCountEndTime() {
+      this.remaining -= 1000;
 
       if (this.remaining > 0) {
         setTimeout(() => {
           this.countEndTimeId = window.requestAnimationFrame(
             this.onCountEndTime,
           );
-        }, timeout);
+        }, 1000);
       } else {
         this.remaining = 0;
         this.countEndTimeId = null;

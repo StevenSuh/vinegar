@@ -1,16 +1,21 @@
 <template>
-  <button
+  <component
+    :is="hasForm ? 'button' : 'div'"
     class="button"
     :class="[type, size]"
     @click="onClick"
   >
     <slot />
-  </button>
+  </component>
 </template>
 
 <script>
 export default {
   props: {
+    hasForm: {
+      type: Boolean,
+      default: false,
+    },
     prevent: {
       type: Boolean,
       default: false,

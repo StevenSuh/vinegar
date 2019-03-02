@@ -11,7 +11,7 @@ module.exports = {
 
   CONTROL_ENTER: 'control:onEnter',
   CONTROL_INIT: 'control:onInit',
-  CONTROL_IS_INTERVAL: 'control:onIsInterval',
+  CONTROL_INTERVAL: 'control:onInterval',
   CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
   CONTROL_WAIT: 'control:onWait',
 
@@ -40,7 +40,7 @@ module.exports = {
 
     CHAT_SEND: 'chat:onChatSend',
 
-    CONTROL_IS_INTERVAL: 'control:onIsInterval',
+    CONTROL_INTERVAL: 'control:onInterval',
     CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
 
     EDITOR_TEXT_UPDATE: 'editor:onEditorTextUpdate',

@@ -85,7 +85,7 @@
         />
       </div>
       <div class="button-wrapper marginTop small">
-        <ButtonComponent type="primary">
+        <ButtonComponent type="primary" :has-form="true">
           <div class="create-button">
             <p :class="isLoading ? 'hide' : ''">
               Create

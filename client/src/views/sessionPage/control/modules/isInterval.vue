@@ -25,13 +25,7 @@ export default {
   },
   data() {
     return {
-      // isInterval
-      requestStartTime: null,
       remaining: null,
-      intervalStartTime: null,
-      targetTimestamp: 0,
-
-      // requestAnimationFrame id
       countEndTimeId: null,
     };
   },
@@ -41,29 +35,20 @@ export default {
     }
   },
   mounted() {
-    this.intervalStartTime = Date.now();
-    this.remaining = this.intervalEndTime - this.intervalStartTime;
+    this.remaining = this.intervalEndTime - Date.now();
     this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
   },
   methods: {
     formatDuration,
-    onCountEndTime(timestamp) {
-      if (!this.requestStartTime) {
-        this.requestStartTime = timestamp;
-      }
-      const actualTimestamp = timestamp - this.requestStartTime;
-
-      const timeout = 1000 + (this.targetTimestamp - actualTimestamp);
-      this.remaining =
-        this.intervalEndTime - this.intervalStartTime - actualTimestamp;
-      this.targetTimestamp = actualTimestamp + timeout;
+    onCountEndTime() {
+      this.remaining -= 1000;
 
       if (this.remaining > 0) {
         setTimeout(() => {
           this.countEndTimeId = window.requestAnimationFrame(
             this.onCountEndTime,
           );
-        }, timeout);
+        }, 1000);
       } else {
         this.remaining = 0;
         this.countEndTimeId = null;

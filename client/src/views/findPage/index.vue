@@ -171,7 +171,8 @@ export default {
 
 <style scoped>
 .find {
-  height: 100vh;
+  height: auto;
+  min-height: 100vh;
 }
 
 .loader-wrapper {

@@ -36,6 +36,7 @@ module.exports = (dbClient) => {
     });
 
     // class definitions
+    Users.ACTIVE = 'active';
     Users.COLOR = 'color';
     Users.CREATED_AT = 'createdAt';
     Users.EMAIL = 'email';

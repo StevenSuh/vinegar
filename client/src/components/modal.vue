@@ -101,12 +101,12 @@ export default {
       }
     },
     show(value, oldValue) {
-      if (value && value !== oldValue) {
+      if (value !== null && value !== oldValue) {
         this.onEnter(this.$refs.content[this.currentStep], 600);
       }
     },
     open(value, oldValue) {
-      if (value && value !== oldValue) {
+      if (value !== null && value !== oldValue) {
         if (value) {
           document.body.classList.add('overflow');
         } else {

@@ -85,16 +85,21 @@ class Interval {
       return;
     }
 
+    await redisClient.setAsync(redisClient.robinQuery(
+      { managerId: this.managerId },
+      await getRoundRobinId(),
+    ));
+
     this.intervals = await this.manager.getIntervals();
 
-    const currIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
-    const currInterval = this.intervals.findIndex(interval =>
-      currIntervalId === interval.get(Intervals.ID));
-    this.current = currInterval;
+    const currentIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
+    const currentInterval = this.intervals.findIndex(interval =>
+      currentIntervalId === interval.get(Intervals.ID));
+    this.current = currentInterval;
 
     const jobs = [];
 
-    for (let i = currInterval + 1; i < this.intervals.length; i += 1) {
+    for (let i = currentInterval + 1; i < this.intervals.length; i += 1) {
       const startTime = this.intervals[i].get(Intervals.START_TIME);
       jobs.push(schedule.scheduleJob(
         new Date(startTime),
@@ -261,18 +266,16 @@ class Interval {
       return;
     }
 
-    await interval.update({ userId: candidate.get(Users.ID) });
+    await interval.update({
+      userId: candidate.get(Users.ID),
+      username: candidate.get(Users.NAME),
+    });
 
     if (targetIndex === this.current) {
+      this.current -= 1;
       this.startInterval();
     } else {
-      this.jobs[targetIndex].cancel();
-      this.jobs[targetIndex] = schedule.scheduleJob(
-        new Date(interval.get(Intervals.START_TIME)),
-        () => this.startInterval(false),
-      );
-
-      const userIdName = `user-${userId}`;
+      const userIdName = `user-${candidate.get(Users.ID)}`;
       this.publisher.to(userIdName).publishEvent(
         INTERVAL_STATUS,
         { startTime: interval.get(Intervals.START_TIME) },
@@ -285,10 +288,11 @@ class Interval {
 
     const intervals = (people.length > this.count) ?
       this.intervals :
-      this.intervals.slice(0, this.current + 1);
+      this.intervals.slice(this.current);
 
     const candidates = people.filter(person =>
-      !intervals.find(interval => interval.get(Intervals.USER_ID) === person.get(Users.ID)));
+      !intervals.find(interval =>
+        interval.get(Intervals.USER_ID) === person.get(Users.ID)));
 
     return this.shuffle(candidates)[0];
   }

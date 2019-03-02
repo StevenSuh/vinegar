@@ -1,6 +1,6 @@
 module.exports = {
   SESSION_END_DURATION: 6000,
-  REASSIGN_WAIT_DURATION: 30000,
+  REASSIGN_WAIT_DURATION: 3000,
 
   CONTROL_INTERVAL: 'control:onInterval',
   CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
@@ -18,10 +18,8 @@ module.exports = {
 
   SOCKET_CLOSE: 'socket:onClose',
 
-  ROUND_ROBIN_EVENTS: {
-    INTERVAL_CREATE: 'interval:onCreate',
-  },
   SUBSCRIBE_EVENTS: {
+    INTERVAL_CREATE: 'interval:onCreate',
     INTERVAL_REASSIGN: 'interval:onReassign',
   },
 };

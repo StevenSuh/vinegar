@@ -13,7 +13,13 @@
 .ql-container {
   min-height: 408px;
   max-height: calc(100% - 40px);
-  overflow: hidden auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ql-cursor,
+.ql-cursor-selections {
+  display: block;
 }
 
 .hide-toolbar {

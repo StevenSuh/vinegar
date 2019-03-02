@@ -21,3 +21,4 @@ product:
 5. Download feature - probably through adding another worker > generating PDF > uploading to CDN
   - Set expiration
   - If given time and flexibility, set up the worker with different stack? since communication will be done through redis pub/sub (maybe explore RCP?)
+6. Maybe play around with github's issues tracker? (rather than tracking through this file)

@@ -19,7 +19,6 @@
         name="search"
         placeholder="Type your session name..."
         suggestion="Try &quot;UCSC&quot;"
-        type="search"
         :class="{ 'search-expanded': searchQuery.length > 0 && searched }"
         :on-autosearch="onSearch"
         :on-clear-search="onClearSearch"

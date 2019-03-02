@@ -16,10 +16,13 @@
         />
       </router-link>
       <div class="left">
-        <h1 class="school-name">
-          {{ school }}
+        <h1 class="name-wrapper">
+          <span class="school-name">
+            {{ school }}
+          </span>
+          {{ ' / ' }}
           <span class="session-name">
-            {{ ' / ' }} {{ session }}
+            {{ session }}
           </span>
         </h1>
         <div class="editor-wrapper">
@@ -118,6 +121,15 @@ export default {
   transition-delay: 0.3s;
 }
 
+.name-wrapper {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
 .school-name {
   font-size: 36px;
   font-weight: 500;
@@ -188,6 +200,7 @@ export default {
 @media (max-width: 700px) {
   .session {
     flex-direction: column;
+    height: auto;
   }
 
   .school-name {
