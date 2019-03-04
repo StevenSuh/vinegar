@@ -56,7 +56,14 @@ export default {
       if (!this.isDownloading) {
         this.isDownloading = true;
         this.isLoading = true;
-        this.socket.sendEvent('control:onDownload');
+
+        const styles = document.getElementsByTagName('style');
+        const innerHTML = [...styles].map(style => style.innerHTML);
+
+        const style = document.createElement('style');
+        style.innerHTML = innerHTML;
+
+        this.socket.sendEvent('control:onDownload', { style: style.outerHTML });
       }
     },
     onResetDownload() {
@@ -72,8 +79,15 @@ export default {
     },
   },
   sockets: {
-    'control:onDownload': function() {
+    'control:onDownload': function({ url }) {
       this.isDownloading = false;
+
+      const { school, session } = this.$route.params;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${school}/${session}`;
+      a.target = '_blank';
+      a.click();
 
       if (!this.mouseover) {
         this.reset = true;

@@ -28,6 +28,8 @@ module.exports = {
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
+  PDF_CREATE: 'pdf:onCreate',
+
   PEOPLE_DELETE: 'people:onDelete',
   PEOPLE_ENTER: 'people:onEnter',
   PEOPLE_JOIN: 'people:onJoin',

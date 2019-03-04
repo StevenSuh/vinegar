@@ -26,19 +26,19 @@ const createInterval = async (sessionId) => {
   publisher.publishEvent(INTERVAL_CREATE, { robinId, sessionId });
 };
 
-const createExistingInterval = async (managerId, sessionId) => {
-  const robinId = parseInt(await redisClient.getAsync(redisClient.robinQuery({ managerId })), 10);
+const createExistingInterval = async (sessionId) => {
+  const robinId = parseInt(await redisClient.getAsync(redisClient.robinQuery({ sessionId })), 10);
 
   if (robinId === null) {
     await createInterval(sessionId);
   }
 };
 
-const reassignInterval = async (managerId, userId) => {
-  const robinId = parseInt(await redisClient.getAsync(redisClient.robinQuery({ managerId })), 10);
+const reassignInterval = async (sessionId, userId) => {
+  const robinId = parseInt(await redisClient.getAsync(redisClient.robinQuery({ sessionId })), 10);
 
   if (robinId !== null) {
-    publisher.publishEvent(INTERVAL_REASSIGN, { managerId, robinId, userId });
+    publisher.publishEvent(INTERVAL_REASSIGN, { sessionId, robinId, userId });
   }
 };
 

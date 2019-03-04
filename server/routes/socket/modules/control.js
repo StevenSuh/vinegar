@@ -4,9 +4,10 @@ const {
   reassignInterval,
 } = require('services/interval');
 
+const { createPdf } = require('services/worker');
+
 const dbClient = require('db')();
 const Intervals = require('db/intervals/model')(dbClient);
-const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
@@ -22,8 +23,6 @@ const {
 
 const { getPeople } = require('routes/socket/utils');
 
-const { inflate, sleep } = require('utils');
-
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
@@ -31,12 +30,7 @@ module.exports = async (wss, ws, session, user) => {
   const userId = user.get(Users.ID);
 
   if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
-    const manager = await IntervalManagers.findOne({ where: { sessionId }});
-
-    if (manager) {
-      const managerId = manager.get(IntervalManagers.ID);
-      await createExistingInterval(managerId, sessionId);
-    }
+    await createExistingInterval(sessionId);
   }
 
   const currIntervalId = session.get(Sessions.CURRENT_INTERVAL_ID);
@@ -59,12 +53,8 @@ module.exports = async (wss, ws, session, user) => {
     status: session.get(Sessions.STATUS),
   });
 
-  ws.onEvent(CONTROL_DOWNLOAD, async () => {
-    await session.reload();
-    console.log(inflate(session.get(Sessions.CONTENT)));
-
-    await sleep(3000);
-    ws.sendEvent(CONTROL_DOWNLOAD);
+  ws.onEvent(CONTROL_DOWNLOAD, async ({ style }) => {
+    createPdf(sessionId, style);
   });
 
   ws.onEvent(CONTROL_INIT, async ({ participants }) => {
@@ -122,11 +112,8 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.on('close', async () => {
-    const manager = await IntervalManagers.findOne({ where: { sessionId }});
-
-    if (manager) {
-      const intervalManagerId = manager.get(IntervalManagers.ID);
-      reassignInterval(intervalManagerId, userId);
+    if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
+      reassignInterval(sessionId, userId);
     }
   });
 };

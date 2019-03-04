@@ -24,8 +24,8 @@ module.exports = () => {
     redisClient.SESSION_NAME = 'sessionName';
     redisClient.USER_ID = 'userId';
 
-    redisClient.robinQuery = ({ managerId }) =>
-      `${redisClient.ROBIN_MANAGER}-${managerId}`;
+    redisClient.robinQuery = ({ sessionId }) =>
+      `${redisClient.ROBIN_MANAGER}-${sessionId}`;
     redisClient.sessionId = ({ cookieId }, value) => {
       const query = [cookieId, redisClient.SESSION_ID];
       if (value) {

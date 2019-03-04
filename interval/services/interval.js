@@ -2,7 +2,6 @@ const schedule = require('node-schedule');
 
 const dbClient = require('db')();
 const Intervals = require('db/intervals/model')(dbClient);
-const IntervalManagers = require('db/intervalManagers/model')(dbClient);
 const Sessions = require('db/sessions/model')(dbClient);
 const Users = require('db/users/model')(dbClient);
 
@@ -22,8 +21,8 @@ const {
 const { sleep } = require('utils');
 
 class Interval {
-  constructor({ session, publisher }, managers) {
-    this.managers = managers;
+  constructor({ session, publisher }, sessions) {
+    this.sessions = sessions;
     this.ended = false;
 
     this.current = -1;
@@ -41,9 +40,6 @@ class Interval {
     this.session = session;
     this.sessionId = session.get(Sessions.ID);
     this.sessionName = `session-${this.sessionId}`;
-
-    this.manager = null;
-    this.managerId = null;
   }
 
   normalizeTimeout() {
@@ -76,21 +72,20 @@ class Interval {
     });
   }
 
-  async setupExisting(manager) {
-    this.manager = manager;
-    this.managerId = manager.get(IntervalManagers.ID);
-
+  async setupExisting() {
     if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED) {
       this.endInterval();
       return;
     }
 
     await redisClient.setAsync(redisClient.robinQuery(
-      { managerId: this.managerId },
+      { sessionId: this.sessionId },
       await getRoundRobinId(),
     ));
 
-    this.intervals = await this.manager.getIntervals();
+    this.intervals = await this.session.getIntervals();
+    this.intervals.sort((a, b) =>
+      new Date(b.get(Intervals.START_TIME)) - new Date(a.get(Intervals.START_TIME)));
 
     const currentIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
     const currentInterval = this.intervals.findIndex(interval =>
@@ -120,18 +115,13 @@ class Interval {
   async setupInterval() {
     this.current = -1;
 
-    const manager = await this.session.getManager();
-    if (manager) {
-      this.setupExisting(manager);
+    if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
+      this.setupExisting();
       return;
     }
 
-    // create manager
-    this.manager = await IntervalManagers.create({ sessionId: this.sessionId });
-    this.managerId = this.manager.get(IntervalManagers.ID);
-
     await redisClient.setAsync(redisClient.robinQuery(
-      { managerId: this.managerId },
+      { sessionId: this.sessionId },
       await getRoundRobinId(),
     ));
 
@@ -150,7 +140,6 @@ class Interval {
 
       promises.push(Intervals.create({
         duration: this.timeout,
-        intervalManagerId: this.managerId,
         sessionId: this.sessionId,
         startTime,
         endTime: startTime + this.timeout,
@@ -223,12 +212,12 @@ class Interval {
 
     // terminate session
     await sleep(SESSION_END_DURATION);
-    const robinQuery = redisClient.robinQuery({ managerId: this.managerId });
+    const robinQuery = redisClient.robinQuery({ sessionId: this.sessionId });
     const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
     const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
     redisClient.delAsync(schoolQuery[0], sessionQuery[0], robinQuery);
 
-    delete this.managers[this.managerId];
+    delete this.sessions[this.sessionId];
     this.session.destroy();
     this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
   }

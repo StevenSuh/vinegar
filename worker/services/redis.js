@@ -5,7 +5,7 @@ const {
 const redis = require('redis');
 const bluebird = require('bluebird');
 
-const { REDIS_SOCKET, ROBIN_TOTAL } = require('defs');
+const { REDIS_SOCKET, WORKER_TOTAL } = require('defs');
 
 const { tryCatch } = require('utils');
 
@@ -23,42 +23,15 @@ const redisClient = bluebird.promisifyAll(
   }),
 );
 
-redisClient.ROBIN_MANAGER = 'robin-manager';
-redisClient.SESSION_SCHOOL = 'schoolName';
-redisClient.SESSION_NAME = 'sessionName';
-
-redisClient.robinQuery = ({ sessionId }, value) => {
-  if (value) {
-    return [`${redisClient.ROBIN_MANAGER}-${sessionId}`, value];
-  }
-  return `${redisClient.ROBIN_MANAGER}-${sessionId}`;
-};
-redisClient.sessionSchool = ({ cookieId, sessionId }, value) => {
-  const query = [`${redisClient.SESSION_SCHOOL}-${sessionId}`, cookieId];
-  if (value) {
-    query.push(value);
-  }
-  return query;
-};
-redisClient.sessionName = ({ cookieId, sessionId }, value) => {
-  const query = [`${redisClient.SESSION_NAME}-${sessionId}`, cookieId];
-  if (value) {
-    query.push(value);
-  }
-  return query;
-};
-redisClient.intervalQuery = ({ sessionId }, value, expiration) =>
-  [`${redisClient.INTERVAL}-${sessionId}`, value, 'PX', expiration];
-
-const getRoundRobinId = async () => {
+const getWorkerId = async () => {
   if (redisClient.robinId !== undefined) {
     return redisClient.robinId;
   }
-  const index = parseInt(await redisClient.incrAsync(ROBIN_TOTAL), 10);
+  const index = parseInt(await redisClient.incrAsync(WORKER_TOTAL), 10);
   redisClient.robinId = index;
   return index;
 };
-getRoundRobinId();
+getWorkerId();
 
 // publisher
 const publisher = redis.createClient({
@@ -114,7 +87,7 @@ subscriber.on('message', async function(channel, message) {
 
 module.exports = {
   addCallback,
-  getRoundRobinId,
+  getWorkerId,
   redisClient,
   publisher,
   subscriber,

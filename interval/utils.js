@@ -14,11 +14,11 @@ module.exports = {
       return null;
     }
   },
-  exitHandler: managers => {
+  exitHandler: sessions => {
     // do something when app is closing
     const exitFn = () => {
-      Object.keys(managers).forEach(managerId => {
-        const robinQuery = redisClient.robinQuery({ managerId });
+      Object.keys(sessions).forEach(sessionId => {
+        const robinQuery = redisClient.robinQuery({ sessionId });
         redisClient.delAsync(robinQuery);
       });
     };

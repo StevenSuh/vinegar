@@ -5,7 +5,7 @@ install:
 prettier:
 	prettier --write **/*.js **/*.vue
 lint:
-	make prettier && cd client && yarn lint --fix && cd ../server && yarn lint --fix && cd ../interval && yarn lint --fix
+	make prettier && cd client && yarn lint --fix && cd ../server && yarn lint --fix && cd ../interval && yarn lint --fix && cd ../worker && yarn lint --fix
 
 
 serve:
@@ -18,10 +18,12 @@ delete-api:
 	docker rm $(shell docker ps -aqf "name=api")
 delete-interval:
 	docker rm $(shell docker ps -aqf "name=interval")
+delete-worker:
+	docker rm $(shell docker ps -aqf "name=worker")
 clear-node-modules:
-	cd client && rm -rf node_modules && cd ../server && rm -rf node_modules && cd ../interval && rm -rf node_modules
+	cd client && rm -rf node_modules && cd ../server && rm -rf node_modules && cd ../interval && rm -rf node_modules && cd ../worker && rm -rf node_modules
 serve-no-cache:
-	make delete-client && make delete-api && make delete-interval && docker-compose build --no-cache && make serve
+	make delete-client && make delete-api && make delete-interval && make delete-worker && docker-compose build --no-cache && make serve
 serve-reset:
 	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose build --no-cache && docker-compose up
 
