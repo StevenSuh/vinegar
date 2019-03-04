@@ -1,19 +1,11 @@
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
 
-const {
-  addCallback,
-  publisher,
-  subscriber,
-} = require('services/redis');
+const { addCallback, publisher, subscriber } = require('services/redis');
 
 const Pdf = require('services/pdf');
 
-const {
-  CONTROL_DOWNLOAD,
-  PDF_CREATE,
-  SUBSCRIBE_EVENTS,
-} = require('defs');
+const { CONTROL_DOWNLOAD, PDF_CREATE, SUBSCRIBE_EVENTS } = require('defs');
 
 addCallback(PDF_CREATE, async ({ sessionId, style, userId }) => {
   const session = await Sessions.findOne({ where: { id: sessionId } });

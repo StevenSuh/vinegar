@@ -1,3 +1,7 @@
+deploy:
+	make lint && make test && bash deploy.sh
+test:
+	echo "There are no tests at the moment"
 dev:
 	cd client && yarn serve >/dev/null & cd server && yarn serve >/dev/null
 install:

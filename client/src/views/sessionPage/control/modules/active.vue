@@ -18,7 +18,10 @@
     </div>
     <div class="right">
       <div class="button-wrapper">
-        <download-button class="marginRight small" :socket="socket" />
+        <download-button
+          class="marginRight small"
+          :socket="socket"
+        />
         <invite-button />
       </div>
       <div class="end-text">

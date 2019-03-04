@@ -35,7 +35,7 @@ services:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_HOST=postgres
       - POSTGRES_DATABASE_NAME=postgres
-      - POSTGRES_PASSWORD= # should be empty
+      - POSTGRES_PASSWORD=
       - POSTGRES_PORT=5432
   client:
     build:
@@ -54,11 +54,28 @@ services:
     depends_on:
       - api
     environment:
-      # copy of api's environment
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - POSTGRES_USERNAME=postgres
       - POSTGRES_HOST=postgres
       - POSTGRES_DATABASE_NAME=postgres
-      - POSTGRES_PASSWORD= # should be empty
+      - POSTGRES_PASSWORD=
+      - POSTGRES_PORT=5432
+  worker:
+    build:
+      dockerfile: ./worker/Dockerfile.dev
+      content: ./
+    volumes:
+      - /app/worker/node_modules
+      - ./worker:/app/worker
+      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
+    depends_on:
+      - api
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DATABASE_NAME=postgres
+      - POSTGRES_PASSWORD=
       - POSTGRES_PORT=5432
