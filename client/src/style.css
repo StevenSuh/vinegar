@@ -45,6 +45,15 @@ html,
   width: 100%;
 }
 
+@page {
+  size: A4 portrait;
+  margin: 0.5cm;
+}
+
+@page:first {
+  margin-bottom: 0;
+}
+
 body,
 button,
 h1,

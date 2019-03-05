@@ -73,8 +73,9 @@
 
 .content-message {
   margin: 0 auto;
-  padding-top: 12%;
+  top: 45%;
   text-align: center;
+  transform: translateY(-50%);
 }
 
 .content-header {

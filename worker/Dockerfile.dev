@@ -1,7 +1,14 @@
-FROM node:alpine
+FROM node:latest
+RUN apt-get update
+RUN apt-get install -y cabextract
+RUN apt-get install -y xfonts-utils fontconfig fonts-liberation libfontenc1 libxfont1 xfonts-encodings
+RUN wget http://ftp.de.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb && dpkg -i ttf-mscorefonts-installer_3.6_all.deb && rm ttf-mscorefonts-installer_3.6_all.deb
+
 WORKDIR "/app"
 RUN mkdir shared
 COPY ./shared ./shared
+COPY ./shared/fonts /usr/share/fonts
+RUN fc-cache -fv
 RUN mkdir worker
 
 WORKDIR "/app/worker"

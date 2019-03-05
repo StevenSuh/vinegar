@@ -8,6 +8,7 @@ export function onSmallerFontHandler() {
 
   index = Math.max(index - 1, 0);
   this.editor.format('size', this.sizes[index]);
+  this.editor.format('line-height', this.height[index]);
 }
 
 export function onLargerFontHandler() {
@@ -16,6 +17,7 @@ export function onLargerFontHandler() {
 
   index = Math.min(index + 1, this.sizes.length - 1);
   this.editor.format('size', this.sizes[index]);
+  this.editor.format('line-height', this.height[index]);
 }
 
 export function onExtendHandler() {

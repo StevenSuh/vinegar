@@ -54,7 +54,7 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.onEvent(CONTROL_DOWNLOAD, async ({ style }) => {
-    createPdf(sessionId, style);
+    createPdf(sessionId, style, userId);
   });
 
   ws.onEvent(CONTROL_INIT, async ({ participants }) => {

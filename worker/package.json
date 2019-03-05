@@ -17,6 +17,7 @@
     "db": "file:../shared/db",
     "html-pdf": "^2.2.0",
     "nodemon": "^1.18.10",
+    "phantomjs-prebuilt": "^2.1.16",
     "redis": "^2.8.0"
   },
   "devDependencies": {

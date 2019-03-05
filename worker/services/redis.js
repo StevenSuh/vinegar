@@ -24,11 +24,11 @@ const redisClient = bluebird.promisifyAll(
 );
 
 const getWorkerId = async () => {
-  if (redisClient.robinId !== undefined) {
-    return redisClient.robinId;
+  if (redisClient.workerId !== undefined) {
+    return redisClient.workerId;
   }
   const index = parseInt(await redisClient.incrAsync(WORKER_TOTAL), 10);
-  redisClient.robinId = index;
+  redisClient.workerId = index;
   return index;
 };
 getWorkerId();

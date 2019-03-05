@@ -7,9 +7,11 @@ const addWsCallbacks = (type, cb) => {
   wsCallbacks.push({ type, cb });
 };
 
-const EmptySocket = {
+export const EmptySocket = {
+  addEventListener: () => {},
   empty: true,
   close: () => handleErrorMiddleware('You are not connected to a session.', 'socket'),
+  closeSocket: () => {},
   pong: () => {},
   sendEvent: () => {},
   startPingPong: () => {},

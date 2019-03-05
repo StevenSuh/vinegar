@@ -1,3 +1,5 @@
+const zlib = require('zlib');
+
 module.exports = {
   sleep: timeout => new Promise(resolve => setTimeout(resolve, timeout)),
   tryCatch: (fn, errCb) => {
@@ -11,5 +13,11 @@ module.exports = {
       console.warn(err);
       return null;
     }
+  },
+  inflate: text => {
+    if (text) {
+      return zlib.inflateSync(Buffer.from(text, 'base64')).toString();
+    }
+    return text;
   },
 };

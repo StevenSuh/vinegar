@@ -62,7 +62,7 @@ import {
 } from './modules/handlers';
 import ToolbarConfig from './toolbarConfig';
 
-import { FONT_SIZES } from '@/defs';
+import { FONT_SIZES, HEIGHT_SIZES } from '@/defs';
 
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
@@ -87,6 +87,7 @@ export default {
       prevEnter: false,
       prevFocus: null,
       sizes: FONT_SIZES,
+      height: HEIGHT_SIZES,
       updateTimeout: null,
     };
   },

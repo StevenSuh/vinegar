@@ -2613,7 +2613,7 @@ pgpass@1.x:
   dependencies:
     split "^1.0.0"
 
-phantomjs-prebuilt@^2.1.4:
+phantomjs-prebuilt@^2.1.16, phantomjs-prebuilt@^2.1.4:
   version "2.1.16"
   resolved "https://registry.yarnpkg.com/phantomjs-prebuilt/-/phantomjs-prebuilt-2.1.16.tgz#efd212a4a3966d3647684ea8ba788549be2aefef"
   integrity sha1-79ISpKOWbTZHaE6ouniFSb4q7+8=

@@ -26,7 +26,7 @@
 <script>
 import ErrorModal from '@/views/sessionPage/errorModal';
 
-import { initSocket } from '@/services/socket';
+import { EmptySocket, initSocket } from '@/services/socket';
 import {
   connectErrorMiddlewareWithCallback,
   disconnectErrorMiddleware,
@@ -46,7 +46,7 @@ export default {
     return {
       errorModal: null,
       isWelcome: true,
-      socket: null,
+      socket: EmptySocket,
       show: false,
     };
   },
@@ -60,9 +60,8 @@ export default {
   beforeDestroy() {
     disconnectErrorMiddleware(this, this.onError);
 
-    if (!this.socket.empty) {
-      this.socket.close();
-      this.socket = null;
+    if (this.socket.empty === false) {
+      this.socket.closeSocket();
     }
   },
   methods: {
@@ -71,7 +70,7 @@ export default {
       this.show = true;
     },
     onInit(callback) {
-      if (!this.socket) {
+      if (this.socket.empty === true) {
         const { host, pathname } = window.location;
         const url = `ws://${host}/ws${pathname}`;
 

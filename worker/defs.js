@@ -5,8 +5,10 @@ module.exports = {
 
   PDF_CREATE: 'pdf:onCreate',
 
-  WORKER_TOTAL: 'worker:onTotal',
-  WORKER_ROTATE: 'worker:onRotate',
+  REDIS_SOCKET: 'redis:websocket',
+
+  WORKER_TOTAL: 'worker:total',
+  WORKER_ROTATE: 'worker:rotate',
 
   SUBSCRIBE_EVENTS: {
     PDF_CREATE: 'pdf:onCreate',

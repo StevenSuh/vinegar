@@ -369,7 +369,7 @@ pre strong {
 .ql-picker-item[data-value='rubik']::before,
 .ql-picker-label[data-value='rubik']::before {
   content: 'Rubik' !important;
-  font-family: 'Rubik', sans-serif !important;
+  font-family: 'Rubik', sans-serif;
 }
 
 strong,
@@ -381,21 +381,21 @@ strong.ql-font-rubik {
 .ql-picker-item[data-value='arial']::before,
 .ql-picker-label[data-value='arial']::before {
   content: 'Arial' !important;
-  font-family: 'Arial', sans-serif !important;
+  font-family: 'Arial', sans-serif;
 }
 
 .ql-font-times,
 .ql-picker-item[data-value='times']::before,
 .ql-picker-label[data-value='times']::before {
   content: 'Times' !important;
-  font-family: 'Times New Roman', sans-serif !important;
+  font-family: 'Times New Roman', sans-serif;
 }
 
 .ql-font-courier,
 .ql-picker-item[data-value='courier']::before,
 .ql-picker-label[data-value='courier']::before {
   content: 'Courier' !important;
-  font-family: 'Courier New', monospace !important;
+  font-family: 'Courier New', monospace;
 }
 
 strong.ql-font-arial,

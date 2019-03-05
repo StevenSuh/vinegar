@@ -18,12 +18,12 @@ publisher.publishEvent = (type, data) => {
   publisher.publish(type, JSON.stringify(data));
 };
 
-const createPdf = async (sessionId, style) => {
+const createPdf = async (sessionId, style, userId) => {
   const total = parseInt(await redisClient.getAsync(WORKER_TOTAL), 10);
   const workerId = parseInt(await redisClient.incrAsync(WORKER_ROTATE), 10);
 
   redisClient.setAsync(WORKER_ROTATE, workerId % total);
-  publisher.publishEvent(PDF_CREATE, { workerId, sessionId, style });
+  publisher.publishEvent(PDF_CREATE, { sessionId, style, userId, workerId });
 };
 
 module.exports = {

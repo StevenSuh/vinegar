@@ -124,6 +124,7 @@ export default {
   font-size: 22px;
   font-weight: 400;
   line-height: 44px;
+  padding-bottom: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: top;
@@ -133,7 +134,6 @@ export default {
   font-size: 36px;
   font-weight: 500;
   line-height: 44px;
-  padding-bottom: 20px;
 }
 
 .session-name {

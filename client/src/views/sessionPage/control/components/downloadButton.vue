@@ -63,7 +63,15 @@ export default {
         const style = document.createElement('style');
         style.innerHTML = innerHTML;
 
-        this.socket.sendEvent('control:onDownload', { style: style.outerHTML });
+        const links = document.getElementsByTagName('link');
+        const filteredLinks = [...links].filter(link =>
+          link.href.endsWith('.css'),
+        );
+        const finalLinks = filteredLinks.map(link => link.outerHTML);
+
+        const totalContent = `${finalLinks.join('')}${style.outerHTML}`;
+
+        this.socket.sendEvent('control:onDownload', { style: totalContent });
       }
     },
     onResetDownload() {
@@ -85,7 +93,7 @@ export default {
       const { school, session } = this.$route.params;
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${school}/${session}`;
+      a.download = `${school}-${session}.pdf`;
       a.target = '_blank';
       a.click();
 

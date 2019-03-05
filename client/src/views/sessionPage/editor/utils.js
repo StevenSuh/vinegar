@@ -4,7 +4,7 @@ import ImageResize from 'quill-image-resize-module';
 import { ImageDrop } from 'quill-image-drop-module';
 import MagicUrl from 'quill-magic-url';
 
-import { CONTENT_UPDATE_DUR, FONT_SIZES } from '@/defs';
+import { CONTENT_UPDATE_DUR, FONT_SIZES, HEIGHT_SIZES } from '@/defs';
 
 import PlainClipboard from './PlainClipboard';
 import customizeTooltip from './modules/CustomTooltip';
@@ -29,6 +29,11 @@ export function setupQuill() {
   const Size = Quill.import('attributors/style/size');
   Size.whitelist = FONT_SIZES;
   Quill.register(Size, true);
+
+  const Parchment = Quill.import('parchment');
+  const config = { whitelist: HEIGHT_SIZES };
+  const lineHeightStyle = new Parchment.Attributor.Style('lineheight', 'line-height', config);
+  Parchment.register(lineHeightStyle);
 }
 
 export function initEditor() {
