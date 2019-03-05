@@ -1,6 +1,5 @@
 const { Storage } = require('@google-cloud/storage');
-const pdf = require('html-pdf');
-const phantomPath = require('phantomjs-prebuilt').path;
+const puppeteer = require('puppeteer');
 
 const dbClient = require('db')();
 const Sessions = require('db/sessions/model')(dbClient);
@@ -8,8 +7,13 @@ const Sessions = require('db/sessions/model')(dbClient);
 const { BUCKET_NAME } = require('defs');
 
 const options = {
-  border: "0.2in",
-  phantomPath,
+  margin: {
+    top: '0.5cm',
+    bottom: '0.5cm',
+    left: '0.5cm',
+    right: '0.5cm',
+  },
+  printBackground: true,
 };
 
 class PdfCreator {
@@ -25,27 +29,16 @@ class PdfCreator {
     this.storage = new Storage();
   }
 
-  createPdf(html) {
-    return new Promise((resolve, reject) => {
-      pdf.create(html, options).toStream((err, stream) => {
-        if (err) {
-          console.error('An error has occurred at createPdf');
-          reject(err);
-        }
-        this.stream = stream;
-        resolve();
-      });
-    });
-  }
+  async createPdf(html) {
+    const storageFile = this.storage.bucket(BUCKET_NAME).file(this.filename);
 
-  savePdf() {
-    return new Promise((resolve, reject) => {
-      const storageFile = this.storage.bucket(BUCKET_NAME).file(this.filename);
-      this.stream
-        .pipe(storageFile.createWriteStream({ gzip: true }))
-        .on('finish', resolve)
-        .on('error', reject);
-    });
+    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const page = await browser.newPage();
+    await page.setContent(html);
+    await page.emulateMedia('screen');
+
+    const buffer = await page.pdf(options);
+    return storageFile.save(buffer, { gzip: true });
   }
 
   async generateSignedUrl() {

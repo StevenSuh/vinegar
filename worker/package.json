@@ -15,9 +15,8 @@
     "@google-cloud/storage": "^2.4.2",
     "bluebird": "^3.5.3",
     "db": "file:../shared/db",
-    "html-pdf": "^2.2.0",
     "nodemon": "^1.18.10",
-    "phantomjs-prebuilt": "^2.1.16",
+    "puppeteer": "^1.13.0",
     "redis": "^2.8.0"
   },
   "devDependencies": {

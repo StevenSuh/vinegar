@@ -64,10 +64,6 @@ import ToolbarConfig from './toolbarConfig';
 
 import { FONT_SIZES, HEIGHT_SIZES } from '@/defs';
 
-import 'quill/dist/quill.core.css';
-import 'quill/dist/quill.snow.css';
-import 'quill-cursors/dist/quill-cursors.css';
-
 // setup editor
 setupQuill();
 
@@ -209,6 +205,12 @@ export default {
 };
 </script>
 
+<style src="quill/dist/quill.core.css">
+</style>
+<style src="quill/dist/quill.snow.css">
+</style>
+<style src="quill-cursors/dist/quill-cursors.css">
+</style>
 <style src="./style.css">
 /* should NOT be scoped */
 </style>

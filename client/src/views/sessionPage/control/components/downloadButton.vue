@@ -61,7 +61,8 @@ export default {
         const innerHTML = [...styles].map(style => style.innerHTML);
 
         const style = document.createElement('style');
-        style.innerHTML = innerHTML;
+        style.media = 'screen';
+        style.innerHTML = innerHTML.join('');
 
         const links = document.getElementsByTagName('link');
         const filteredLinks = [...links].filter(link =>

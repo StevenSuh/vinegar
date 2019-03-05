@@ -28,15 +28,16 @@ addCallback(PDF_CREATE, async ({ sessionId, style, userId, workerId }) => {
   const totalContent = `
     <html style="-webkit-print-color-adjust: exact;">
       <head>${style}</head>
-      <body style="background-color: white; -webkit-print-color-adjust: exact;">
-        <div class="ql-editor" style="-webkit-print-color-adjust: exact;">${content}</div>
+      <body>
+        <div class="ql-container ql-snow">
+          <div class="ql-editor">${content}</div>
+        </div>
       </body>
     </html>
   `;
 
   const pdf = new Pdf(session);
   await pdf.createPdf(totalContent);
-  await pdf.savePdf();
   await pdf.generateSignedUrl();
 
   const { url } = pdf;
