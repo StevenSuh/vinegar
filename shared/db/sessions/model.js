@@ -4,7 +4,6 @@ const {
   findAllByFullName,
 } = require('./methods');
 
-const STATUS = ['initial', 'waiting', 'active', 'ended'];
 let Sessions = null;
 
 module.exports = (dbClient) => {
@@ -49,13 +48,6 @@ module.exports = (dbClient) => {
         allowNull: false,
         default: STATUS[0],
         type: Sequelize.STRING,
-        validate: {
-          isOneOf(value) {
-            if (!STATUS.includes(value)) {
-              throw new Error(`${value} must be one of ${STATUS}`);
-            }
-          },
-        }
       },
     }, {
       freezeTableName: true,

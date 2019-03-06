@@ -109,10 +109,11 @@ export default {
       if (value !== null && value !== oldValue) {
         if (value) {
           document.body.classList.add('overflow');
+          this.onEnter(this.$refs.content[this.currentStep], 0);
         } else {
           document.body.classList.remove('overflow');
+          this.onLeave(this.$refs.content[this.currentStep], 0);
         }
-        this.onEnter(this.$refs.content[this.currentStep], 0);
       }
     },
     currentStep(value, oldValue) {
@@ -209,6 +210,10 @@ export default {
   transform: translate(-50%, -50%) scale(0.8);
   will-change: transform, opacity;
   z-index: 1001;
+}
+
+.content > * {
+  position: relative !important;
 }
 
 .will-hide {

@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 
-const TYPES = ['system', 'user'];
 let Chats = null;
 
 module.exports = (dbClient) => {
@@ -26,13 +25,6 @@ module.exports = (dbClient) => {
       type: {
         allowNull: false,
         type: Sequelize.STRING,
-        validate: {
-          isOneOf(value) {
-            if (!TYPES.includes(value)) {
-              throw new Error(`${value} must be one of ${TYPES}`);
-            }
-          },
-        }
       },
     }, {
       freezeTableName: true,

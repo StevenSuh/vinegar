@@ -15,6 +15,10 @@
           alt="back button"
         />
       </router-link>
+      <Headline
+        class="headline"
+        :socket="socket"
+      />
       <div class="left">
         <h1 class="name-wrapper">
           <span class="school-name">
@@ -47,6 +51,7 @@
 import Chat from '@/views/sessionPage/chat';
 import Control from '@/views/sessionPage/control';
 import Editor from '@/views/sessionPage/editor';
+import Headline from '@/views/sessionPage/headline';
 import People from '@/views/sessionPage/people';
 
 import { socketMixin } from '@/services/socket';
@@ -61,6 +66,7 @@ export default {
     Chat,
     Control,
     Editor,
+    Headline,
     People,
   },
   mixins: [socketMixin],
@@ -147,7 +153,7 @@ export default {
 .back-button-wrapper {
   cursor: pointer;
   position: absolute;
-  left: 15px;
+  left: 20px;
   height: 40px;
   top: 15px;
   width: 40px;
@@ -160,15 +166,19 @@ export default {
   width: 50px;
 }
 
+.headline {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+}
+
 .left {
   padding-right: 25px;
-  min-width: 492px;
   width: 60%;
 }
 
 .right {
   padding-left: 25px;
-  min-width: 328px;
   width: 40%;
 }
 
@@ -191,7 +201,8 @@ export default {
     padding: 15px 20px;
   }
 
-  .back-button-wrapper {
+  .back-button-wrapper,
+  .headline {
     display: none;
   }
 }

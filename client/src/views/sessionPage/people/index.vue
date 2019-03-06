@@ -132,7 +132,6 @@ export default {
       if (status === 'waiting' && this.people.length === this.participants) {
         this.socket.sendEvent('control:onWait');
       }
-
       this.isOwner = isOwner;
       this.participants = participants;
       this.people = this.sortByOwner(people);
