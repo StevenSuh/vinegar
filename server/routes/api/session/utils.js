@@ -7,7 +7,7 @@ const {
 
 const crypto = require('crypto');
 
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 
 const colorLetters = '0123456789ABCDEF';
 

@@ -1,5 +1,4 @@
-const dbClient = require('db')();
-const Sessions = require('db/sessions/model')(dbClient);
+const Sessions = require('db/sessions/model');
 
 const {
   addCallback,

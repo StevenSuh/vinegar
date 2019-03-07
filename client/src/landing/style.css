@@ -37,6 +37,10 @@
   font-weight: 500;
 }
 
+.about-button {
+  margin-right: 20px;
+}
+
 .loader-absolute {
   position: absolute;
   left: 50%;
@@ -137,6 +141,7 @@
 .team-start {
   display: block;
   margin: auto;
+  text-align: center;
 }
 
 .team-header {

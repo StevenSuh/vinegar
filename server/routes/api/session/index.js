@@ -1,9 +1,8 @@
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 
-const dbClient = require('db')();
-const Chats = require('db/chats/model')(dbClient);
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Chats = require('db/chats/model');
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
 const {
   requireUserAuth,
@@ -91,7 +90,7 @@ module.exports = (app) => {
         ownerId: req.userId,
         schoolName,
         sessionName,
-        status: Sessions.STATUS_INITIAL,
+        status: Sessions.STATUS_CREATED,
       };
 
       if (password) {

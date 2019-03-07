@@ -1,9 +1,8 @@
 const schedule = require('node-schedule');
 
-const dbClient = require('db')();
-const Intervals = require('db/intervals/model')(dbClient);
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Intervals = require('db/intervals/model');
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
 const { getRoundRobinId, redisClient } = require('services/redis');
 
@@ -72,46 +71,6 @@ class Interval {
     });
   }
 
-  async setupExisting() {
-    if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED) {
-      this.endInterval();
-      return;
-    }
-
-    await redisClient.setAsync(redisClient.robinQuery(
-      { sessionId: this.sessionId },
-      await getRoundRobinId(),
-    ));
-
-    this.intervals = await this.session.getIntervals();
-    this.intervals.sort((a, b) =>
-      new Date(b.get(Intervals.START_TIME)) - new Date(a.get(Intervals.START_TIME)));
-
-    const currentIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
-    const currentInterval = this.intervals.findIndex(interval =>
-      currentIntervalId === interval.get(Intervals.ID));
-    this.current = currentInterval;
-
-    const jobs = [];
-
-    for (let i = currentInterval + 1; i < this.intervals.length; i += 1) {
-      const startTime = this.intervals[i].get(Intervals.START_TIME);
-      jobs.push(schedule.scheduleJob(
-        new Date(startTime),
-        () => this.startInterval(),
-      ));
-    }
-
-    jobs.push(schedule.scheduleJob(
-      new Date(this.endTime),
-      () => this.endInterval(),
-    ));
-
-    this.jobs = jobs;
-
-    this.startInterval(true);
-  }
-
   async setupInterval() {
     this.current = -1;
 
@@ -169,6 +128,46 @@ class Interval {
     this.startInterval(true);
   }
 
+  async setupExisting() {
+    if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED) {
+      this.endInterval();
+      return;
+    }
+
+    await redisClient.setAsync(redisClient.robinQuery(
+      { sessionId: this.sessionId },
+      await getRoundRobinId(),
+    ));
+
+    this.intervals = await this.session.getIntervals();
+    this.intervals.sort((a, b) =>
+      new Date(b.get(Intervals.START_TIME)) - new Date(a.get(Intervals.START_TIME)));
+
+    const currentIntervalId = this.session.get(Sessions.CURRENT_INTERVAL_ID);
+    const currentInterval = this.intervals.findIndex(interval =>
+      currentIntervalId === interval.get(Intervals.ID));
+    this.current = currentInterval;
+
+    const jobs = [];
+
+    for (let i = currentInterval + 1; i < this.intervals.length; i += 1) {
+      const startTime = this.intervals[i].get(Intervals.START_TIME);
+      jobs.push(schedule.scheduleJob(
+        new Date(startTime),
+        () => this.startInterval(),
+      ));
+    }
+
+    jobs.push(schedule.scheduleJob(
+      new Date(this.endTime),
+      () => this.endInterval(),
+    ));
+
+    this.jobs = jobs;
+
+    this.startInterval(true);
+  }
+
   async startInterval(initial) {
     this.current += 1;
 
@@ -222,14 +221,6 @@ class Interval {
     this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
   }
 
-  /**
-   * Reassigns the user's interval if:
-   *  - session is active
-   *  - user has an interval
-   *  - user is inactive (has left the session)
-   *  - user's interval is about to end
-   * @param {string} userId - id of user in session
-   */
   async reassignInterval(userId) {
     const targetIndex = this.intervals.findIndex(interval =>
       userId === interval.get(Intervals.USER_ID));

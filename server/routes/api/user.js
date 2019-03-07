@@ -1,5 +1,4 @@
-const dbClient = require('db')();
-const Users = require('db/users/model')(dbClient);
+const Users = require('db/users/model');
 
 const { requireSessionAuth, requireUserAuth } = require('routes/api/middleware');
 

@@ -1,6 +1,6 @@
 const redis = require('redis');
 
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 
 const { ROBIN_ROTATE, ROBIN_TOTAL } = require('defs');
 const { INTERVAL_CREATE, INTERVAL_REASSIGN } = require('routes/socket/defs');

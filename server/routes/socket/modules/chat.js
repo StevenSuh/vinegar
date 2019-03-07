@@ -1,7 +1,6 @@
-const dbClient = require('db')();
-const Chats = require('db/chats/model')(dbClient);
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Chats = require('db/chats/model');
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
 const { getChats } = require('routes/socket/utils');
 

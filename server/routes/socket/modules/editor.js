@@ -1,8 +1,5 @@
-const { CONTENT_UPDATE_DUR } = require('defs');
-
-const dbClient = require('db')();
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
 const {
   EDITOR_ENTER,
@@ -13,6 +10,7 @@ const {
   SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
+const { CONTENT_UPDATE_DUR } = require('defs');
 const { deflate, inflate } = require('utils');
 
 module.exports = (_wss, ws, session, user) => {

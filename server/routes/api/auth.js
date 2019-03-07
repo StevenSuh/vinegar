@@ -1,4 +1,4 @@
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 
 const { createUser, getNamesByReferer } = require('routes/api/middleware');
 

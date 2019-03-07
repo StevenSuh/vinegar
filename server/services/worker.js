@@ -1,6 +1,6 @@
 const redis = require('redis');
 
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 
 const { WORKER_ROTATE, WORKER_TOTAL } = require('defs');
 const { PDF_CREATE } = require('routes/socket/defs');

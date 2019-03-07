@@ -34,8 +34,8 @@
                 alt="step 2"
               />
               <p class="step-msg">
-                Only begin taking notes if it's your turn! You will also be notified
-                through email and/or phone.
+                Only begin taking notes if it's your turn! You will also be
+                notified through email and/or phone.
               </p>
             </div>
             <div class="step-wrapper">
@@ -77,6 +77,10 @@ export default {
   components: {
     Modal,
   },
+  mixins: [socketMixin],
+  props: {
+    socket: [Object, WebSocket],
+  },
   data() {
     return {
       isOpen: false,
@@ -88,10 +92,6 @@ export default {
       StepTwoImg,
       StepThreeImg,
     };
-  },
-  mixins: [socketMixin],
-  props: {
-    socket: [Object, WebSocket],
   },
   methods: {
     onClickHelp() {
@@ -106,7 +106,7 @@ export default {
       this.isOwner = isOwner;
     },
   },
-}
+};
 </script>
 
 <style scoped>

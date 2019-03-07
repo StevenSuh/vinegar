@@ -3,11 +3,10 @@
 const WebSocket = require('ws');
 const { WsWrapper, WssWrapper } = require('routes/socket/wrapper');
 
-const dbClient = require('db')();
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 
 const initSocketEditor = require('./modules/editor');
 const initSocketChat = require('./modules/chat');
@@ -31,7 +30,6 @@ const {
 WebSocket.Server.prototype.shouldHandle = shouldHandle;
 
 const startSocket = async (wss, ws, session, user) => {
-  const startTime = Date.now();
   await user.update({ active: true });
 
   ws.join(`session-${session.get(Sessions.ID)}`);
@@ -44,9 +42,6 @@ const startSocket = async (wss, ws, session, user) => {
   initSocketEditor(wss, ws, session, user);
   await initSocketControl(wss, ws, session, user);
   await initSocketPeople(wss, ws, session, user);
-
-  const diffTime = Date.now() - startTime;
-  console.log('SOCKET /socket:onEnter took:', `${diffTime}ms`);
 
   ws.sendEvent(SOCKET_ENTER);
 };

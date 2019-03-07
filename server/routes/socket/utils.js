@@ -1,9 +1,8 @@
 const cookie = require('cookie');
 const pathToRegexp = require('path-to-regexp');
 
-const dbClient = require('db')();
-const Chats = require('db/chats/model')(dbClient);
-const Sessions = require('db/sessions/model')(dbClient);
+const Chats = require('db/chats/model');
+const Sessions = require('db/sessions/model');
 
 const { tryCatch } = require('utils');
 

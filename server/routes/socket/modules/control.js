@@ -6,10 +6,9 @@ const {
 
 const { createPdf } = require('services/worker');
 
-const dbClient = require('db')();
-const Intervals = require('db/intervals/model')(dbClient);
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Intervals = require('db/intervals/model');
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
 const {
   CONTROL_DOWNLOAD,
@@ -59,7 +58,7 @@ module.exports = async (wss, ws, session, user) => {
 
   ws.onEvent(CONTROL_INIT, async ({ participants }) => {
     const status = session.get(Sessions.STATUS);
-    if (status !== Sessions.STATUS_INITIAL) {
+    if (status !== Sessions.STATUS_CREATED) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
       return ws.close();
     }

@@ -9,7 +9,7 @@
             </h2>
             <div class="nav-items">
               <ButtonComponent
-                class="marginRight small hover"
+                class="about-button hover"
                 type="minimal"
               >
                 <p @click="onClickAbout">

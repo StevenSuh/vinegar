@@ -205,12 +205,9 @@ export default {
 };
 </script>
 
-<style src="quill/dist/quill.core.css">
-</style>
-<style src="quill/dist/quill.snow.css">
-</style>
-<style src="quill-cursors/dist/quill-cursors.css">
-</style>
+<style src="quill/dist/quill.core.css"></style>
+<style src="quill/dist/quill.snow.css"></style>
+<style src="quill-cursors/dist/quill-cursors.css"></style>
 <style src="./style.css">
 /* should NOT be scoped */
 </style>

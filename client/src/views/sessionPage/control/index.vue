@@ -10,7 +10,7 @@
       :interval-end-time="intervalEndTime"
     />
     <Initial
-      v-else-if="status === 'initial'"
+      v-else-if="status === 'created'"
       :duration="duration"
       :is-owner="isOwner"
       :socket="socket"

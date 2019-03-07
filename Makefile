@@ -5,11 +5,18 @@ test:
 dev:
 	cd client && yarn serve >/dev/null & cd server && yarn serve >/dev/null
 install:
-	cd client && yarn && cd ../server && yarn && cd ../interval && yarn
+	cd client && yarn && \
+	cd ../server && yarn && \
+	cd ../interval && yarn && \
+	cd ../worker && yarn
 prettier:
 	prettier --write **/*.js **/*.vue
 lint:
-	make prettier && cd client && yarn lint --fix && cd ../server && yarn lint --fix && cd ../interval && yarn lint --fix && cd ../worker && yarn lint --fix
+	make prettier && \
+	cd client && yarn lint --fix && \
+	cd ../server && yarn lint --fix && \
+	cd ../interval && yarn lint --fix && \
+	cd ../worker && yarn lint --fix
 
 
 serve:
@@ -25,13 +32,29 @@ delete-interval:
 delete-worker:
 	docker rm $(shell docker ps -aqf "name=worker")
 clear-node-modules:
-	cd client && rm -rf node_modules && cd ../server && rm -rf node_modules && cd ../interval && rm -rf node_modules && cd ../worker && rm -rf node_modules
+	cd client && rm -rf node_modules && \
+	cd ../server && rm -rf node_modules && \
+	cd ../interval && rm -rf node_modules && \
+	cd ../worker && rm -rf node_modules
 serve-no-cache:
-	make delete-client && make delete-api && make delete-interval && make delete-worker && docker-compose build --no-cache && make serve
+	make delete-client && \
+	make delete-api && \
+	make delete-interval && \
+	make delete-worker && \
+	docker-compose build --no-cache && make serve
 serve-reset:
-	docker system prune && docker-compose down && docker-compose rm && docker-compose pull && docker-compose build --no-cache && docker-compose up
+	docker system prune && \
+	docker-compose down && \
+	docker-compose rm && \
+	docker-compose pull && \
+	docker-compose build --no-cache && \
+	docker-compose up
 
-
+update-pkgs:
+	docker exec -it $(shell docker ps -qf "name=client") yarn && \
+	docker exec -it $(shell docker ps -qf "name=api") yarn && \
+	docker exec -it $(shell docker ps -qf "name=interval") yarn && \
+	docker exec -it $(shell docker ps -qf "name=worker") yarn
 start-redis:
 	docker container start $(shell docker ps -aqf "name=redis")
 stop-redis:
@@ -51,4 +74,5 @@ reset-db:
 
 
 setup-test:
-	docker exec -it $(shell docker ps -qf "name=postgres") sh && psql -d postgres -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'test_postgres'" || grep -q 1 || psql -d postgres -U postgres -c "CREATE DATABASE test_postgres"
+	docker exec -it $(shell docker ps -qf "name=postgres") sh && \
+	psql -d postgres -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'test_postgres'" || grep -q 1 || psql -d postgres -U postgres -c "CREATE DATABASE test_postgres"

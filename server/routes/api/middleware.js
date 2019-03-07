@@ -1,10 +1,9 @@
-const redisClient = require('services/redis')();
+const redisClient = require('services/redis');
 const pathToRegexp = require('path-to-regexp');
 const uuidv4 = require('uuid/v4');
 
-const dbClient = require('db')();
-const Sessions = require('db/sessions/model')(dbClient);
-const Users = require('db/users/model')(dbClient);
+const Sessions = require('db/sessions/model');
+const Users = require('db/users/model');
 
 const sessionRegex = pathToRegexp('/app/session/:school/:session');
 

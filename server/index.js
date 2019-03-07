@@ -16,9 +16,9 @@ app.use(cookieParser());
 app.use(enableResBody);
 app.use(customMorgan());
 
-require('./routes/api')(app);
-require('db')();
-require('./services/redis')();
+require('routes/api')(app);
+require('db');
+require('services/redis');
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(`${__dirname}client/public`));
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === 'production') {
 app.disable('etag');
 
 const httpServer = new http.Server();
-require('./routes/socket')(httpServer);
+require('routes/socket')(httpServer);
 
 httpServer.listen(WS_PORT);
 app.listen(PORT);
