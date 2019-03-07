@@ -13,6 +13,7 @@ module.exports = {
     'vue/no-v-html': 'off',
     'vue/html-self-closing': 'off',
     'func-names': 'off',
+    'new-cap': 'off',
   }
 };
 

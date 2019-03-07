@@ -75,9 +75,9 @@ export default {
         withOffset ? this.searchResult.length : 0,
       );
       this.hasMore = hasMore;
-      this.searchResult = withOffset ?
-        this.searchResult.concat(result) :
-        result;
+      this.searchResult = withOffset
+        ? this.searchResult.concat(result)
+        : result;
       this.searched = true;
     },
   },

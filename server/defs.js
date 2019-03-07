@@ -10,6 +10,4 @@ module.exports = {
 
   ROBIN_ROTATE: 'robin:rotate',
   ROBIN_TOTAL: 'robin:total',
-  WORKER_ROTATE: 'worker:rotate',
-  WORKER_TOTAL: 'worker:total',
 };

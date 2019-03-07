@@ -124,6 +124,27 @@ textarea:focus {
   opacity: 0;
 }
 
+.upDown-enter-active,
+.upDown-leave-active {
+  transition: opacity var(--transition-duration) var(--transition-curve),
+    transform var(--transition-duration) var(--transition-curve);
+  will-change: opacity, transform;
+}
+
+.upDown-enter {
+  transform: translateY(50%);
+}
+
+.upDown-leave-to {
+  transform: translateY(-50%);
+}
+
+.upDown-enter,
+.upDown-leave-to {
+  opacity: 0;
+}
+
+
 /* reusable global classes */
 .container {
   margin: auto;

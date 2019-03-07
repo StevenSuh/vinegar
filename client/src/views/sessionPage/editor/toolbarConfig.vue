@@ -20,18 +20,10 @@
         <option
           value="rubik"
           selected
-        >
-          Rubik
-        </option>
-        <option value="arial">
-          Arial
-        </option>
-        <option value="times">
-          Times
-        </option>
-        <option value="courier">
-          Courier
-        </option>
+        > Rubik </option>
+        <option value="arial"> Arial </option>
+        <option value="times"> Times </option>
+        <option value="courier"> Courier </option>
       </select>
     </span>
     <span class="ql-formats">
@@ -94,9 +86,7 @@
         value="super"
       />
     </span>
-    <span class="ql-formats">
-      <button class="ql-clean" />
-    </span>
+    <span class="ql-formats"> <button class="ql-clean" /> </span>
     <span class="ql-formats">
       <button
         class="ql-undo"

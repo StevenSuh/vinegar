@@ -1,6 +1,12 @@
 <template>
   <div class="headline-wrapper">
-    <p>Headline</p>
+    <transition name="upDown">
+      <p v-if="startTime">
+        <span class="you bold"> You </span>
+        <span>{{ ' are coming at ' }}</span>
+        <span class="bold"> {{ formatDate(startTime) }} </span>
+      </p>
+    </transition>
     <Help
       class="help-button"
       :socket="socket"
@@ -18,6 +24,29 @@ export default {
   props: {
     socket: [Object, WebSocket],
   },
+  data() {
+    return {
+      startTime: null,
+    };
+  },
+  methods: {
+    formatDate(value) {
+      const localDate = new Date(value);
+      let hour = localDate.getHours();
+      let minute = localDate.getMinutes();
+
+      minute = minute < 10 ? `0${minute}` : minute;
+      const amPm = hour < 12 ? 'AM' : 'PM';
+      hour = hour % 12 ? hour % 12 : 12;
+
+      return `${hour}:${minute} ${amPm}`;
+    },
+  },
+  sockets: {
+    'interval:onStatus': function({ startTime }) {
+      this.startTime = startTime;
+    },
+  },
 };
 </script>
 
@@ -30,5 +59,13 @@ export default {
 
 .help-button {
   margin-left: 50px;
+}
+
+.you {
+  color: var(--main-font-color);
+}
+
+.bold {
+  font-weight: 500;
 }
 </style>

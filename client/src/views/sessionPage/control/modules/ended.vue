@@ -1,9 +1,7 @@
 <template>
   <div class="wrapper">
     <p class="msg">
-      {{ 'Session has ' }} <span class="bold">
-        {{ 'ended.' }}
-      </span>
+      {{ 'Session has ' }} <span class="bold"> {{ 'ended.' }} </span>
     </p>
     <download-button :socket="socket" />
   </div>

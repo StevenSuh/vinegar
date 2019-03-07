@@ -33,9 +33,7 @@
       <invite-button />
     </form>
     <div class="initial-text">
-      <span class="bold">
-        Session ends in:
-      </span>
+      <span class="bold"> Session ends in: </span>
       {{ formatDuration(duration) }}
     </div>
   </div>

@@ -9,7 +9,6 @@ module.exports = {
   CHAT_SEND: 'chat:onChatSend',
   CHAT_SCROLL: 'chat:onChatScroll',
 
-  CONTROL_DOWNLOAD: 'control:onDownload',
   CONTROL_ENTER: 'control:onEnter',
   CONTROL_INIT: 'control:onInit',
   CONTROL_INTERVAL: 'control:onInterval',
@@ -43,7 +42,6 @@ module.exports = {
 
     CHAT_SEND: 'chat:onChatSend',
 
-    CONTROL_DOWNLOAD: 'control:onDownload',
     CONTROL_INTERVAL: 'control:onInterval',
     CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
 

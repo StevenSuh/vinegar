@@ -9,9 +9,7 @@
         <span v-html="AlertCircleIcon" />
         <p class="delete-msg marginLeft small">
           {{ 'Are you sure you want to remove ' }}
-          <span class="bold inline-block">
-            {{ name }}
-          </span>{{ '?' }}
+          <span class="bold inline-block"> {{ name }} </span>{{ '?' }}
         </p>
       </div>
       <div class="button-wrapper marginTop small">

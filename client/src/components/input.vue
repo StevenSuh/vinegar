@@ -4,6 +4,7 @@
       :id="id"
       ref="input"
       class="input"
+      :disabled="disabled"
       :autocomplete="autocomplete"
       :class="{
         error: errorMessage,
@@ -22,9 +23,7 @@
       v-if="label"
       class="label"
       :for="id"
-    >
-      {{ label }}
-    </label>
+    > {{ label }} </label>
     <p
       v-if="errorMessage"
       class="error-message"
@@ -52,6 +51,10 @@ export default {
     autosearch: {
       type: String,
       default: 'off',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     errorMessage: String,
     id: {

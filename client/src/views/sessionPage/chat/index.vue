@@ -54,9 +54,7 @@
           class="msg-wrapper"
         >
           <p class="msg msg-system">
-            <span class="msg-name">
-              {{ item.name }}
-            </span> {{ item.msg }}
+            <span class="msg-name"> {{ item.name }} </span> {{ item.msg }}
           </p>
           <p class="msg-date">
             {{ item.date }}
@@ -179,7 +177,7 @@ export default {
 }
 
 .msg-box::placeholder {
-  color: #e5e5e5;
+  color: var(--gray-font-color);
   font-weight: 300;
 }
 

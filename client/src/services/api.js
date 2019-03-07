@@ -53,14 +53,6 @@ export const getUserSessionInfo = apiTemplate(
   },
 );
 
-export const getSessionInfo = apiTemplate(
-  '/api/session',
-  async (endpoint) => {
-    const res = await axios.get(endpoint);
-    return res.data;
-  },
-);
-
 export const getSearchSessionResults = apiTemplate(
   '/api/session/search',
   async (endpoint, query, offset) => {
@@ -89,6 +81,14 @@ export const enterSession = apiTemplate(
   '/api/session/enter',
   async (endpoint, data) => {
     const res = await axios.post(endpoint, data);
+    return res.data;
+  },
+);
+
+export const submitFeedback = apiTemplate(
+  '/api/session/feedback',
+  async (endpoint, feedback) => {
+    const res = await axios.post(endpoint, { feedback });
     return res.data;
   },
 );

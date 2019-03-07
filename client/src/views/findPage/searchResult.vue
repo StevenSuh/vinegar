@@ -71,6 +71,13 @@ export default {
       PasswordIcon,
     };
   },
+  watch: {
+    data(value, oldValue) {
+      if (value !== oldValue || value.length !== oldValue.length) {
+        this.searching = false;
+      }
+    },
+  },
   created() {
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('click', this.onBlur);
@@ -109,11 +116,7 @@ export default {
       }
     },
     onScroll(e) {
-      const {
-        clientHeight,
-        scrollHeight,
-        scrollTop,
-      } = e.target;
+      const { clientHeight, scrollHeight, scrollTop } = e.target;
       const currentScroll = clientHeight + scrollTop;
 
       if (
@@ -123,13 +126,6 @@ export default {
       ) {
         this.searching = true;
         this.onSearch(null, true);
-      }
-    },
-  },
-  watch: {
-    data(value, oldValue) {
-      if (value !== oldValue || value.length !== oldValue.length) {
-        this.searching = false;
       }
     },
   },

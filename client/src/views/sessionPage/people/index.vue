@@ -35,9 +35,7 @@
       class="waiting-msg marginBottom"
     >
       {{ 'Waiting for ' }}
-      <span class="bold">
-        {{ participants - people.length }}
-      </span>
+      <span class="bold"> {{ participants - people.length }} </span>
       {{ ' more people to begin session...' }}
     </p>
     <delete-modal

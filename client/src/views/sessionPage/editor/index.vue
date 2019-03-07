@@ -31,6 +31,7 @@
       </div>
     </div>
     <div
+      id="editor"
       ref="editor"
       @click="onFocusEditor"
     />

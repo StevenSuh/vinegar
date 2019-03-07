@@ -25,10 +25,6 @@ const {
 const nameRegex = new RegExp(`^[${ALLOWED_CHARACTERS.join('')}]+$`);
 
 module.exports = (app) => {
-  app.get('/api/session', async (req, res) => {
-    res.json({});
-  });
-
   app.get(
     '/api/session/search',
     requireUserAuth,
@@ -62,7 +58,7 @@ module.exports = (app) => {
       }));
 
       return res.json({
-        result: result.slice(0, -1),
+        result: result.length === 6 ? result.slice(0, -1) : result,
         hasMore: result.length === 6,
       });
     },
@@ -230,6 +226,18 @@ module.exports = (app) => {
       }
 
       return res.json({ validName: true });
+    },
+  );
+
+  app.post(
+    '/api/session/feedback',
+    requireUserAuth,
+    requireSessionAuth,
+    async (req, res) => {
+      const { feedback } = req.body;
+      // eslint-disable-next-line no-console
+      console.log(feedback);
+      return res.end();
     },
   );
 };

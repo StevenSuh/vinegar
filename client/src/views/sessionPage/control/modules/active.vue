@@ -5,9 +5,7 @@
         v-if="intervalUser"
         class="interval-msg"
       >
-        <span class="interval-user">
-          {{ intervalUser }}
-        </span>
+        <span class="interval-user"> {{ intervalUser }} </span>
         {{ ' is currently typing...' }}
       </p>
       <!--
@@ -25,9 +23,7 @@
         <invite-button />
       </div>
       <div class="end-text">
-        <span class="bold">
-          Session ends in:
-        </span>
+        <span class="bold"> Session ends in: </span>
         {{ formatDuration(remaining) }}
       </div>
     </div>

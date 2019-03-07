@@ -4,14 +4,11 @@ const {
   reassignInterval,
 } = require('services/interval');
 
-const { createPdf } = require('services/worker');
-
 const Intervals = require('db/intervals/model');
 const Sessions = require('db/sessions/model');
 const Users = require('db/users/model');
 
 const {
-  CONTROL_DOWNLOAD,
   CONTROL_ENTER,
   CONTROL_INIT,
   CONTROL_INTERVAL,
@@ -50,10 +47,6 @@ module.exports = async (wss, ws, session, user) => {
     isOwner: session.get(Sessions.OWNER_ID) === userId,
     participants: session.get(Sessions.PARTICIPANTS),
     status: session.get(Sessions.STATUS),
-  });
-
-  ws.onEvent(CONTROL_DOWNLOAD, async ({ style }) => {
-    createPdf(sessionId, style, userId);
   });
 
   ws.onEvent(CONTROL_INIT, async ({ participants }) => {

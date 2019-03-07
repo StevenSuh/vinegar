@@ -1,10 +1,5 @@
 Sort of a wish list
 
-immediate:
-- Make download function work
-- Finish adding interval status and help modal UI
-- Make redis a mediator between client and db
-
 engineering:
 - Unit tests
   - Most likely Jest

@@ -24,11 +24,13 @@ services:
     build:
       dockerfile: ./server/Dockerfile.dev
       context: ./
+      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     volumes:
       - /app/server/node_modules
       - ./server:/app/server
     environment:
       # get these from owner
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-credentials.json
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PASSWORD_SALT=
@@ -54,25 +56,6 @@ services:
     depends_on:
       - api
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_HOST=postgres
-      - POSTGRES_DATABASE_NAME=postgres
-      - POSTGRES_PASSWORD=
-      - POSTGRES_PORT=5432
-  worker:
-    build:
-      dockerfile: ./worker/Dockerfile.dev
-      content: ./
-    volumes:
-      - /app/worker/node_modules
-      - ./worker:/app/worker
-      - ./vinegar-storage.json:/root/.config/vinegar-storage.json
-    depends_on:
-      - api
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-storage.json
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - POSTGRES_USERNAME=postgres

@@ -13,6 +13,7 @@
           class="back-button"
           :src="backImage"
           alt="back button"
+          @click="onClickBack"
         />
       </router-link>
       <Headline
@@ -21,12 +22,8 @@
       />
       <div class="left">
         <h1 class="name-wrapper">
-          <span class="school-name">
-            {{ school }}
-          </span> {{ ' / ' }}
-          <span class="session-name">
-            {{ session }}
-          </span>
+          <span class="school-name"> {{ school }} </span> {{ ' / ' }}
+          <span class="session-name"> {{ session }} </span>
         </h1>
         <div class="editor-wrapper">
           <Editor :socket="socket" />
@@ -35,7 +32,7 @@
       </div>
       <div class="right">
         <People
-          class="people-wrapper"
+          class="people-wrapper paddingTop small"
           :socket="socket"
         />
         <Chat
@@ -93,6 +90,11 @@ export default {
   },
   mounted() {
     this.show = true;
+  },
+  methods: {
+    onClickBack() {
+      this.socket.closeSocket();
+    },
   },
   sockets: {
     error(err) {

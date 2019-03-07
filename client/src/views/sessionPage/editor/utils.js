@@ -37,6 +37,7 @@ export function setupQuill() {
 }
 
 export function initEditor() {
+  this.editor.enable(false);
   this.editor.format('font', 'rubik');
   this.editor.format('size', '16px');
 
@@ -44,9 +45,7 @@ export function initEditor() {
   this.editor.on('text-change', this.textUpdate);
 
   document.getElementsByClassName('ql-extend')[0].innerHTML = '...';
-
   customizeTooltip.call(this);
-
   setTimeout(() => this.onResizeCollapse(), 0);
 }
 
