@@ -7,7 +7,7 @@
         class="person"
       >
         <span
-          v-if="!person.isOwner && isInterval"
+          v-if="!person.isOwner && person.id === intervalUserId"
           class="person-icon interval"
           v-html="IntervalIcon"
         />
@@ -69,7 +69,7 @@ export default {
     return {
       // state
       isOwner: null,
-      isInterval: null,
+      intervalUserId: null,
       participants: null,
       people: [],
       status: null,
@@ -125,6 +125,9 @@ export default {
     'control:onUpdateStatus': function({ participants, status }) {
       this.participants = participants;
       this.status = status;
+    },
+    'interval:onUpdate': function({ intervalUserId }) {
+      this.intervalUserId = intervalUserId;
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {
       if (status === 'waiting' && this.people.length === this.participants) {

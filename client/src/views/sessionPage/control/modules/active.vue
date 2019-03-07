@@ -2,10 +2,10 @@
   <div class="wrapper paddingTop small">
     <div class="left">
       <p
-        v-if="intervalUser"
+        v-if="intervalUserName"
         class="interval-msg"
       >
-        <span class="interval-user"> {{ intervalUser }} </span>
+        <span class="interval-user"> {{ intervalUserName }} </span>
         {{ ' is currently typing...' }}
       </p>
       <!--
@@ -43,7 +43,7 @@ export default {
   },
   props: {
     endTime: Number,
-    intervalUser: String,
+    intervalUserName: String,
     isOwner: Boolean,
     socket: [Object, WebSocket],
   },

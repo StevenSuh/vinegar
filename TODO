@@ -7,13 +7,8 @@ engineering:
 - Separate socket out of api to a different service/container
 - Note that Sequelize.INTEGER hits a limit at around 2 billion. Consider using BIGINT data type for Id primary key.
 - Look into adding logging for deployment. So far, I've found Stackdriver logging for GCP.
-- Rate limiting through express-rate-limit (needs manual limiting for socket connections)
 - Normalizing data schemas (requests, sockets, db, redis) to simpler convention (specifically, dates have been hard to deal with - time in ms vs. date string?)
 - Use redis as R/W cache in between interacting with DB for socket (optimization task, to be housed in /shared/db)
 
 product:
-- If kicked out 3 times, block the user's ip address from session
 - Separate join & create routes out of '/app/find'
-- Add writing icon on intervalUser
-- Tooltip on owner icon and writing icon
-- Maybe play around with github's issues tracker? (rather than tracking through this file)

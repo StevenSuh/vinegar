@@ -1,6 +1,8 @@
 const Sessions = require('db/sessions/model');
 const Users = require('db/users/model');
 
+const redisClient = require('services/redis');
+
 const {
   PEOPLE_DELETE,
   PEOPLE_ENTER,
@@ -35,6 +37,7 @@ module.exports = async (_wss, ws, session, user) => {
   ws.onEvent(PEOPLE_DELETE, ({ id }) => {
     if (isOwner) {
       const targetUser = `user-${id}`;
+      redisClient.incrAsync(redisClient.sessionBlock({ sessionId, userId: id }));
       ws.to(targetUser).sendServer(SOCKET_CLOSE);
     }
   });

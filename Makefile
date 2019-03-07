@@ -5,8 +5,8 @@ test:
 dev:
 	cd client && yarn serve >/dev/null & cd server && yarn serve >/dev/null
 install:
-	cd client && yarn && \
-	cd ../server && yarn && \
+	cd client && yarn & \
+	cd ../server && yarn & \
 	cd ../interval && yarn
 prettier:
 	prettier --write **/*.js **/*.vue
@@ -37,13 +37,15 @@ serve-no-cache:
 	make delete-interval && \
 	docker-compose build --no-cache && make serve
 serve-reset:
-	docker system prune && \
-	docker-compose down && \
-	docker-compose rm && \
-	docker-compose pull && \
+	make reset; \
 	docker-compose build --no-cache && \
 	docker-compose up
 
+reset:
+	docker stop `docker ps -qa`; \
+	docker rm `docker ps -qa`; \
+	docker rmi -f `docker images -qa`; \
+	docker network rm `docker network ls -q`;
 update:
 	docker exec -it $(shell docker ps -qf "name=client") sh -c 'rm -f yarn.lock && yarn' && \
 	docker exec -it $(shell docker ps -qf "name=api") sh -c 'rm -f yarn.lock && yarn' && \

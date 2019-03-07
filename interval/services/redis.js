@@ -26,6 +26,8 @@ const redisClient = bluebird.promisifyAll(
 redisClient.ROBIN_MANAGER = 'robin-manager';
 redisClient.SESSION_SCHOOL = 'schoolName';
 redisClient.SESSION_NAME = 'sessionName';
+redisClient.SESSION_BLOCK = 'sessionBlock';
+redisClient.USER_ID = 'userId';
 
 redisClient.robinQuery = ({ sessionId }, value) => {
   if (value) {
@@ -47,6 +49,8 @@ redisClient.sessionName = ({ cookieId, sessionId }, value) => {
   }
   return query;
 };
+redisClient.sessionBlock = ({ sessionId, userId }) =>
+  [`${redisClient.SESSION_BLOCK}-${sessionId}`, `${redisClient.USER_ID}-${userId}`];
 redisClient.intervalQuery = ({ sessionId }, value, expiration) =>
   [`${redisClient.INTERVAL}-${sessionId}`, value, 'PX', expiration];
 

@@ -23,7 +23,7 @@
     <Active
       v-else-if="status === 'active'"
       :end-time="endTime"
-      :interval-user="intervalUser"
+      :interval-username="intervalUserName"
       :is-owner="isOwner"
       :socket="socket"
     />
@@ -55,7 +55,7 @@ export default {
     return {
       duration: null,
       endTime: null,
-      intervalUser: null,
+      intervalUserName: null,
       isOwner: null,
       participants: null,
       status: null,
@@ -69,14 +69,14 @@ export default {
     'control:onEnter': function({
       duration,
       endTime,
-      intervalUser,
+      intervalUserName,
       isOwner,
       participants,
       status,
     }) {
       this.duration = duration;
       this.endTime = new Date(endTime).getTime();
-      this.intervalUser = intervalUser;
+      this.intervalUserName = intervalUserName;
       this.isOwner = isOwner;
       this.participants = participants;
       this.status = status;
@@ -92,8 +92,8 @@ export default {
       this.participants = participants;
       this.status = status;
     },
-    'interval:onUpdate': function({ intervalUser }) {
-      this.intervalUser = intervalUser;
+    'interval:onUpdate': function({ intervalUserName }) {
+      this.intervalUserName = intervalUserName;
     },
   },
 };

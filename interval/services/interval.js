@@ -178,7 +178,8 @@ class Interval {
     this.notifyUser(currentInterval, true);
 
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
-      intervalUser: currentInterval.get(Intervals.USERNAME),
+      intervalUserName: currentInterval.get(Intervals.USERNAME),
+      intervalUserId: currentInterval.get(Intervals.ID),
     });
 
     if (this.current > 0) {
@@ -214,7 +215,8 @@ class Interval {
     const robinQuery = redisClient.robinQuery({ sessionId: this.sessionId });
     const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
     const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
-    redisClient.delAsync(schoolQuery[0], sessionQuery[0], robinQuery);
+    const blockQuery = redisClient.sessionBlock({ sessionId: this.sessionId });
+    redisClient.delAsync(schoolQuery[0], sessionQuery[0], blockQuery[0], robinQuery);
 
     delete this.sessions[this.sessionId];
     this.session.destroy();
