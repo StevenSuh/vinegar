@@ -63,8 +63,8 @@ export const getSessionInfo = apiTemplate(
 
 export const getSearchSessionResults = apiTemplate(
   '/api/session/search',
-  async (endpoint, query) => {
-    const res = await axios.get(`${endpoint}?query=${query}`);
+  async (endpoint, query, offset) => {
+    const res = await axios.get(`${endpoint}?query=${query}&offset=${offset}`);
     return res.data;
   },
 );

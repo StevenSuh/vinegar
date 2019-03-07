@@ -44,7 +44,6 @@ const Sessions = dbClient.define('sessions', {
   },
   status: {
     allowNull: false,
-    default: STATUS[0],
     type: Sequelize.STRING,
   },
 }, {

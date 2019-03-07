@@ -1,5 +1,8 @@
 <template>
-  <div class="result-wrapper">
+  <div
+    class="result-wrapper"
+    @scroll="onScroll"
+  >
     <div
       v-for="(item, index) in data"
       :key="index"
@@ -51,11 +54,13 @@ export default {
       type: Array,
       default: () => [],
     },
+    hasMore: Boolean,
     query: {
       type: String,
       default: '',
     },
     inputId: String,
+    onSearch: Function,
   },
   data() {
     return {
@@ -101,6 +106,30 @@ export default {
             this.data.length - 1,
           );
         }
+      }
+    },
+    onScroll(e) {
+      const {
+        clientHeight,
+        scrollHeight,
+        scrollTop,
+      } = e.target;
+      const currentScroll = clientHeight + scrollTop;
+
+      if (
+        this.hasMore &&
+        !this.searching &&
+        scrollHeight - currentScroll <= 50
+      ) {
+        this.searching = true;
+        this.onSearch(null, true);
+      }
+    },
+  },
+  watch: {
+    data(value, oldValue) {
+      if (value !== oldValue || value.length !== oldValue.length) {
+        this.searching = false;
       }
     },
   },

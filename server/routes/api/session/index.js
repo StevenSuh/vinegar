@@ -34,7 +34,7 @@ module.exports = (app) => {
     requireUserAuth,
     async (req, res) => {
       const {
-        limit = 5,
+        limit = 6,
         offset = 0,
         query = '',
       } = req.query;
@@ -47,7 +47,7 @@ module.exports = (app) => {
         query: searchQuery,
       });
 
-      return res.json(sessions.map(({
+      const result = sessions.map(({
         createdAt,
         password,
         schoolName,
@@ -59,7 +59,12 @@ module.exports = (app) => {
         schoolName,
         sessionName,
         status,
-      })));
+      }));
+
+      return res.json({
+        result: result.slice(0, -1),
+        hasMore: result.length === 6,
+      });
     },
   );
 

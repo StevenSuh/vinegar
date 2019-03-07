@@ -30,8 +30,10 @@
           v-if="searchQuery.length > 0 && searched"
           class="searchResult"
           :data="searchResult"
+          :has-more="hasMore"
           :input-id="searchInputId"
           :query="searchQuery"
+          :on-search="onSearch"
         />
       </transition>
     </div>
@@ -51,6 +53,7 @@ export default {
   data() {
     return {
       // state
+      hasMore: false,
       searched: false,
       searchInputId: 'join-input',
       searchQuery: '',
@@ -66,8 +69,15 @@ export default {
     onInputChange(value) {
       this.searchQuery = value;
     },
-    async onSearch() {
-      this.searchResult = await getSearchSessionResults(this.searchQuery);
+    async onSearch(_, withOffset) {
+      const { result, hasMore } = await getSearchSessionResults(
+        this.searchQuery,
+        withOffset ? this.searchResult.length : 0,
+      );
+      this.hasMore = hasMore;
+      this.searchResult = withOffset ?
+        this.searchResult.concat(result) :
+        result;
       this.searched = true;
     },
   },

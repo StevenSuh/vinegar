@@ -50,11 +50,11 @@ serve-reset:
 	docker-compose build --no-cache && \
 	docker-compose up
 
-update-pkgs:
-	docker exec -it $(shell docker ps -qf "name=client") yarn && \
-	docker exec -it $(shell docker ps -qf "name=api") yarn && \
-	docker exec -it $(shell docker ps -qf "name=interval") yarn && \
-	docker exec -it $(shell docker ps -qf "name=worker") yarn
+update:
+	docker exec -it $(shell docker ps -qf "name=client") sh -c 'rm -f yarn.lock && yarn' && \
+	docker exec -it $(shell docker ps -qf "name=api") sh -c 'rm -f yarn.lock && yarn' && \
+	docker exec -it $(shell docker ps -qf "name=interval") sh -c 'rm -f yarn.lock && yarn' && \
+	docker exec -it $(shell docker ps -qf "name=worker") sh -c 'rm -f yarn.lock && yarn'
 start-redis:
 	docker container start $(shell docker ps -aqf "name=redis")
 stop-redis:
