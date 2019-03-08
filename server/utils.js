@@ -1,6 +1,8 @@
 const morgan = require('morgan');
 const zlib = require('zlib');
 
+const logger = require('services/logger');
+
 module.exports = {
   sleep: timeout => new Promise(resolve => setTimeout(resolve, timeout)),
   tryCatch: (fn, errCb) => {
@@ -10,8 +12,7 @@ module.exports = {
       if (errCb) {
         return errCb();
       }
-      // eslint-disable-next-line no-console
-      console.warn(err);
+      logger.warn(err);
       return null;
     }
   },

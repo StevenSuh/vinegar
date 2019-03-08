@@ -1,3 +1,4 @@
+const logger = require('services/logger');
 const redisClient = require('services/redis');
 
 const Chats = require('db/chats/model');
@@ -235,8 +236,7 @@ module.exports = (app) => {
     requireSessionAuth,
     async (req, res) => {
       const { feedback } = req.body;
-      // eslint-disable-next-line no-console
-      console.log(feedback);
+      logger.info(feedback);
       return res.end();
     },
   );

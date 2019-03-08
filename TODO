@@ -6,7 +6,6 @@ engineering:
 - Clean up a lot of code - create utilities, refactor repeated logic (focus socket, interval)
 - Separate socket out of api to a different service/container
 - Note that Sequelize.INTEGER hits a limit at around 2 billion. Consider using BIGINT data type for Id primary key.
-- Look into adding logging for deployment. So far, I've found Stackdriver logging for GCP.
 - Normalizing data schemas (requests, sockets, db, redis) to simpler convention (specifically, dates have been hard to deal with - time in ms vs. date string?)
 - Use redis as R/W cache in between interacting with DB for socket (optimization task, to be housed in /shared/db)
 

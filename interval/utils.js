@@ -1,3 +1,4 @@
+const logger = require('services/logger');
 const { redisClient } = require('services/redis');
 
 module.exports = {
@@ -9,8 +10,7 @@ module.exports = {
       if (errCb) {
         return errCb();
       }
-      // eslint-disable-next-line no-console
-      console.warn(err);
+      logger.warn(err);
       return null;
     }
   },

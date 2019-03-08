@@ -1,6 +1,8 @@
 const cookie = require('cookie');
 const pathToRegexp = require('path-to-regexp');
 
+const logger = require('services/logger');
+
 const Chats = require('db/chats/model');
 const Sessions = require('db/sessions/model');
 
@@ -14,9 +16,7 @@ const socketLogger = (message, ws) => {
   if (process.env.NODE_ENV !== 'production') {
     const now = new Date().toTimeString().split(' ')[0];
     if (message === 'pong') {
-      // eslint-disable-next-line no-console
-      console.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message} - ${now}`);
-      return;
+      return logger.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message} - ${now}`);
     }
 
     let data = message;
@@ -25,15 +25,9 @@ const socketLogger = (message, ws) => {
     }
 
     if (data) {
-      const { type } = data;
-      delete data.type;
-      delete data.content;
-      delete data.style;
-      // eslint-disable-next-line no-console
-      console.log(`SOCKET /${type} ${ws.sessions.join(', ')} - ${JSON.stringify(data)} - ${now}`);
+      logger.log(`SOCKET /${data.type} ${ws.sessions.join(', ')} - ${JSON.stringify(data)} - ${now}`);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(`SOCKET error - ${message} - ${now}`);
+      logger.log(`SOCKET error - ${message} - ${now}`);
     }
   }
 };

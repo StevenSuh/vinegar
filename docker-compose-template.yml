@@ -24,10 +24,10 @@ services:
     build:
       dockerfile: ./server/Dockerfile.dev
       context: ./
-      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     volumes:
       - /app/server/node_modules
       - ./server:/app/server
+      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     environment:
       # get these from owner
       - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-credentials.json
