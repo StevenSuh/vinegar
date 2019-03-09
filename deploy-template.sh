@@ -1,9 +1,12 @@
 #!/bin/bash
+# add -d or --dev to test on minikube/local kubernetes setup
+
 SHA=$(git rev-parse HEAD)
-SALT= # get from owner
-POSTGRES_PASSWORD= # get from owner
-DOCKER_LOGIN= # get from owner
-DOCKER_PASSWORD= # get from owner
+SALT= # get these from owner
+POSTGRES_PASSWORD= # get these from owner
+DOCKER_LOGIN= # get these from owner
+DOCKER_PASSWORD= # get these from owner
+DEV=
 
 if [ -z "$SHA" ] || \
    [ -z "$SALT" ] || \
@@ -24,10 +27,24 @@ if [ -z "$(which gcloud)" ] || \
   exit 1
 fi
 
-gcloud auth activate-service-account --key-file vinegar-google-credentials.json
-gcloud container clusters get-credentials vinegar-prod
-gcloud config set project vinegar
-gcloud config set compute/zone us-west2-b
+while test $# -gt 0; do
+  case "$1" in
+    -d|--dev)
+      DEV='true'
+      break;;
+    *)
+      break;;
+  esac
+done
+
+if [ -z "$DEV" ]; then
+  gcloud auth activate-service-account --key-file vinegar-google-credentials.json
+  gcloud container clusters get-credentials vinegar-prod
+  gcloud config set project vinegar
+  gcloud config set compute/zone us-west2-b
+else
+  kubectl config use-context minikube
+fi
 
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
 docker build -t stevenesuh/vinegar-client:latest -t stevenesuh/vinegar-client:$SHA -f ./client/Dockerfile ./client

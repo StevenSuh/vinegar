@@ -46,7 +46,7 @@
   position: absolute;
   transition: opacity var(--transition-mid-duration) var(--transition-curve);
   transform: translateY(2px);
-  z-index: 1;
+  z-index: 10;
 }
 
 .collapse.show {
