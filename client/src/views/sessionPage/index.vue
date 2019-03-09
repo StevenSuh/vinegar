@@ -72,7 +72,9 @@ export default {
     onInit(callback) {
       if (this.socket.empty === true) {
         const { host, pathname } = window.location;
-        const url = `ws://${host}/ws${pathname}`;
+        const websocket = process.env.NODE_ENV === 'production' ? 'wss' : 'ws';
+
+        const url = `${websocket}://${host}/ws${pathname}`;
 
         this.socket = new WebSocket(url);
         initSocket(this.socket);

@@ -2,3 +2,4 @@
 node_modules
 docker-compose.yml
 vinegar-*.json
+deploy.sh

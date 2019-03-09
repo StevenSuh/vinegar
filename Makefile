@@ -16,9 +16,8 @@ lint:
 	cd ../server && yarn lint --fix && \
 	cd ../interval && yarn lint --fix
 
-
 serve:
-	make reset-redis && docker-compose up
+	make reset-redis; docker-compose up
 serve-build:
 	docker-compose up --build
 delete-client:
@@ -45,7 +44,8 @@ reset:
 	docker stop `docker ps -qa`; \
 	docker rm `docker ps -qa`; \
 	docker rmi -f `docker images -qa`; \
-	docker network rm `docker network ls -q`;
+	docker volume rm `docker volume ls -q`; \
+	docker network rm `docker network ls -q`
 update:
 	docker exec -it $(shell docker ps -qf "name=client") sh -c 'rm -f yarn.lock && yarn' && \
 	docker exec -it $(shell docker ps -qf "name=api") sh -c 'rm -f yarn.lock && yarn' && \

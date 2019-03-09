@@ -26,6 +26,7 @@ services:
       context: ./
     volumes:
       - /app/server/node_modules
+      - ./shared:/app/shared
       - ./server:/app/server
       - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     environment:
@@ -52,10 +53,13 @@ services:
       context: ./
     volumes:
       - /app/interval/node_modules
+      - ./shared:/app/shared
       - ./interval:/app/interval
+      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     depends_on:
       - api
     environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-credentials.json
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - POSTGRES_USERNAME=postgres

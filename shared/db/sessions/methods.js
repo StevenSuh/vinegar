@@ -19,7 +19,7 @@ module.exports = {
     return this.findAll({
       limit,
       offset,
-      order: [[Sessions.CREATED_AT, 'ASC']],
+      order: [[this.CREATED_AT, 'ASC']],
       where: searchCriteria,
     });
   },

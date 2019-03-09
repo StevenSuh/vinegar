@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: google-credentials
+      containers:
+      - name: server
+        image: stevenesuh/vinegar-server
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        ports:
+        - containerPort: 5000
+        - containerPort: 3000
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        - name: REDIS_HOST
+          value: redis-cluster-ip-service
+        - name: REDIS_PORT
+          value: '6379'
+        - name: PASSWORD_SALT
+          valueFrom:
+            secretKeyRef:
+              name: passwordsalt
+              key: PASSWORD_SALT_SECRET
+        - name: POSTGRES_USERNAME
+          value: postgres
+        - name: POSTGRES_HOST
+          value: postgres-cluster-ip-service
+        - name: POSTGRES_DATABASE_NAME
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgrespassword
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_PORT
+          value: '5432'
+

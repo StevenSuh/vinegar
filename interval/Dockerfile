@@ -8,5 +8,4 @@ WORKDIR "/app/interval"
 COPY ./interval/package.json ./
 RUN yarn
 COPY ./interval .
-RUN yarn add global forever
-CMD ["forever", "start", "-c", "'yarn start'", "./"]
+CMD ["yarn", "start"]

@@ -76,9 +76,8 @@ module.exports = (server) => {
         const schoolName = await redisClient.hgetAsync(redisClient.sessionSchool({ cookieId, sessionId }));
         const sessionName = await redisClient.hgetAsync(redisClient.sessionName({ cookieId, sessionId }));
 
-        const sessionPromise = Sessions.findOne({ where: { id: sessionId }});
-        const userPromise = Users.findOne({ where: { id: userId }});
-        const [session, user] = await Promise.all([sessionPromise, userPromise]);
+        const session = await Sessions.findOne({ where: { id: sessionId }});
+        const user = await Users.findOne({ where: { id: userId }});
 
         if (!session || !user) {
           ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Session does not exist.' });

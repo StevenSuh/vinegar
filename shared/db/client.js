@@ -17,6 +17,21 @@ const dbClient = new Sequelize(
     logging: false,
     operatorsAliases: false,
     port: pgPort,
+    retry: {
+      match: [
+        /SequelizeConnectionError/,
+        /SequelizeConnectionRefusedError/,
+        /SequelizeHostNotFoundError/,
+        /SequelizeHostNotReachableError/,
+        /SequelizeInvalidConnectionError/,
+        /SequelizeConnectionTimedOutError/
+      ],
+      name: 'query',
+      backoffBase: 100,
+      backoffExponent: 1.1,
+      timeout: 60000,
+      max: Infinity
+    },
   },
 );
 

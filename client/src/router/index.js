@@ -28,10 +28,10 @@ const router = new Router({
       component: sessionPage,
       meta: { title: 'Vinegar - :school/:session'},
     },
-    {
-      path: '/app',
-      redirect: '/app/find',
-    },
+    // {
+    //   path: '/app',
+    //   redirect: '/app/find',
+    // },
     {
       path: '*',
       redirect: '/',

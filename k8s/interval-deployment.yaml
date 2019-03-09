@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interval-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: interval
+  template:
+    metadata:
+      labels:
+        component: interval
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: google-credentials
+      containers:
+      - name: interval
+        image: stevenesuh/vinegar-interval
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        - name: REDIS_HOST
+          value: redis-cluster-ip-service
+        - name: REDIS_PORT
+          value: '6379'
+        - name: POSTGRES_USERNAME
+          value: postgres
+        - name: POSTGRES_HOST
+          value: postgres-cluster-ip-service
+        - name: POSTGRES_DATABASE_NAME
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgrespassword
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_PORT
+          value: '5432'
