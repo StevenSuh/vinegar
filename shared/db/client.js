@@ -30,7 +30,7 @@ const dbClient = new Sequelize(
       backoffBase: 100,
       backoffExponent: 1.1,
       timeout: 60000,
-      max: Infinity
+      max: Infinity,
     },
   },
 );

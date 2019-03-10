@@ -4,6 +4,7 @@ const Users = require('db/users/model');
 const redisClient = require('services/redis');
 
 const {
+  CONTROL_WAIT,
   PEOPLE_DELETE,
   PEOPLE_ENTER,
   PEOPLE_JOIN,
@@ -20,11 +21,12 @@ module.exports = async (_wss, ws, session, user) => {
   const userId = user.get(Users.ID);
   const name = user.get(Users.NAME);
   const isOwner = userId === session.get(Sessions.OWNER_ID);
+  const people = await getPeople(session);
 
   ws.sendEvent(PEOPLE_ENTER, {
-    isOwner: session.get(Sessions.OWNER_ID) === userId,
+    isOwner,
     participants: session.get(Sessions.PARTICIPANTS),
-    people: await getPeople(session),
+    people,
     status: session.get(Sessions.STATUS),
   });
 
@@ -33,6 +35,15 @@ module.exports = async (_wss, ws, session, user) => {
     name,
     isOwner,
   });
+
+  if (
+    isOwner &&
+    session.get(Sessions.STATUS) === Sessions.STATUS_WAITING &&
+    people.length === session.get(Sessions.PARTICIPANTS)
+  ) {
+    const ownerUserName = `user-${userId}`;
+    ws.to(ownerUserName).sendServer(CONTROL_WAIT);
+  }
 
   ws.onEvent(PEOPLE_DELETE, ({ id }) => {
     if (isOwner) {

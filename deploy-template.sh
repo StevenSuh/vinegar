@@ -1,11 +1,9 @@
 #!/bin/bash
-# add -d or --dev to test on minikube/local kubernetes setup
-
 SHA=$(git rev-parse HEAD)
-SALT= # get these from owner
-POSTGRES_PASSWORD= # get these from owner
-DOCKER_LOGIN= # get these from owner
-DOCKER_PASSWORD= # get these from owner
+SALT=
+POSTGRES_PASSWORD=
+DOCKER_LOGIN=stevenesuh
+DOCKER_PASSWORD=
 DEV=
 
 if [ -z "$SHA" ] || \
@@ -27,10 +25,19 @@ if [ -z "$(which gcloud)" ] || \
   exit 1
 fi
 
+if [ -z "$(which helm)" ]; then
+  curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh
+  chmod 700 get_helm.sh
+  ./get_helm.sh
+fi
+
 while test $# -gt 0; do
   case "$1" in
     -d|--dev)
       DEV='true'
+      break;;
+    --no-cache)
+      make reset
       break;;
     *)
       break;;
@@ -39,9 +46,9 @@ done
 
 if [ -z "$DEV" ]; then
   gcloud auth activate-service-account --key-file vinegar-google-credentials.json
-  gcloud container clusters get-credentials vinegar-prod
   gcloud config set project vinegar
-  gcloud config set compute/zone us-west2-b
+  gcloud config set compute/zone us-west2-a
+  gcloud container clusters get-credentials vinegar-prod
 else
   kubectl config use-context minikube
 fi
@@ -54,9 +61,33 @@ docker build -t stevenesuh/vinegar-interval:latest -t stevenesuh/vinegar-interva
 docker push stevenesuh/vinegar-client:latest
 docker push stevenesuh/vinegar-server:latest
 docker push stevenesuh/vinegar-interval:latest
+
 docker push stevenesuh/vinegar-client:$SHA
 docker push stevenesuh/vinegar-server:$SHA
 docker push stevenesuh/vinegar-interval:$SHA
+
+# one-time tiller service activation
+kubectl get serviceaccount tiller
+if [ $? -eq 1 ]; then
+  echo "The cluster is missing tiller service account"
+  kubectl create serviceaccount --namespace kube-system tiller
+  kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+  helm init --service-account tiller --upgrade
+  sleep 10
+  helm install stable/nginx-ingress --name my-nginx --set rbac.create=true
+
+  kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml
+  kubectl create namespace cert-manager
+  kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+  sleep 10
+  helm repo update
+  helm install \
+    --name cert-manager \
+    --namespace cert-manager \
+    --version v0.6.6 \
+    stable/cert-manager
+fi
 
 kubectl get secret google-credentials
 if [ $? -eq 1 ]; then
@@ -68,19 +99,17 @@ fi
 kubectl get secret passwordsalt
 if [ $? -eq 1 ]; then
   echo "The cluster is missing passwordsalt"
-  exit 1
+  # exit 1
   # kubectl create secret generic passwordsalt --from-literal PASSWORD_SALT_SECRET=$SALT
 fi
 
 kubectl get secret postgrespassword
 if [ $? -eq 1 ]; then
   echo "The cluster is missing postgrespassword"
-  exit 1
+  # exit 1
   # kubectl create secret generic postgrespassword --from-literal POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 fi
 
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/provider/cloud-generic.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
 kubectl apply -f k8s
 kubectl set image deployments/client-deployment client=stevenesuh/vinegar-client:$SHA
 kubectl set image deployments/server-deployment server=stevenesuh/vinegar-server:$SHA

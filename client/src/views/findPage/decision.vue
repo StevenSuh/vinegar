@@ -7,9 +7,10 @@
       Let's help you get started.
     </p>
     <div class="find-action-wrapper">
-      <div
+      <router-link
         class="find-action join"
-        @click="onClickJoin"
+        tag="div"
+        to="/app/join"
       >
         <div class="find-action-inner-wrapper">
           <img
@@ -24,10 +25,11 @@
             Looking for a session to join?
           </p>
         </div>
-      </div>
-      <div
+      </router-link>
+      <router-link
         class="find-action create"
-        @click="onClickCreate"
+        tag="div"
+        to="/app/create"
       >
         <div class="find-action-inner-wrapper">
           <img
@@ -42,7 +44,7 @@
             Want to create a session?
           </p>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -52,10 +54,6 @@ import createBoxImage from '@/assets/create_box.png';
 import joinBoxImage from '@/assets/join_box.png';
 
 export default {
-  props: {
-    onClickJoin: Function,
-    onClickCreate: Function,
-  },
   data() {
     return {
       // assets
@@ -142,6 +140,34 @@ export default {
   .find-action {
     padding-top: 35%;
     width: 35%;
+  }
+}
+
+@media (max-width: 800px) {
+  .find-action-wrapper {
+    flex-direction: column;
+  }
+
+  .action-title {
+    font-size: 18px;
+  }
+
+  .action-message {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 540px) {
+  .find-action {
+    padding-top: 70%;
+    width: 70%;
+  }
+}
+
+@media (max-width: 400px) {
+  .find-action {
+    padding-top: 90%;
+    width: 90%;
   }
 }
 </style>

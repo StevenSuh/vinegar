@@ -5,6 +5,10 @@ import landingPage from '@/views/landingPage';
 import findPage from '@/views/findPage';
 import sessionPage from '@/views/sessionPage';
 
+import Decision from '@/views/findPage/decision';
+import Join from '@/views/findPage/join';
+import Create from '@/views/findPage/create';
+
 Vue.use(Router);
 
 const router = new Router({
@@ -17,10 +21,24 @@ const router = new Router({
       meta: { title: 'Vinegar' },
     },
     {
-      path: '/app/find',
+      path: '/app',
       name: 'find',
       component: findPage,
       meta: { title: 'Vinegar - App' },
+      children: [
+        {
+          path: 'find',
+          component: Decision,
+        },
+        {
+          path: 'join',
+          component: Join,
+        },
+        {
+          path: 'create',
+          component: Create,
+        },
+      ],
     },
     {
       path: '/app/session/:school/:session',

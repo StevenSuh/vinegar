@@ -84,7 +84,7 @@
           @onChange="onPasswordChange"
         />
       </div>
-      <div class="button-wrapper marginTop small">
+      <div class="button-wrapper marginTop paddingBottom small">
         <ButtonComponent
           type="primary"
           :has-form="true"
@@ -293,6 +293,21 @@ export default {
   padding: 0;
   position: absolute !important;
   top: calc(50% - 12px);
+}
+
+@media (max-width: 800px) {
+  .create-header {
+    font-size: 30px;
+    padding-top: 40px;
+  }
+
+  .create-message {
+    font-size: 16px;
+  }
+
+  .form-wrapper {
+    width: 90%;
+  }
 }
 </style>
 

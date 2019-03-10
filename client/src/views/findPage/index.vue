@@ -1,17 +1,13 @@
 <template>
   <transition name="fade">
     <div v-if="show">
-      <div
-        v-if="!isMobile"
-        class="find"
-      >
+      <div class="find">
         <div class="container paddingTop">
           <nav class="navbar">
             <router-link
-              v-if="isMakingChoice"
               class="back-button-wrapper hover"
               tag="a"
-              to="/"
+              :to="$route.path === '/app/find' ? '/' : '/app/find'"
             >
               <img
                 class="back-button"
@@ -19,17 +15,6 @@
                 alt="back button"
               />
             </router-link>
-            <button
-              v-else
-              class="back-button-wrapper hover"
-              @click="onSetIsMakingChoiceTrue"
-            >
-              <img
-                class="back-button"
-                :src="backImage"
-                alt="back button"
-              />
-            </button>
             <h2 class="nav-header">
               Vinegar
             </h2>
@@ -49,21 +34,7 @@
           <transition name="fade">
             <div v-if="loaded">
               <transition name="fade">
-                <div>
-                  <transition name="fade">
-                    <Decision
-                      v-if="isMakingChoice"
-                      :on-click-join="onClickJoin"
-                      :on-click-create="onClickCreate"
-                    />
-                  </transition>
-                  <transition name="fade">
-                    <Join v-if="isJoiningSession" />
-                  </transition>
-                  <transition name="fade">
-                    <Create v-if="isCreatingSession" />
-                  </transition>
-                </div>
+                <router-view />
               </transition>
             </div>
           </transition>
@@ -84,13 +55,6 @@
           </transition>
         </div>
       </div>
-      <div
-        v-else
-        class="find"
-      >
-        <!-- TODO -->
-        can't do mobile
-      </div>
     </div>
   </transition>
 </template>
@@ -98,11 +62,6 @@
 <script>
 import { signIn } from '@/services/api';
 import Loader from '@/components/loader';
-import Decision from '@/views/findPage/decision';
-import Join from '@/views/findPage/join';
-import Create from '@/views/findPage/create';
-
-import { MIN_MOBILE_WIDTH } from '@/defs';
 
 import backImage from '@/assets/back.png';
 import leftImage from '@/assets/find_left.png';
@@ -110,18 +69,11 @@ import rightImage from '@/assets/find_right.png';
 
 export default {
   components: {
-    Create,
-    Join,
     Loader,
-    Decision,
   },
   data() {
     return {
       // state
-      isMobile: window.innerWidth <= MIN_MOBILE_WIDTH,
-      isMakingChoice: true,
-      isJoiningSession: false,
-      isCreatingSession: false,
       loaded: false,
       show: false,
 
@@ -131,39 +83,17 @@ export default {
       rightImage,
     };
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize);
-  },
   beforeCreate() {
     document.title = 'Vinegar - Note Taking App';
-  },
-  created() {
-    window.addEventListener('resize', this.onResize);
   },
   mounted() {
     this.show = true;
     this.onInit();
   },
   methods: {
-    onClickJoin() {
-      this.isMakingChoice = false;
-      this.isJoiningSession = true;
-    },
-    onClickCreate() {
-      this.isMakingChoice = false;
-      this.isCreatingSession = true;
-    },
     async onInit() {
       await signIn();
       this.loaded = true;
-    },
-    onResize() {
-      this.isMobile = window.innerWidth <= MIN_MOBILE_WIDTH;
-    },
-    onSetIsMakingChoiceTrue() {
-      this.isMakingChoice = true;
-      this.isJoiningSession = false;
-      this.isCreatingSession = false;
     },
   },
 };
@@ -238,5 +168,12 @@ export default {
   pointer-events: none;
   position: absolute;
   height: 85%;
+}
+
+@media (max-width: 540px) {
+  .find-left-img,
+  .find-right-img {
+    display: none;
+  }
 }
 </style>

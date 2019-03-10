@@ -58,7 +58,7 @@ const getRoundRobinId = async () => {
   if (redisClient.robinId !== undefined) {
     return redisClient.robinId;
   }
-  const index = parseInt(await redisClient.incrAsync(ROBIN_TOTAL), 10);
+  const index = parseInt(await redisClient.incrAsync(ROBIN_TOTAL) || 1, 10);
   redisClient.robinId = index;
   return index;
 };

@@ -130,19 +130,12 @@ export default {
       this.intervalUserId = intervalUserId;
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {
-      if (status === 'waiting' && this.people.length === this.participants) {
-        this.socket.sendEvent('control:onWait');
-      }
       this.isOwner = isOwner;
       this.participants = participants;
       this.people = this.sortByOwner(people);
       this.status = status;
     },
     'people:onJoin': function(person) {
-      if (this.people.length + 1 === this.participants) {
-        this.socket.sendEvent('control:onWait');
-      }
-
       if (!person.isOwner) {
         this.people.push(person);
         return;

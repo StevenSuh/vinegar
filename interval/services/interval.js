@@ -10,6 +10,7 @@ const {
   SESSION_END_DURATION,
   CONTROL_INTERVAL,
   CONTROL_UPDATE_STATUS,
+  IDLE_REMIND,
   INTERVAL_REMIND,
   INTERVAL_STATUS,
   INTERVAL_UPDATE,
@@ -33,6 +34,7 @@ class Interval {
     this.totalDuration = session.get(Sessions.DURATION);
     this.timeout = this.normalizeTimeout();
     this.endTime = session.get(Sessions.END_TIME);
+    this.idleJob = null;
 
     this.publisher = publisher;
 
@@ -71,18 +73,72 @@ class Interval {
     });
   }
 
+  async startIdleCheck() {
+    await redisClient.setAsync(redisClient.robinQuery(
+      { sessionId: this.sessionId },
+      await getRoundRobinId(),
+    ));
+
+    const time = Date.now();
+
+    this.idleRemindJob = schedule.scheduleJob(
+      new Date(time + (1000 * 60 * 30)), // 30 minutes later
+      () => this.remindIdle(),
+    );
+
+    this.idleCloseJob = schedule.scheduleJob(
+      new Date(time + (1000 * 60 * 60)), // 60 minutes later
+      () => this.closeIdle(),
+    );
+  }
+
+  async remindIdle() {
+    await this.session.reload();
+
+    if (
+      this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE ||
+      this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED
+    ) {
+      this.idleCloseJob.cancel();
+      return console.log('Session', this.sessionId, 'has already started/ended at remindIdle');
+    }
+
+    const ownerIdName = `user-${this.session.get(Sessions.OWNER_ID)}`;
+    this.publisher.to(ownerIdName).publishServer(IDLE_REMIND);
+  }
+
+  async closeIdle() {
+    await this.session.reload();
+
+    if (
+      this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE ||
+      this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED
+    ) {
+      return console.log('Session', this.sessionId, 'has already started/ended at closeIdle');
+    }
+
+    const robinQuery = redisClient.robinQuery({ sessionId: this.sessionId });
+    const schoolQuery = redisClient.sessionSchool({ sessionId: this.sessionId });
+    const sessionQuery = redisClient.sessionName({ sessionId: this.sessionId });
+    const blockQuery = redisClient.sessionBlock({ sessionId: this.sessionId });
+    redisClient.delAsync(schoolQuery[0], sessionQuery[0], blockQuery[0], robinQuery);
+
+    delete this.sessions[this.sessionId];
+    this.session.destroy();
+    this.publisher.to(this.sessionName).publishServer(SOCKET_CLOSE);
+  }
+
   async setupInterval() {
+    this.idleRemindJob.cancel();
+    this.idleCloseJob.cancel();
     this.current = -1;
+
+    await this.session.reload();
 
     if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
       this.setupExisting();
       return;
     }
-
-    await redisClient.setAsync(redisClient.robinQuery(
-      { sessionId: this.sessionId },
-      await getRoundRobinId(),
-    ));
 
     // shuffle people
     const people = await this.session.getUsers({ where: { active: true }});

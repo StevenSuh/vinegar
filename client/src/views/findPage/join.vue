@@ -116,6 +116,20 @@ export default {
 .searchResult {
   top: -25px;
 }
+
+@media (max-width: 800px) {
+  .join-header {
+    font-size: 30px;
+  }
+
+  .join-message {
+    font-size: 16px;
+  }
+
+  .search-wrapper {
+    width: 90%;
+  }
+}
 </style>
 
 <style>

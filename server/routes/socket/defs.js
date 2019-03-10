@@ -21,9 +21,12 @@ module.exports = {
   EDITOR_SELECTION_UPDATE: 'editor:onEditorSelectionUpdate',
   EDITOR_SELECTION_REMOVE: 'editor:onEditorSelectionRemove',
 
+  IDLE_REMIND: 'idle:onRemind',
+
   INTERVAL_CREATE: 'interval:onCreate',
   INTERVAL_REASSIGN: 'interval:onReassign',
   INTERVAL_REMIND: 'interval:onRemind',
+  INTERVAL_SETUP: 'interval:onSetup',
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
@@ -49,6 +52,8 @@ module.exports = {
     EDITOR_CONTENT_UPDATE: 'editor:onEditorContentUpdate',
     EDITOR_SELECTION_UPDATE: 'editor:onEditorSelectionUpdate',
     EDITOR_SELECTION_REMOVE: 'editor:onEditorSelectionRemove',
+
+    IDLE_REMIND: 'interval:onRemind',
 
     INTERVAL_REMIND: 'interval:onRemind',
     INTERVAL_UPDATE: 'interval:onUpdate',

@@ -8,6 +8,7 @@ module.exports = {
   INTERVAL_CREATE: 'interval:onCreate',
   INTERVAL_REASSIGN: 'interval:onReassign',
   INTERVAL_REMIND: 'interval:onRemind',
+  INTERVAL_SETUP: 'interval:onSetup',
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
@@ -21,5 +22,6 @@ module.exports = {
   SUBSCRIBE_EVENTS: {
     INTERVAL_CREATE: 'interval:onCreate',
     INTERVAL_REASSIGN: 'interval:onReassign',
+    INTERVAL_SETUP: 'interval:onSetup',
   },
 };

@@ -24,6 +24,7 @@ module.exports = async (wss, ws, session, user) => {
   const sessionName = `session-${sessionId}`;
 
   const userId = user.get(Users.ID);
+  const isOwner = session.get(Sessions.OWNER_ID) === userId;
 
   if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
     await createExistingInterval(sessionId);
@@ -44,12 +45,16 @@ module.exports = async (wss, ws, session, user) => {
     duration: session.get(Sessions.DURATION),
     endTime: session.get(Sessions.END_TIME),
     intervalUser: interval ? interval.get(Intervals.USERNAME) : '',
-    isOwner: session.get(Sessions.OWNER_ID) === userId,
+    isOwner,
     participants: session.get(Sessions.PARTICIPANTS),
     status: session.get(Sessions.STATUS),
   });
 
   ws.onEvent(CONTROL_INIT, async ({ participants }) => {
+    if (!isOwner) {
+      return;
+    }
+
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_CREATED) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
@@ -68,18 +73,18 @@ module.exports = async (wss, ws, session, user) => {
     if (isFull) {
       update.status = Sessions.STATUS_ACTIVE;
       update.endTime = Date.now() + session.get(Sessions.DURATION);
-    }
-
-    await session.update(update);
-
-    if (isFull) {
       await createInterval(sessionId);
     } else {
       wss.to(sessionName).sendEvent(CONTROL_UPDATE_STATUS, update);
     }
+    await session.update(update);
   });
 
-  ws.onEvent(CONTROL_WAIT, async () => {
+  ws.onServer(CONTROL_WAIT, async () => {
+    if (!isOwner) {
+      return;
+    }
+
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_WAITING) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
@@ -99,8 +104,8 @@ module.exports = async (wss, ws, session, user) => {
       status: Sessions.STATUS_ACTIVE,
     };
 
-    await session.update(update);
     await createInterval(sessionId);
+    await session.update(update);
   });
 
   ws.on('close', async () => {

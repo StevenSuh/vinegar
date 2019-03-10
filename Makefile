@@ -1,5 +1,9 @@
 deploy:
-	make lint && make test && bash deploy.sh
+	make lint-fix && make test && \
+	ls deploy.sh && bash deploy.sh
+deploy-no-cache:
+	make lint-fix && make test && \
+	ls deploy.sh && bash deploy.sh --no-cache
 test:
 	echo "There are no tests at the moment"
 dev:
@@ -15,6 +19,11 @@ lint:
 	cd client && yarn lint --fix && \
 	cd ../server && yarn lint --fix && \
 	cd ../interval && yarn lint --fix
+lint-fix:
+	cd client && yarn lint && \
+	cd ../server && yarn lint && \
+	cd ../interval && yarn lint
+
 
 serve:
 	make reset-redis; docker-compose up
@@ -39,6 +48,7 @@ serve-reset:
 	make reset; \
 	docker-compose build --no-cache && \
 	docker-compose up
+
 
 reset:
 	docker stop `docker ps -qa`; \

@@ -33,6 +33,8 @@ const WsWrapper = (ws) => {
     if (message === 'pong') {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send('ping');
+      } else {
+        ws.terminate();
       }
       return;
     }
@@ -67,6 +69,8 @@ const WsWrapper = (ws) => {
       socketLogger({ type }, ws);
       const json = JSON.stringify({ ...data, _type: type });
       ws.send(json);
+    } else {
+      ws.terminate();
     }
   };
 

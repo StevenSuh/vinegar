@@ -13,5 +13,6 @@ module.exports = {
     'func-names': 'off',
     'consistent-return': 'off',
     'node/no-extraneous-require': 'off',
+    'no-console': 'off',
   },
 };

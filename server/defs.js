@@ -4,6 +4,7 @@ module.exports = {
   DEFAULT_COLOR: '#F88379',
   DEFAULT_ENTER_MSG: ' has entered the room.',
   DEFAULT_CREATE_MSG: ' has been created.',
+  DEFAULT_IDLE_MSG: ' will close if the session does not start soon.',
   DEFAULT_LEAVE_MSG: ' has left the room.',
   DEFAULT_REMIND_MSG: ' will be closing soon.',
   MIN_PASSWORD_LENGTH: 4,

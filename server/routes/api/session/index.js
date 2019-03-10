@@ -236,7 +236,7 @@ module.exports = (app) => {
     requireSessionAuth,
     async (req, res) => {
       const { feedback } = req.body;
-      logger.info(feedback);
+      logger.info('FEEDBACK', feedback);
       return res.end();
     },
   );
