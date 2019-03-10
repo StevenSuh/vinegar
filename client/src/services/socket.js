@@ -33,6 +33,8 @@ export const initSocket = (socket) => {
     if (this.readyState === this.OPEN) {
       try {
         this.send('pong');
+        const validCbs = wsCallbacks.filter(item => item.type === 'pong');
+        validCbs.forEach(({ cb }) => cb());
       } catch (e) {
         handleErrorMiddleware(e, 'socket');
       }
@@ -44,7 +46,7 @@ export const initSocket = (socket) => {
 
   socket.startPingPong = function() {
     clearInterval(this.idleTimeout);
-    this.idleTimeout = setInterval(this.pong, 20000); // disconnects after 30 sec of idle
+    this.idleTimeout = setInterval(this.pong, 5000); // disconnects after 30 sec of idle
   };
 
   socket.sendEvent = function(type, data = {}) {
@@ -75,9 +77,7 @@ export const initSocket = (socket) => {
       const { _type } = data;
 
       const validCbs = wsCallbacks.filter(item => item.type === _type);
-      validCbs.forEach(({ cb }) => {
-        cb(data);
-      });
+      validCbs.forEach(({ cb }) => cb(data));
       this.startPingPong();
     }
   };

@@ -92,6 +92,9 @@ export default {
     this.editor = new Quill(this.$refs.editor, {
       bounds: this.$refs.editor,
       modules: {
+        history: {
+          userOnly: true,
+        },
         cursors: { autoRegisterListener: false },
         keyboard: {
           bindings: { 'indent code-block': codeBlockIndentHandler(true) },
@@ -166,6 +169,15 @@ export default {
     textUpdate,
   },
   sockets: {
+    pong() {
+      const range = this.editor.getSelection();
+      this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
+      try {
+        this.editor.getModule('cursors').update();
+      } catch (err) {
+        console.warn(err); // eslint-disable-line no-console
+      }
+    },
     'socket:onEnter': function() {
       this.socket.sendEvent('editor:onEnter');
     },

@@ -25,6 +25,7 @@ const socketLogger = (message, ws) => {
     }
 
     if (data) {
+      delete data.content;
       logger.log(`SOCKET /${data.type} ${ws.sessions.join(', ')} - ${JSON.stringify(data)} - ${now}`);
     } else {
       logger.log(`SOCKET error - ${message} - ${now}`);

@@ -103,8 +103,9 @@ class Interval {
       return console.log('Session', this.sessionId, 'has already started/ended at remindIdle');
     }
 
-    const ownerIdName = `user-${this.session.get(Sessions.OWNER_ID)}`;
-    this.publisher.to(ownerIdName).publishServer(IDLE_REMIND);
+    const people = await this.session.getUsers({ where: { active: true }});
+    const userIdName = `user-${people[0].get(Users.ID)}`;
+    this.publisher.to(userIdName).publishServer(IDLE_REMIND);
   }
 
   async closeIdle() {
@@ -266,8 +267,9 @@ class Interval {
 
     // warning before session is terminated
     await sleep(SESSION_END_DURATION);
-    const ownerIdName = `user-${this.session.get(Sessions.OWNER_ID)}`;
-    this.publisher.to(ownerIdName).publishServer(INTERVAL_REMIND);
+    const people = await this.session.getUsers({ where: { active: true }});
+    const userIdName = `user-${people[0].get(Users.ID)}`;
+    this.publisher.to(userIdName).publishServer(INTERVAL_REMIND);
 
     // terminate session
     await sleep(SESSION_END_DURATION);

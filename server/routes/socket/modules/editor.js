@@ -24,12 +24,12 @@ module.exports = (_wss, ws, session, user) => {
   let updateTimeout = null;
 
   ws.onEvent(EDITOR_ENTER, () => {
-    ws.sendEvent(EDITOR_ENTER, {
-      content: inflate(session.get(Sessions.CONTENT)),
-    });
+    const sessionContent = inflate(session.get(Sessions.CONTENT));
+    ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data: sessionContent });
+    ws.sendEvent(EDITOR_ENTER, { content: sessionContent });
 
     ws.onEvent(EDITOR_TEXT_UPDATE, ({ data }) => {
-      ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data, userId });
+      ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data });
     });
 
     ws.onEvent(EDITOR_CONTENT_UPDATE, (data) => {

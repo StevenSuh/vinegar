@@ -14,6 +14,8 @@ module.exports = {
     'vue/html-self-closing': 'off',
     'func-names': 'off',
     'new-cap': 'off',
+    'import/no-named-as-default-member': 'off',
+    'import/no-named-as-default': 'off',
   }
 };
 

@@ -11,7 +11,7 @@ import customizeTooltip from './modules/CustomTooltip';
 import ImageUrlDrop from './modules/imageUrlDrop';
 
 export function setupQuill() {
-  Quill.register('modules/clipboard', PlainClipboard, true);
+  Quill.register('modules/customClipboard', PlainClipboard, true);
   Quill.register('modules/cursors', QuillCursors);
   Quill.register('modules/imageResize', ImageResize);
   Quill.register('modules/imageDrop', ImageDrop);

@@ -10,4 +10,8 @@ engineering:
 - Use redis as R/W cache in between interacting with DB for socket (optimization task, to be housed in /shared/db)
 
 product:
-- Separate join & create routes out of '/app/find'
+- add send button to chat (use arrow)
+- add upvote downvote feature
+- add tooltips to owner/interval icons
+
+bugs:

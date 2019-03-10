@@ -229,5 +229,9 @@ export default {
   .right {
     margin-top: 20px;
   }
+
+  .people-wrapper {
+    padding-bottom: 20px;
+  }
 }
 </style>

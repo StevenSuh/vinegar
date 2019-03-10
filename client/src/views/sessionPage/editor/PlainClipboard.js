@@ -7,13 +7,6 @@ const Delta = Quill.import('delta');
 class PlainClipboard extends Clipboard {
   onPaste(e) {
     e.preventDefault();
-    const range = this.quill.getSelection();
-    const text = e.clipboardData.getData('text') || e.clipboardData.getData('url');
-
-    if (text) {
-      this.onPasteText(text, range);
-    }
-
     if (e.clipboardData && e.clipboardData.items && e.clipboardData.items.length) {
 			this.readFiles(e.clipboardData.items, dataUrl => {
         const index = (this.quill.getSelection() || {}).index || this.quill.getLength();

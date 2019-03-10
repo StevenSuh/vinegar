@@ -67,7 +67,7 @@ docker push stevenesuh/vinegar-server:$SHA
 docker push stevenesuh/vinegar-interval:$SHA
 
 # one-time tiller service activation
-kubectl get serviceaccount tiller
+kubectl get serviceaccount --namespace kube-system tiller
 if [ $? -eq 1 ]; then
   echo "The cluster is missing tiller service account"
   kubectl create serviceaccount --namespace kube-system tiller
