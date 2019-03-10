@@ -15,7 +15,7 @@ const {
   INTERVAL_SETUP,
   SUBSCRIBE_EVENTS,
 } = require('defs');
-const { exitHandler } = require('utils');
+const { exitHandler, cleanupJob } = require('utils');
 
 const sessions = {};
 
@@ -76,3 +76,4 @@ addCallback(INTERVAL_REASSIGN, async ({ sessionId, robinId, userId }) => {
 subscriber.subscribe(...Object.values(SUBSCRIBE_EVENTS));
 
 exitHandler(sessions);
+cleanupJob();
