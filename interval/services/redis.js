@@ -50,7 +50,7 @@ redisClient.sessionName = ({ cookieId, sessionId }, value) => {
   return query;
 };
 redisClient.sessionBlock = ({ sessionId, userId }) =>
-  [`${redisClient.SESSION_BLOCK}-${sessionId}`, `${redisClient.USER_ID}-${userId}`];
+  `${redisClient.SESSION_BLOCK}-${sessionId}-${redisClient.USER_ID}-${userId}`;
 redisClient.intervalQuery = ({ sessionId }, value, expiration) =>
   [`${redisClient.INTERVAL}-${sessionId}`, value, 'PX', expiration];
 
@@ -60,6 +60,7 @@ const getRoundRobinId = async () => {
   }
   const index = parseInt(await redisClient.incrAsync(ROBIN_TOTAL) || 1, 10);
   redisClient.robinId = index;
+  console.log('getRoundRobinId', redisClient.robinId);
   return index;
 };
 getRoundRobinId();

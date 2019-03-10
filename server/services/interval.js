@@ -23,8 +23,10 @@ const setupInterval = async (sessionId) => {
   if (total === 0) {
     throw new Error('There are no interval services running.');
   }
-  const robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE) || 0, 10);
+  const robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE), 10);
   redisClient.setAsync(ROBIN_ROTATE, robinId % total);
+
+  console.log(robinId, total, sessionId);
 
   publisher.publishEvent(INTERVAL_SETUP, { robinId, sessionId });
 };

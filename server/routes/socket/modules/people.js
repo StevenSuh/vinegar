@@ -37,11 +37,10 @@ module.exports = async (_wss, ws, session, user) => {
   });
 
   if (
-    isOwner &&
     session.get(Sessions.STATUS) === Sessions.STATUS_WAITING &&
-    people.length === session.get(Sessions.PARTICIPANTS)
+    people.length >= session.get(Sessions.PARTICIPANTS)
   ) {
-    const ownerUserName = `user-${userId}`;
+    const ownerUserName = `user-${session.get(Sessions.OWNER_ID)}`;
     ws.to(ownerUserName).sendServer(CONTROL_WAIT);
   }
 
