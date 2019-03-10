@@ -8,7 +8,7 @@ class PlainClipboard extends Clipboard {
   onPaste(e) {
     e.preventDefault();
     const range = this.quill.getSelection();
-    const text = e.clipboardData.getData('text/plain') || e.clipboardData.getData('url');
+    const text = e.clipboardData.getData('text') || e.clipboardData.getData('url');
 
     if (text) {
       this.onPasteText(text, range);

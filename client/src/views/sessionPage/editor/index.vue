@@ -194,8 +194,8 @@ export default {
         console.warn(err); // eslint-disable-line no-console
       }
     },
-    'editor:onEditorTextUpdate': function({ data, userId }) {
-      this.editor.updateContents(data, userId);
+    'editor:onEditorTextUpdate': function({ data }) {
+      this.editor.updateContents(data, 'silent');
       try {
         this.editor.getModule('cursors').update();
       } catch (err) {

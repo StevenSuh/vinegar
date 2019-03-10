@@ -64,7 +64,7 @@ export default {
         this.isDownloading = true;
         this.isLoading = true;
 
-        const editor = document.getElementById('editor');
+        const editor = document.getElementsByClassName('ql-editor')[0];
         const pageHeight =
           editor.clientWidth * 1.2941 > editor.scrollHeight
             ? editor.clientWidth * 1.2941

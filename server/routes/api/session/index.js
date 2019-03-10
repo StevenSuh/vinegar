@@ -11,6 +11,8 @@ const {
   requireSessionByReferer,
 } = require('routes/api/middleware');
 
+const { setupInterval } = require('services/interval');
+
 const {
   ALLOWED_CHARACTERS,
   DEFAULT_COLOR,
@@ -115,6 +117,7 @@ module.exports = (app) => {
         return res.status(400).send('Session already exists. Try a different name.');
       }
 
+      await setupInterval(session.get(Sessions.ID));
       await Chats.create({
         color: DEFAULT_COLOR,
         message: DEFAULT_CREATE_MSG,

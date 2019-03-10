@@ -29,11 +29,32 @@ export default class ImageUrlDrop {
   }
 
   insertObject(text, index) {
-    const imgTypes = ['.png', '.gif', '.jpeg', '.bmp', '.ico'];
+    const imgTypes = ['.png', '.gif', '.jpeg', '.bmp', '.ico', '.svg'];
     for (let i = 0; i < imgTypes.length; i += 1) {
       const type = imgTypes[i];
       if (text.endsWith(type)) {
-        return this.quill.insertEmbed(index, "image", text);
+        this.quill.insertEmbed(index, "image", text, 'user');
+
+        const image = document.querySelectorAll(`[src="${text}"]`);
+        for (let j = 0; j < image.length; j += 1) {
+          const downloadedImg = image[j];
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          canvas.width = downloadedImg.width;
+          canvas.height = downloadedImg.height;
+          context.drawImage(downloadedImg, 0, 0);
+
+          try {
+            const dataUrl = canvas.toDataURL();
+            downloadedImg.src = dataUrl;
+          } catch (_) {
+            downloadedImg.src = 'invalid';
+            return;
+          }
+        }
+
+        return;
       }
     }
 
@@ -57,7 +78,15 @@ export default class ImageUrlDrop {
     };
 
     Object.keys(attribute).forEach((key) => {
-      attribute[key] = current[key] || leftSide[key] || rightSide[key];
+      if (current[key]) {
+        attribute[key] = current[key];
+      }
+      if (
+        (leftSide[key] && rightSide[key]) &&
+        (leftSide[key] === rightSide[key])
+      ) {
+        attribute[key] = leftSide[key];
+      }
     });
 
     const delta = new Delta()

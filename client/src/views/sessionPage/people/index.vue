@@ -18,7 +18,7 @@
         />
         <p
           class="person-name"
-          :class="{ bold: isInterval }"
+          :class="{ bold: person.id === intervalUserId }"
         >
           {{ person.name }}
         </p>

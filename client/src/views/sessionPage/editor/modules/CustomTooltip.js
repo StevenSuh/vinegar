@@ -72,6 +72,26 @@ export default function() {
       const index = tooltip.root.getAttribute('data-image');
       editor.insertEmbed(index, 'image', value, Quill.sources.USER);
       editor.focus();
+
+      const image = document.querySelectorAll(`[src="${value}"]`);
+      for (let i = 0; i < image.length; i += 1) {
+        const downloadedImg = image[i];
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        canvas.width = downloadedImg.width;
+        canvas.height = downloadedImg.height;
+        context.drawImage(downloadedImg, 0, 0);
+
+        try {
+          const dataUrl = canvas.toDataURL();
+          downloadedImg.src = dataUrl;
+        } catch (_) {
+          downloadedImg.src = 'invalid';
+          return;
+        }
+      }
+
       tooltip.hide();
     } else {
       oldSave.apply(this, args);

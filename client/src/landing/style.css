@@ -77,7 +77,7 @@
 
 .content-message {
   margin: 0 auto;
-  top: 45%;
+  top: 35vh;
   text-align: center;
   transform: translateY(-50%);
 }

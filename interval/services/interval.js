@@ -26,14 +26,14 @@ class Interval {
     this.ended = false;
 
     this.current = -1;
-    this.count = session.get(Sessions.PARTICIPANTS);
+    this.count = null;
     this.jobs = [];
     this.intervals = [];
     this.intervalUsers = [];
 
     this.totalDuration = session.get(Sessions.DURATION);
-    this.timeout = this.normalizeTimeout();
-    this.endTime = session.get(Sessions.END_TIME);
+    this.timeout = null;
+    this.endTime = null;
     this.idleJob = null;
 
     this.publisher = publisher;
@@ -93,7 +93,7 @@ class Interval {
   }
 
   async remindIdle() {
-    await this.session.reload();
+    this.session = await this.session.reload();
 
     if (
       this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE ||
@@ -108,7 +108,7 @@ class Interval {
   }
 
   async closeIdle() {
-    await this.session.reload();
+    this.session = await this.session.reload();
 
     if (
       this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE ||
@@ -133,9 +133,12 @@ class Interval {
     this.idleCloseJob.cancel();
     this.current = -1;
 
-    await this.session.reload();
+    this.session = await this.session.reload();
+    this.count = this.session.get(Sessions.PARTICIPANTS);
+    this.timeout = this.normalizeTimeout();
+    this.endTime = this.session.get(Sessions.END_TIME);
 
-    if (this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
+    if (this.session.get(Sessions.CURRENT_INTERVAL_ID)) {
       this.setupExisting();
       return;
     }

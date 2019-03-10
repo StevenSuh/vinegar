@@ -1,7 +1,7 @@
 <template>
   <div class="control">
     <Ended
-      v-if="status === 'ended'"
+      v-if="status === 'created'"
       :socket="socket"
     />
     <IsInterval

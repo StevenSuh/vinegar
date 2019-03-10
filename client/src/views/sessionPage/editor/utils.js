@@ -1,11 +1,11 @@
 import Quill from 'quill';
 import QuillCursors from 'quill-cursors';
-import ImageResize from 'quill-image-resize-module';
 import { ImageDrop } from 'quill-image-drop-module';
 import MagicUrl from 'quill-magic-url';
 
 import { CONTENT_UPDATE_DUR, FONT_SIZES, HEIGHT_SIZES } from '@/defs';
 
+import ImageResize from './modules/imageResize';
 import PlainClipboard from './PlainClipboard';
 import customizeTooltip from './modules/CustomTooltip';
 import ImageUrlDrop from './modules/imageUrlDrop';
@@ -73,6 +73,11 @@ export function selectionUpdate(type, range, _oldRange, source) {
       // causing cursor to update inaccurately
       setTimeout(() => {
         this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
+        try {
+          this.editor.getModule('cursors').update();
+        } catch (err) {
+          console.warn(err); // eslint-disable-line no-console
+        }
       }, 0);
     }
   }

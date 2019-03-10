@@ -6,6 +6,16 @@
   width: 100%;
 }
 
+@keyframes appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ql-image-resize {
+  animation: appear var(--transition-duration) var(--transition-curve) forwards;
+  transition: opacity var(--transition-mid-duration) var(--transition-curve);
+}
+
 .ql-toolbar {
   height: 40px;
 }
@@ -105,7 +115,12 @@
   overflow-y: unset;
 }
 
+.ql-editor * {
+  display: inline;
+}
+
 .ql-editor > div {
+  display: block;
   line-height: 1.5em;
   z-index: 0;
 }
@@ -297,7 +312,7 @@ button.active,
 .ql-snow .ql-picker.ql-header .ql-picker-item::before,
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item::before {
-  font-weight: 400 !important;
+  font-weight: normal !important;
 }
 
 code {
@@ -314,7 +329,7 @@ pre * {
 
 code strong,
 pre strong {
-  font-weight: 800 !important;
+  font-weight: bold !important;
 }
 
 .ql-snow .ql-editor blockquote {
@@ -367,10 +382,11 @@ pre strong {
 
 .ql-picker-item::before,
 .ql-picker-label::before {
-  font-weight: 400;
+  font-weight: normal;
 }
 
 .ql-font-rubik,
+.ql-font-rubik *,
 .ql-picker-item[data-value='rubik']::before,
 .ql-picker-label[data-value='rubik']::before {
   content: 'Rubik' !important;
@@ -379,10 +395,11 @@ pre strong {
 
 strong,
 strong.ql-font-rubik {
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .ql-font-arial,
+.ql-font-arial *,
 .ql-picker-item[data-value='arial']::before,
 .ql-picker-label[data-value='arial']::before {
   content: 'Arial' !important;
@@ -390,6 +407,7 @@ strong.ql-font-rubik {
 }
 
 .ql-font-times,
+.ql-font-times *,
 .ql-picker-item[data-value='times']::before,
 .ql-picker-label[data-value='times']::before {
   content: 'Times' !important;
@@ -397,6 +415,7 @@ strong.ql-font-rubik {
 }
 
 .ql-font-courier,
+.ql-font-courier *,
 .ql-picker-item[data-value='courier']::before,
 .ql-picker-label[data-value='courier']::before {
   content: 'Courier' !important;
@@ -406,7 +425,7 @@ strong.ql-font-rubik {
 strong.ql-font-arial,
 strong.ql-font-times,
 strong.ql-font-courier {
-  font-weight: 800;
+  font-weight: bold;
 }
 
 .ql-editor u,

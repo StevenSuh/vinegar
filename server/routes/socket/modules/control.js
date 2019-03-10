@@ -73,11 +73,15 @@ module.exports = async (wss, ws, session, user) => {
     if (isFull) {
       update.status = Sessions.STATUS_ACTIVE;
       update.endTime = Date.now() + session.get(Sessions.DURATION);
+    }
+
+    await session.update(update);
+
+    if (isFull) {
       await createInterval(sessionId);
     } else {
       wss.to(sessionName).sendEvent(CONTROL_UPDATE_STATUS, update);
     }
-    await session.update(update);
   });
 
   ws.onServer(CONTROL_WAIT, async () => {
@@ -104,8 +108,8 @@ module.exports = async (wss, ws, session, user) => {
       status: Sessions.STATUS_ACTIVE,
     };
 
-    await createInterval(sessionId);
     await session.update(update);
+    await createInterval(sessionId);
   });
 
   ws.on('close', async () => {
