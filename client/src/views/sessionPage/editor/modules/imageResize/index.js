@@ -47,7 +47,7 @@ export default class ImageResize {
         this.modules = [];
     }
 
-    initializeModules = () => {
+    initializeModules() {
         this.removeModules();
 
         this.modules = this.moduleClasses.map(
@@ -63,7 +63,7 @@ export default class ImageResize {
         this.onUpdate();
     };
 
-    onUpdate = () => {
+    onUpdate() {
         this.repositionElements();
         this.modules.forEach(
             (module) => {
@@ -72,7 +72,7 @@ export default class ImageResize {
         );
     };
 
-    removeModules = () => {
+    removeModules() {
         this.modules.forEach(
             (module) => {
                 module.onDestroy();
@@ -82,7 +82,7 @@ export default class ImageResize {
         this.modules = [];
     };
 
-    handleClick = (evt) => {
+    handleClick(evt) {
         if (evt.target && evt.target.tagName && evt.target.tagName.toUpperCase() === 'IMG') {
             if (this.img === evt.target) {
                 // we are already focused on this image
@@ -100,7 +100,7 @@ export default class ImageResize {
         }
     };
 
-    show = (img) => {
+    show(img) {
         // keep track of this img element
         this.img = img;
 
@@ -109,7 +109,7 @@ export default class ImageResize {
         this.initializeModules();
     };
 
-    showOverlay = () => {
+    showOverlay() {
         if (this.overlay) {
             this.hideOverlay();
         }
@@ -134,7 +134,7 @@ export default class ImageResize {
         this.repositionElements();
     };
 
-    hideOverlay = () => {
+    hideOverlay() {
         if (!this.overlay) {
             return;
         }
@@ -157,7 +157,7 @@ export default class ImageResize {
         this.setUserSelect('');
     };
 
-    repositionElements = () => {
+    repositionElements() {
         if (!this.overlay || !this.img) {
             return;
         }
@@ -175,13 +175,13 @@ export default class ImageResize {
         });
     };
 
-    hide = () => {
+    hide() {
         this.hideOverlay();
         this.removeModules();
         this.img = undefined;
     };
 
-    setUserSelect = (value) => {
+    setUserSelect(value) {
         [
             'userSelect',
             'mozUserSelect',
@@ -194,7 +194,7 @@ export default class ImageResize {
         });
     };
 
-    checkImage = (evt) => {
+    checkImage(evt) {
         if (this.img) {
             if (evt.keyCode == 46 || evt.keyCode == 8) {
                 window.Quill.find(this.img).deleteAt(0);

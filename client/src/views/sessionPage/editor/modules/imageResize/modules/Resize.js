@@ -2,7 +2,7 @@
 import { BaseModule } from './BaseModule';
 
 export class Resize extends BaseModule {
-    onCreate = () => {
+    onCreate() {
         // track resize handles
         this.boxes = [];
 
@@ -15,12 +15,12 @@ export class Resize extends BaseModule {
         this.positionBoxes();
     };
 
-    onDestroy = () => {
+    onDestroy() {
         // reset drag handle cursors
         this.setCursor('');
     };
 
-    positionBoxes = () => {
+    positionBoxes() {
         const handleXOffset = `${-parseFloat(this.options.handleStyles.width) / 2}px`;
         const handleYOffset = `${-parseFloat(this.options.handleStyles.height) / 2}px`;
 
@@ -35,7 +35,7 @@ export class Resize extends BaseModule {
         });
     };
 
-    addBox = (cursor) => {
+    addBox(cursor) {
         // create div element for resize handle
         const box = document.createElement('div');
 
@@ -55,7 +55,7 @@ export class Resize extends BaseModule {
         this.boxes.push(box);
     };
 
-    handleMousedown = (evt) => {
+    handleMousedown(evt) {
         // note which box
         this.dragBox = evt.target;
         // note starting mousedown position
@@ -69,7 +69,7 @@ export class Resize extends BaseModule {
         document.addEventListener('mouseup', this.handleMouseup, false);
     };
 
-    handleMouseup = () => {
+    handleMouseup() {
         // reset cursor everywhere
         this.setCursor('');
         // stop listening for movement and mouseup
@@ -77,7 +77,7 @@ export class Resize extends BaseModule {
         document.removeEventListener('mouseup', this.handleMouseup);
     };
 
-    handleDrag = (evt) => {
+    handleDrag(evt) {
         if (!this.img) {
             // image not set yet
             return;
@@ -94,7 +94,7 @@ export class Resize extends BaseModule {
         this.requestUpdate();
     };
 
-    setCursor = (value) => {
+    setCursor(value) {
         [
             document.body,
             this.img,
