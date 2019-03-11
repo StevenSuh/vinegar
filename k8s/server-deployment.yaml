@@ -12,22 +12,13 @@ spec:
       labels:
         component: server
     spec:
-      volumes:
-      - name: google-cloud-key
-        secret:
-          secretName: google-credentials
       containers:
       - name: server
         image: stevenesuh/vinegar-server
-        volumeMounts:
-        - name: google-cloud-key
-          mountPath: /var/secrets/google
         ports:
         - containerPort: 5000
         - containerPort: 3000
         env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/secrets/google/key.json
         - name: REDIS_HOST
           value: redis-cluster-ip-service
         - name: REDIS_PORT

@@ -28,10 +28,8 @@ services:
       - /app/server/node_modules
       - ./shared:/app/shared
       - ./server:/app/server
-      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     environment:
       # get the empty values from owner
-      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-credentials.json
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PASSWORD_SALT=
@@ -55,11 +53,29 @@ services:
       - /app/interval/node_modules
       - ./shared:/app/shared
       - ./interval:/app/interval
-      - ./vinegar-credentials.json:/root/.config/vinegar-credentials.json
     depends_on:
       - api
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-credentials.json
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DATABASE_NAME=postgres
+      - POSTGRES_PASSWORD=
+      - POSTGRES_PORT=5432
+  worker:
+    build:
+      dockerfile: ./worker/Dockerfile.dev
+      context: ./
+    volumes:
+      - /app/worker/node_modules
+      - ./shared:/app/shared
+      - ./worker:/app/worker
+      - ./vinegar-google-credentials.json:/root/.config/vinegar-google-credentials.json
+    depends_on:
+      - api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/.config/vinegar-google-credentials.json
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - POSTGRES_USERNAME=postgres

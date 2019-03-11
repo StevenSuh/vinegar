@@ -36,12 +36,16 @@ module.exports = async (_wss, ws, session, user) => {
     isOwner,
   });
 
+  console.log(session.get(Sessions.STATUS));
+  console.log(session.get(Sessions.PARTICIPANTS));
+  console.log(people.length);
+
   if (
     session.get(Sessions.STATUS) === Sessions.STATUS_WAITING &&
     people.length >= session.get(Sessions.PARTICIPANTS)
   ) {
-    const ownerUserName = `user-${session.get(Sessions.OWNER_ID)}`;
-    ws.to(ownerUserName).sendServer(CONTROL_WAIT);
+    const userIdName = `user-${userId}`;
+    ws.to(userIdName).sendServer(CONTROL_WAIT);
   }
 
   ws.onEvent(PEOPLE_DELETE, ({ id }) => {

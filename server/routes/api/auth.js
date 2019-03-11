@@ -47,7 +47,7 @@ module.exports = (app) => {
         const sameSession = (names.schoolName === schoolName) && (names.sessionName === sessionName);
 
         if (sameSession) {
-          const blockCount = await redisClient.hgetAsync(redisClient.sessionBlock({
+          const blockCount = await redisClient.getAsync(redisClient.sessionBlock({
             sessionId,
             userId: req.userId,
           }));

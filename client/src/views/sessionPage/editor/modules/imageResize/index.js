@@ -41,6 +41,8 @@ export default class ImageResize {
 
         this.quill.root.parentNode.style.position = this.quill.root.parentNode.style.position || 'relative';
 
+        this.quill.imageResize = this;
+
         // setup modules
         this.moduleClasses = this.options.modules;
 

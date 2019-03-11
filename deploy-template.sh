@@ -6,6 +6,17 @@ DOCKER_LOGIN=stevenesuh
 DOCKER_PASSWORD=
 DEV=
 
+ALL='true'
+CLIENT=
+SERVER=
+INTERVAL=
+WORKER=
+
+make lint-no-fix
+if [ $? -eq 1 ]; then
+  exit 1
+fi
+
 if [ -z "$SHA" ] || \
    [ -z "$SALT" ] || \
    [ -z "$POSTGRES_PASSWORD" ] || \
@@ -14,7 +25,7 @@ if [ -z "$SHA" ] || \
   echo "You need to set the secrets before deploying."
   exit 1
 fi
-if [ ! -f vinegar-google-credentials.json ]; then
+if [ ! -f "vinegar-google-credentials.json" ]; then
   echo "You need to get GCP credentials before deploying."
   exit 1
 fi
@@ -39,6 +50,22 @@ while test $# -gt 0; do
     --no-cache)
       make reset
       break;;
+    --client)
+      ALL=''
+      CLIENT='true'
+      break;;
+    --server)
+      ALL=''
+      SERVER='true'
+      break;;
+    --interval)
+      ALL=''
+      INTERVAL='true'
+      break;;
+    --worker)
+      ALL=''
+      WORKER='true'
+      break;;
     *)
       break;;
   esac
@@ -54,17 +81,43 @@ else
 fi
 
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
-docker build -t stevenesuh/vinegar-client:latest -t stevenesuh/vinegar-client:$SHA -f ./client/Dockerfile ./client
-docker build -t stevenesuh/vinegar-server:latest -t stevenesuh/vinegar-server:$SHA -f ./server/Dockerfile .
+
+if [ "$ALL" == 'true' ] ||
+   [ "$CLIENT" == 'true' ]; then
+  ls client
+  if [ $? -eq 1 ]; then
+    echo "The script is being called from wrong directory."
+    exit 1
+  fi
+  cd client && yarn build
+  cd .. && cp -rf client/dist/css shared
+  rm -rf client/dist
+
+  docker build -t stevenesuh/vinegar-client:latest -t stevenesuh/vinegar-client:$SHA -f ./client/Dockerfile ./client
+  docker push stevenesuh/vinegar-client:latest
+  docker push stevenesuh/vinegar-client:$SHA
+fi
+
+if [ "$ALL" == 'true' ] ||
+   [ "$SERVER" == 'true' ]; then
+  docker build -t stevenesuh/vinegar-server:latest -t stevenesuh/vinegar-server:$SHA -f ./server/Dockerfile .
+  docker push stevenesuh/vinegar-server:latest
+  docker push stevenesuh/vinegar-server:$SHA
+fi
+
+if [ "$ALL" == 'true' ] ||
+   [ "$INTERVAL" == 'true' ]; then
 docker build -t stevenesuh/vinegar-interval:latest -t stevenesuh/vinegar-interval:$SHA -f ./interval/Dockerfile .
-
-docker push stevenesuh/vinegar-client:latest
-docker push stevenesuh/vinegar-server:latest
 docker push stevenesuh/vinegar-interval:latest
-
-docker push stevenesuh/vinegar-client:$SHA
-docker push stevenesuh/vinegar-server:$SHA
 docker push stevenesuh/vinegar-interval:$SHA
+fi
+
+if [ "$ALL" == 'true' ] ||
+   [ "$WORKER" == 'true' ]; then
+  docker build -t stevenesuh/vinegar-worker:latest -t stevenesuh/vinegar-worker:$SHA -f ./worker/Dockerfile .
+  docker push stevenesuh/vinegar-worker:latest
+  docker push stevenesuh/vinegar-worker:$SHA
+fi
 
 # one-time tiller service activation
 kubectl get serviceaccount --namespace kube-system tiller
@@ -87,6 +140,9 @@ if [ $? -eq 1 ]; then
     --namespace cert-manager \
     --version v0.6.6 \
     stable/cert-manager
+else
+  REDIS_POD=$(kubectl get pods -o name | grep redis-deployment | cut -c 5-)
+  kubectl exec -it "$REDIS_POD" redis-cli DEL robin:total robin:rotate
 fi
 
 kubectl get secret google-credentials
@@ -114,3 +170,4 @@ kubectl apply -f k8s
 kubectl set image deployments/client-deployment client=stevenesuh/vinegar-client:$SHA
 kubectl set image deployments/server-deployment server=stevenesuh/vinegar-server:$SHA
 kubectl set image deployments/interval-deployment interval=stevenesuh/vinegar-interval:$SHA
+kubectl set image deployments/worker-deployment worker=stevenesuh/vinegar-worker:$SHA

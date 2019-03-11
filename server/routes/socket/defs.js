@@ -10,6 +10,7 @@ module.exports = {
   CHAT_SCROLL: 'chat:onChatScroll',
 
   CONTROL_ENTER: 'control:onEnter',
+  CONTROL_DOWNLOAD: 'control:onDownload',
   CONTROL_INIT: 'control:onInit',
   CONTROL_INTERVAL: 'control:onInterval',
   CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
@@ -47,6 +48,7 @@ module.exports = {
 
     CONTROL_INTERVAL: 'control:onInterval',
     CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
+    CONTROL_WAIT: 'control:onWait',
 
     EDITOR_TEXT_UPDATE: 'editor:onEditorTextUpdate',
     EDITOR_CONTENT_UPDATE: 'editor:onEditorContentUpdate',

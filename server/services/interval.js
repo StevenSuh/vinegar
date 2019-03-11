@@ -3,7 +3,11 @@ const redis = require('redis');
 const redisClient = require('services/redis');
 
 const { ROBIN_ROTATE, ROBIN_TOTAL } = require('defs');
-const { INTERVAL_CREATE, INTERVAL_REASSIGN, INTERVAL_SETUP } = require('routes/socket/defs');
+const {
+  INTERVAL_CREATE,
+  INTERVAL_REASSIGN,
+  INTERVAL_SETUP,
+} = require('routes/socket/defs');
 
 const publisher = redis.createClient({
   host: process.env.REDIS_HOST,
@@ -18,7 +22,7 @@ publisher.publishEvent = (type, data) => {
   publisher.publish(type, JSON.stringify(data));
 };
 
-const setupInterval = async (sessionId) => {
+const setupInterval = async (sessionId, recreate, reassign) => {
   const total = parseInt(await redisClient.getAsync(ROBIN_TOTAL) || 0, 10);
   if (total === 0) {
     throw new Error('There are no interval services running.');
@@ -28,10 +32,18 @@ const setupInterval = async (sessionId) => {
 
   console.log(robinId, total, sessionId);
 
-  publisher.publishEvent(INTERVAL_SETUP, { robinId, sessionId });
+  const data = { robinId, sessionId };
+  if (recreate) {
+    data.recreate = recreate;
+  }
+  if (reassign) {
+    data.userId = reassign;
+  }
+  publisher.publishEvent(INTERVAL_SETUP, data);
 };
 
 const createInterval = async (sessionId) => {
+  console.log('createInterval');
   const robinId = await redisClient.getAsync(redisClient.robinQuery({ sessionId }));
 
   if (robinId !== null) {
@@ -40,15 +52,7 @@ const createInterval = async (sessionId) => {
       sessionId,
     });
   } else {
-    console.error('Session', sessionId, 'has no robinId when createInterval');
-  }
-};
-
-const createExistingInterval = async (sessionId) => {
-  const robinId = await redisClient.getAsync(redisClient.robinQuery({ sessionId }));
-
-  if (robinId === null) {
-    await createInterval(sessionId);
+    await setupInterval(sessionId, true);
   }
 };
 
@@ -62,13 +66,12 @@ const reassignInterval = async (sessionId, userId) => {
       userId,
     });
   } else {
-    console.error('Session', sessionId, 'has no robinId when reassignInterval');
+    await setupInterval(sessionId, true, userId);
   }
 };
 
 module.exports = {
   createInterval,
-  createExistingInterval,
   reassignInterval,
   setupInterval,
 };

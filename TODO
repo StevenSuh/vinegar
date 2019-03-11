@@ -13,5 +13,6 @@ product:
 - add send button to chat (use arrow)
 - add upvote downvote feature
 - add tooltips to owner/interval icons
+- remove phone number to email
 
 bugs:

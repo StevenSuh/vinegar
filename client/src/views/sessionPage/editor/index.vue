@@ -148,6 +148,7 @@ export default {
     },
     onClickCollapse(e) {
       e.stopPropagation();
+      this.editor.imageResize.repositionElements();
     },
     onExtendBlur,
     onResizeCollapse,

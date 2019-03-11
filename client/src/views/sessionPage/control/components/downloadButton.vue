@@ -27,26 +27,19 @@
 </template>
 
 <script>
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { socketMixin } from '@/services/socket';
 
 import Loader from '@/components/loader';
 import Tooltip from '@/components/tooltip';
 
 import DownloadIcon from '@/assets/download.png';
 
-import RubikLight from './Rubik-Light-light';
-import RubikBold from './Rubik-Medium-bold';
-import RubikNormal from './Rubik-Regular-normal';
-
-// connecting html2canvas for using with jsPDF
-window.html2canvas = html2canvas;
-
 export default {
   components: {
     Loader,
     Tooltip,
   },
+  mixins: [socketMixin],
   props: {
     socket: [Object, WebSocket],
   },
@@ -64,44 +57,7 @@ export default {
         this.isDownloading = true;
         this.isLoading = true;
 
-        const editor = document.getElementsByClassName('ql-editor')[0];
-        const pageHeight =
-          editor.clientWidth * 1.2941 > editor.scrollHeight
-            ? editor.clientWidth * 1.2941
-            : editor.scrollHeight;
-        const pdf = new jsPDF('p', 'pt', [editor.clientWidth, pageHeight + 15]);
-
-        // custom font
-        pdf.addFileToVFS('Rubik-Regular.ttf', RubikNormal);
-        pdf.addFileToVFS('Rubik-Medium.ttf', RubikBold);
-        pdf.addFileToVFS('Rubik-Light.ttf', RubikLight);
-        pdf.addFont('Rubik-Regular.ttf', 'rubik', 'normal');
-        pdf.addFont('Rubik-Medium.ttf', 'rubik', 'bold');
-        pdf.addFont('Rubik-Light.ttf', 'rubik', 'light');
-
-        // html2canvas uses window.devicePixelRatio (which is 2), which is too large
-        const { defaultPixelRatio } = window;
-        window.devicePixelRatio = 1;
-        pdf.html(editor, {
-          callback: generatedPdf => {
-            const { school, session } = this.$route.params;
-
-            const a = document.createElement('a');
-            a.href = generatedPdf.output('datauristring');
-            a.download = `${school}-${session}.pdf`;
-            a.target = '_blank';
-            a.click();
-
-            // reset window.devicePixelRatio to default;
-            window.devicePixelRatio = defaultPixelRatio;
-            this.isDownloading = false;
-            if (!this.mouseover) {
-              this.reset = true;
-            } else {
-              this.isLoading = false;
-            }
-          },
-        });
+        this.socket.sendEvent('control:onDownload');
       }
     },
     onResetDownload() {
@@ -114,6 +70,24 @@ export default {
     },
     onMouseLeave() {
       this.mouseover = false;
+    },
+  },
+  sockets: {
+    'control:onDownload': function({ url }) {
+      this.isDownloading = false;
+
+      const { school, session } = this.$route.params;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${school}-${session}.pdf`;
+      a.target = '_blank';
+      a.click();
+
+      if (!this.mouseover) {
+        this.reset = true;
+      } else {
+        this.isLoading = false;
+      }
     },
   },
 };

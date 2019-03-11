@@ -79,7 +79,7 @@
             @onChange="onNameChange"
           />
         </div>
-        <div class="marginTop small">
+        <!-- <div class="marginTop small">
           <h6 class="input-title">
             Phone (optional):
           </h6>
@@ -98,7 +98,7 @@
             :value="phone"
             @onChange="onPhoneChange"
           />
-        </div>
+        </div> -->
         <p class="how-works paddingTop">
           How this works:
         </p>

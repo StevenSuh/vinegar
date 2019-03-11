@@ -6,7 +6,7 @@
     <p class="find-action-message paddingTop small">
       Let's help you get started.
     </p>
-    <div class="find-action-wrapper">
+    <div class="find-action-wrapper paddingBottom">
       <router-link
         class="find-action join"
         tag="div"
@@ -164,7 +164,7 @@ export default {
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 450px) {
   .find-action {
     padding-top: 90%;
     width: 90%;

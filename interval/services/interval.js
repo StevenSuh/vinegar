@@ -185,6 +185,8 @@ class Interval {
     this.jobs = jobs;
     this.intervals = await Promise.all(promises);
 
+    console.log(this.count, this.intervals.length);
+
     this.startInterval(true);
   }
 
@@ -268,6 +270,7 @@ class Interval {
     // warning before session is terminated
     await sleep(SESSION_END_DURATION);
     const people = await this.session.getUsers({ where: { active: true }});
+    console.log(people);
     const userIdName = `user-${people[0].get(Users.ID)}`;
     this.publisher.to(userIdName).publishServer(INTERVAL_REMIND);
 

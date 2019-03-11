@@ -1,9 +1,3 @@
-deploy:
-	make lint-fix && make test && \
-	ls deploy.sh && bash deploy.sh
-deploy-no-cache:
-	make lint-fix && make test && \
-	ls deploy.sh && bash deploy.sh --no-cache
 test:
 	echo "There are no tests at the moment"
 dev:
@@ -11,43 +5,46 @@ dev:
 install:
 	cd client && yarn & \
 	cd ../server && yarn & \
-	cd ../interval && yarn
+	cd ../interval && yarn & \
+	cd ../worker && yarn
 prettier:
 	prettier --write **/*.js **/*.vue
 lint:
 	make prettier && \
 	cd client && yarn lint --fix && \
 	cd ../server && yarn lint --fix && \
-	cd ../interval && yarn lint --fix
-lint-fix:
+	cd ../interval && yarn lint --fix && \
+	cd ../worker && yarn lint --fix
+lint-no-fix:
 	cd client && yarn lint && \
 	cd ../server && yarn lint && \
-	cd ../interval && yarn lint
+	cd ../interval && yarn lint && \
+	cd ../worker && yarn lint
 
 
+update-css:
+	cd client && yarn build && \
+	cd .. && rm -rf shared/css && cp -rf client/dist/css shared && \
+	rm -rf client/dist
 serve:
 	make reset-redis; docker-compose up
 serve-build:
 	docker-compose up --build
-delete-client:
-	docker rm $(shell docker ps -aqf "name=client")
-delete-api:
-	docker rm $(shell docker ps -aqf "name=api")
-delete-interval:
-	docker rm $(shell docker ps -aqf "name=interval")
-clear-node-modules:
-	cd client && rm -rf node_modules && \
-	cd ../server && rm -rf node_modules && \
-	cd ../interval && rm -rf node_modules
-serve-no-cache:
-	make delete-client && \
-	make delete-api && \
-	make delete-interval && \
-	docker-compose build --no-cache && make serve
 serve-reset:
 	make reset; \
 	docker-compose build --no-cache && \
 	docker-compose up
+
+
+REDIS_POD = kube-redis
+kube-redis: REDIS_POD = $(shell kubectl get pods -o name | grep redis-deployment | cut -c 5-)
+kube-redis:
+	kubectl exec -it $(REDIS_POD) sh
+
+POSTGRES_POD = kube-postgres
+kube-postgres: POSTGRES_POD = $(shell kubectl get pods -o name | grep postgres-deployment | cut -c 5-)
+kube-postgres:
+	kubectl exec -it $(POSTGRES_POD) sh
 
 
 reset:
@@ -59,7 +56,8 @@ reset:
 update:
 	docker exec -it $(shell docker ps -qf "name=client") sh -c 'rm -f yarn.lock && yarn' && \
 	docker exec -it $(shell docker ps -qf "name=api") sh -c 'rm -f yarn.lock && yarn' && \
-	docker exec -it $(shell docker ps -qf "name=interval") sh -c 'rm -f yarn.lock && yarn'
+	docker exec -it $(shell docker ps -qf "name=interval") sh -c 'rm -f yarn.lock && yarn' && \
+	docker exec -it $(shell docker ps -qf "name=worker") sh -c 'rm -f yarn.lock && yarn'
 start-redis:
 	docker container start $(shell docker ps -aqf "name=redis")
 stop-redis:

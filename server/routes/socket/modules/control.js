@@ -1,14 +1,15 @@
 const {
   createInterval,
-  createExistingInterval,
   reassignInterval,
 } = require('services/interval');
+const { createPdf } = require('services/worker');
 
 const Intervals = require('db/intervals/model');
 const Sessions = require('db/sessions/model');
 const Users = require('db/users/model');
 
 const {
+  CONTROL_DOWNLOAD,
   CONTROL_ENTER,
   CONTROL_INIT,
   CONTROL_INTERVAL,
@@ -27,7 +28,7 @@ module.exports = async (wss, ws, session, user) => {
   const isOwner = session.get(Sessions.OWNER_ID) === userId;
 
   if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
-    await createExistingInterval(sessionId);
+    await createInterval(sessionId);
   }
 
   const currIntervalId = session.get(Sessions.CURRENT_INTERVAL_ID);
@@ -70,13 +71,7 @@ module.exports = async (wss, ws, session, user) => {
     const isFull = participants <= people.length;
     const update = { participants, status: Sessions.STATUS_WAITING };
 
-    if (isFull) {
-      update.status = Sessions.STATUS_ACTIVE;
-      update.endTime = Date.now() + session.get(Sessions.DURATION);
-    }
-
     await session.update(update);
-
     if (isFull) {
       await createInterval(sessionId);
     } else {
@@ -85,10 +80,6 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.onServer(CONTROL_WAIT, async () => {
-    if (!isOwner) {
-      return;
-    }
-
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_WAITING) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
@@ -103,13 +94,11 @@ module.exports = async (wss, ws, session, user) => {
       return;
     }
 
-    const update = {
-      endTime: Date.now() + session.get(Sessions.DURATION),
-      status: Sessions.STATUS_ACTIVE,
-    };
-
-    await session.update(update);
     await createInterval(sessionId);
+  });
+
+  ws.onEvent(CONTROL_DOWNLOAD, async () => {
+    createPdf(sessionId, userId);
   });
 
   ws.on('close', async () => {
