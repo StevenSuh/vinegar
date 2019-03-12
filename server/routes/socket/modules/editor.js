@@ -4,13 +4,13 @@ const Users = require('db/users/model');
 const {
   EDITOR_ENTER,
   EDITOR_TEXT_UPDATE,
+  EDITOR_CONTENT_REQUEST,
   EDITOR_CONTENT_UPDATE,
   EDITOR_SELECTION_UPDATE,
   EDITOR_SELECTION_REMOVE,
   SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
-const { CONTENT_UPDATE_DUR } = require('defs');
 const { deflate, inflate } = require('utils');
 
 module.exports = (_wss, ws, session, user) => {
@@ -21,8 +21,6 @@ module.exports = (_wss, ws, session, user) => {
   const color = user.get(Users.COLOR);
   const name = user.get(Users.NAME);
 
-  let updateTimeout = null;
-
   ws.onEvent(EDITOR_ENTER, () => {
     const sessionContent = inflate(session.get(Sessions.CONTENT));
     ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data: sessionContent });
@@ -32,16 +30,18 @@ module.exports = (_wss, ws, session, user) => {
       ws.to(sessionName).sendEvent(EDITOR_TEXT_UPDATE, { data });
     });
 
-    ws.onEvent(EDITOR_CONTENT_UPDATE, (data) => {
-      if (!data.content) {
+    ws.onEvent(EDITOR_CONTENT_UPDATE, ({ content }) => {
+      if (!content) {
         ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid editor content.' });
         return;
       }
+      session.update({ content: deflate(content) });
+    });
 
-      clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(({ content }) => {
-        session.update({ content: deflate(content) });
-      }, CONTENT_UPDATE_DUR, data);
+    ws.onEvent(EDITOR_CONTENT_REQUEST, async () => {
+      session = await session.reload();
+      const content = inflate(session.get(Sessions.CONTENT));
+      ws.sendEvent(EDITOR_CONTENT_REQUEST, { content });
     });
 
     ws.onEvent(EDITOR_SELECTION_UPDATE, ({ data }) => {

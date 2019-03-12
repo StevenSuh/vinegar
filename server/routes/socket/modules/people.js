@@ -50,6 +50,7 @@ module.exports = async (_wss, ws, session, user) => {
     if (isOwner) {
       const targetUser = `user-${id}`;
       redisClient.incrAsync(redisClient.sessionBlock({ sessionId, userId: id }));
+      ws.to(targetUser).sendEvent(PEOPLE_DELETE);
       ws.to(targetUser).sendServer(SOCKET_CLOSE);
     }
   });

@@ -14,7 +14,7 @@ const WsWrapper = (ws) => {
   const wsEvents = [];
   ws.id = uuidv4();
 
-  ws.sessions = [];
+  ws.sessions = [ws.id];
   ws.join = (sessionId) => {
     ws.sessions.push(sessionId);
   };
@@ -28,7 +28,6 @@ const WsWrapper = (ws) => {
   };
 
   ws.on('message', (message) => {
-
     if (message === 'pong') {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send('ping');

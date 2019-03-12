@@ -30,6 +30,7 @@ import { EmptySocket, initSocket } from '@/services/socket';
 import {
   connectErrorMiddlewareWithCallback,
   disconnectErrorMiddleware,
+  handleErrorMiddleware,
 } from '@/services/middleware';
 
 import Welcome from '@/views/sessionPage/welcomeModal';
@@ -62,7 +63,19 @@ export default {
     this.socket.closeSocket();
   },
   methods: {
-    onError(msg) {
+    onSlowConnection() {
+      window.addEventListener('online', this.onFastConnection);
+    },
+    onFastConnection() {
+      window.removeEventListener('online', this.onFastConnection);
+      handleErrorMiddleware(
+        'Detected slow internet... Try refreshing once connected.',
+      );
+    },
+    onError(msg, type) {
+      if (type !== 'socket') {
+        return;
+      }
       this.errorModal = { header: 'An error has occurred.', msg };
       this.show = true;
     },

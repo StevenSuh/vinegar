@@ -88,6 +88,7 @@ export default {
       prevFocus: null,
       sizes: FONT_SIZES,
       height: HEIGHT_SIZES,
+      updateFn: () => {},
       updateTimeout: null,
     };
   },
@@ -127,15 +128,28 @@ export default {
     window.addEventListener('click', this.onCheckBlur);
     window.addEventListener('click', this.onExtendBlur);
     window.addEventListener('resize', this.onResizeCollapse);
+    window.addEventListener('offline', this.onSlowConnection);
+    window.updateFn = () => {};
     this.editor.root.addEventListener('scroll', this.onScrollEditor);
   },
   beforeDestroy() {
+    clearTimeout(this.updateTimeout);
+    this.updateFn();
+
     window.removeEventListener('click', this.onCheckBlur);
     window.removeEventListener('click', this.onExtendBlur);
     window.removeEventListener('resize', this.onResizeCollapse);
+    window.removeEventListener('offline', this.onSlowConnection);
     this.editor.root.removeEventListener('scroll', this.onScrollEditor);
   },
   methods: {
+    onSlowConnection() {
+      window.addEventListener('online', this.onFastConnection);
+    },
+    onFastConnection() {
+      window.removeEventListener('online', this.onFastConnection);
+      this.socket.sendEvent('editor:onEditorContentRequest');
+    },
     checkForEnter,
     initEditor,
     onFocusEditor() {
@@ -178,7 +192,6 @@ export default {
   sockets: {
     pong() {
       const range = this.editor.getSelection();
-
       if (range) {
         this.socket.sendEvent('editor:onEditorSelectionUpdate', {
           data: range,

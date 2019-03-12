@@ -112,9 +112,12 @@ export function textUpdate(delta, _oldDelta, source) {
     this.socket.sendEvent('editor:onEditorTextUpdate', { data: delta });
 
     clearTimeout(this.updateTimeout);
-    this.updateTimeout = setTimeout(() => {
+    this.updateFn = () => {
       this.socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.root.innerHTML });
-    }, CONTENT_UPDATE_DUR);
+      this.updateFn = () => {};
+      this.updateTimeout = null;
+    };
+    this.updateTimeout = setTimeout(this.updateFn, CONTENT_UPDATE_DUR);
   }
 }
 

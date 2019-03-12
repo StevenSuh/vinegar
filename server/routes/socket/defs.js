@@ -18,6 +18,7 @@ module.exports = {
 
   EDITOR_ENTER: 'editor:onEnter',
   EDITOR_TEXT_UPDATE: 'editor:onEditorTextUpdate',
+  EDITOR_CONTENT_REQUEST: 'editor:onEditorContentRequest',
   EDITOR_CONTENT_UPDATE: 'editor:onEditorContentUpdate',
   EDITOR_SELECTION_UPDATE: 'editor:onEditorSelectionUpdate',
   EDITOR_SELECTION_REMOVE: 'editor:onEditorSelectionRemove',
@@ -51,6 +52,7 @@ module.exports = {
     CONTROL_WAIT: 'control:onWait',
 
     EDITOR_TEXT_UPDATE: 'editor:onEditorTextUpdate',
+    EDITOR_CONTENT_REQUEST: 'editor:onEditorContentRequest',
     EDITOR_CONTENT_UPDATE: 'editor:onEditorContentUpdate',
     EDITOR_SELECTION_UPDATE: 'editor:onEditorSelectionUpdate',
     EDITOR_SELECTION_REMOVE: 'editor:onEditorSelectionRemove',

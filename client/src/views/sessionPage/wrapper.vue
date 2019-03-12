@@ -73,6 +73,7 @@ export default {
   data() {
     return {
       // state
+      deleted: false,
       school: this.$route.params.school,
       session: this.$route.params.session,
       show: false,
@@ -101,9 +102,21 @@ export default {
       handleErrorMiddleware(err, 'socket');
     },
     close() {
+      if (this.deleted) {
+        return;
+      }
       const { school, session } = this;
       handleErrorMiddleware(
         `You have been disconnected from session: ${school}/${session}.`,
+        'socket',
+      );
+      this.socket.closeSocket();
+    },
+    'people:onDelete': function() {
+      this.deleted = true;
+      const { school, session } = this;
+      handleErrorMiddleware(
+        `You have been kicked from session: ${school}/${session}.`,
         'socket',
       );
       this.socket.closeSocket();

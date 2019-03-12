@@ -113,7 +113,7 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.onEvent(CONTROL_DOWNLOAD, async () => {
-    createPdf(sessionId, userId);
+    createPdf(sessionId, ws.id);
   });
 
   ws.on('close', async () => {

@@ -27,8 +27,8 @@ cssFiles.forEach(file => {
   );
 });
 
-addCallback(PDF_CREATE, async ({ sessionId, userId, workerId }) => {
-  console.log(PDF_CREATE, sessionId, userId, workerId);
+addCallback(PDF_CREATE, async ({ sessionId, uuid, workerId }) => {
+  console.log(PDF_CREATE, sessionId, uuid, workerId);
   if (!workerId) {
     throw new Error('workerId must be defined');
   }
@@ -77,8 +77,8 @@ addCallback(PDF_CREATE, async ({ sessionId, userId, workerId }) => {
   await pdf.generateSignedUrl();
 
   const { url } = pdf;
-  const userIdName = `user-${userId}`;
-  publisher.to(userIdName).publishEvent(CONTROL_DOWNLOAD, { url });
+  const uuidName = `user-${uuid}`;
+  publisher.to(uuidName).publishEvent(CONTROL_DOWNLOAD, { url });
 });
 
 subscriber.subscribe(...Object.values(SUBSCRIBE_EVENTS));
