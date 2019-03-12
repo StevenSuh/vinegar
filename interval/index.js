@@ -23,14 +23,12 @@ getRoundRobinId();
 addCallback(
   INTERVAL_SETUP,
   async ({ recreate, robinId, sessionId, userId }) => {
-    const clientRobinId = await getRoundRobinId();
-    console.log(clientRobinId);
-
     if (robinId === undefined || robinId === null) {
       throw new Error(
         `RobinId must be defined ${robinId}, sessionId ${sessionId}`,
       );
     }
+    const clientRobinId = await getRoundRobinId();
     if (robinId !== clientRobinId) {
       return;
     }
@@ -79,7 +77,6 @@ addCallback(INTERVAL_CREATE, async ({ robinId, sessionId }) => {
 });
 
 addCallback(INTERVAL_REASSIGN, async ({ sessionId, robinId, userId }) => {
-  console.log(INTERVAL_REASSIGN, sessionId, robinId, userId);
   if (robinId === undefined || robinId === null) {
     throw new Error(
       `RobinId must be defined ${robinId}, sessionId ${sessionId}`,

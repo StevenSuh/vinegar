@@ -1,6 +1,9 @@
 <template>
   <div class="editor">
-    <div ref="toolbar" @click="onClickToolbar">
+    <div
+      ref="toolbar"
+      @click="onClickToolbar"
+    >
       <div
         ref="open"
         class="open"
@@ -150,7 +153,7 @@ export default {
       e.stopPropagation();
       this.editor.imageResize.repositionElements();
     },
-    onClickToolbar(e) {
+    onClickToolbar() {
       this.editor.imageResize.repositionElements();
     },
     onExtendBlur,
@@ -177,7 +180,9 @@ export default {
       const range = this.editor.getSelection();
 
       if (range) {
-        this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
+        this.socket.sendEvent('editor:onEditorSelectionUpdate', {
+          data: range,
+        });
       }
       try {
         this.editor.getModule('cursors').update();

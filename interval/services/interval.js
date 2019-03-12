@@ -190,7 +190,6 @@ class Interval {
     this.jobs = jobs;
     this.intervals = await Promise.all(promises);
 
-    console.log('beforeStartInterval', this.count, this.intervals.length);
 
     this.startInterval(true);
   }
@@ -239,16 +238,10 @@ class Interval {
     this.current += 1;
 
     const currentInterval = this.intervals[this.current];
-
-    console.log('inStartInterval', this.current, this.intervals.length);
-    console.log(currentInterval.get({ plain: true }));
-
     await this.session.update({ currentIntervalId: currentInterval.get(Intervals.ID) });
 
     // update current user view
     this.notifyUser(currentInterval, true);
-
-    console.log(currentInterval.get(Intervals.USERNAME));
 
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
       intervalUserName: currentInterval.get(Intervals.USERNAME),
@@ -281,7 +274,6 @@ class Interval {
     // warning before session is terminated
     await sleep(SESSION_END_DURATION);
     const people = await this.session.getUsers({ where: { active: true }});
-    console.log(people);
     const userIdName = `user-${people[0].get(Users.ID)}`;
     this.publisher.to(userIdName).publishServer(INTERVAL_REMIND);
 
@@ -299,9 +291,6 @@ class Interval {
   }
 
   async reassignInterval(userId) {
-    console.log('reassignInterval', this.current, this.intervals.length);
-    console.log(userId, this.intervals.map(interval => interval.get({ plain: true })));
-
     const targetIndex = this.intervals.findIndex(interval =>
       userId === interval.get(Intervals.USER_ID));
 

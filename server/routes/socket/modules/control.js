@@ -65,6 +65,8 @@ module.exports = async (wss, ws, session, user) => {
       return;
     }
 
+    await session.reload();
+
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_CREATED) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
@@ -89,8 +91,9 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.onServer(CONTROL_WAIT, async () => {
+    await session.reload();
+
     const status = session.get(Sessions.STATUS);
-    console.log(CONTROL_WAIT, status);
     if (status !== Sessions.STATUS_WAITING) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
       return;
@@ -113,7 +116,6 @@ module.exports = async (wss, ws, session, user) => {
 
   ws.on('close', async () => {
     await session.reload();
-    console.log('calling reassignInterval', sessionId, userId, session.get(Sessions.STATUS));
 
     if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
       reassignInterval(sessionId, userId);

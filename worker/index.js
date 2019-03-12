@@ -17,9 +17,14 @@ const { CONTROL_DOWNLOAD, PDF_CREATE, SUBSCRIBE_EVENTS } = require('defs');
 getWorkerId();
 
 let styles = '';
-const cssFiles = fs.readdirSync(path.resolve(__dirname, 'node_modules', 'client-css'));
+const cssFiles = fs.readdirSync(
+  path.resolve(__dirname, 'node_modules', 'client-css'),
+);
 cssFiles.forEach(file => {
-  styles += fs.readFileSync(path.resolve(__dirname, 'node_modules', 'client-css', file), 'utf8');
+  styles += fs.readFileSync(
+    path.resolve(__dirname, 'node_modules', 'client-css', file),
+    'utf8',
+  );
 });
 
 addCallback(PDF_CREATE, async ({ sessionId, userId, workerId }) => {

@@ -30,7 +30,6 @@ const setupInterval = async (sessionId, recreate, reassign) => {
   const robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE), 10);
   redisClient.setAsync(ROBIN_ROTATE, robinId % total);
 
-  console.log(robinId, total, sessionId);
 
   const data = { robinId, sessionId };
   if (recreate) {
@@ -44,7 +43,6 @@ const setupInterval = async (sessionId, recreate, reassign) => {
 
 const createInterval = async (sessionId) => {
   const robinId = await redisClient.getAsync(redisClient.robinQuery({ sessionId }));
-  console.log('createInterval', robinId);
 
   if (robinId !== null) {
     publisher.publishEvent(INTERVAL_CREATE, {
@@ -58,7 +56,6 @@ const createInterval = async (sessionId) => {
 
 const reassignInterval = async (sessionId, userId) => {
   const robinId = await redisClient.getAsync(redisClient.robinQuery({ sessionId }));
-  console.log('reassignInterval', robinId);
 
   if (robinId !== null) {
     publisher.publishEvent(INTERVAL_REASSIGN, {

@@ -93,11 +93,9 @@ const setupSocketClose = (ws) => {
 };
 
 const setupSocketDuplicate = (ws, userSessionName) => {
-  console.log(ws.id);
   ws.to(userSessionName).sendServer(SOCKET_DUPLICATE, { id: ws.id });
 
   ws.onServer(SOCKET_DUPLICATE, ({ id: newWsId }) => {
-    console.log(newWsId, ws.id);
     if (newWsId !== ws.id) {
       ws.sendEvent(SOCKET_DUPLICATE);
       ws.close();

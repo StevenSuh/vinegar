@@ -52,7 +52,6 @@ export default {
       }
     },
     'interval:onStatus': function({ startTime }) {
-      console.log(startTime);
       this.startTime = startTime;
     },
   },
