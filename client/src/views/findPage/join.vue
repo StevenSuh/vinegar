@@ -61,6 +61,9 @@ export default {
       searchResult: [],
     };
   },
+  mounted() {
+    this.track();
+  },
   methods: {
     onClearSearch() {
       this.searchResult = [];
@@ -79,6 +82,9 @@ export default {
         ? this.searchResult.concat(result)
         : result;
       this.searched = true;
+    },
+    track() {
+      this.$ga.page('/app/join');
     },
   },
 };

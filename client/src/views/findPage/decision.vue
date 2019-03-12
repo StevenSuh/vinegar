@@ -61,6 +61,14 @@ export default {
       joinBoxImage,
     };
   },
+  mounted() {
+    this.track();
+  },
+  methods: {
+    track() {
+      this.$ga.page('/app/find');
+    },
+  },
 };
 </script>
 

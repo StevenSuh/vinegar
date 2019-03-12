@@ -397,6 +397,7 @@ export default {
   },
   mounted() {
     this.show = true;
+    this.track();
   },
   methods: {
     onClickAbout() {
@@ -407,6 +408,9 @@ export default {
         top,
         behavior: 'smooth',
       });
+    },
+    track() {
+      this.$ga.page('/');
     },
   },
 };

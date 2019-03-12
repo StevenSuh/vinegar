@@ -143,6 +143,9 @@ export default {
       this.isLoading = false;
     });
   },
+  mounted() {
+    this.track();
+  },
   methods: {
     async onCreateFormSubmit(e) {
       e.preventDefault();
@@ -236,6 +239,9 @@ export default {
     },
     onSessionNameChange(value) {
       this.sessionName = value;
+    },
+    track() {
+      this.$ga.page('/app/create');
     },
   },
 };

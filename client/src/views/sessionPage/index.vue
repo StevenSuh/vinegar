@@ -58,6 +58,9 @@ export default {
   created() {
     connectErrorMiddlewareWithCallback(this, this.onError);
   },
+  mounted() {
+    this.track();
+  },
   beforeDestroy() {
     disconnectErrorMiddleware(this, this.onError);
     this.socket.closeSocket();
@@ -110,6 +113,10 @@ export default {
       this.onInit(() => {
         this.show = true;
       });
+    },
+    track() {
+      const { school, session } = this.$route.params;
+      this.$ga.page(`/app/session/${school}/${session}`);
     },
   },
 };

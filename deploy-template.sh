@@ -12,6 +12,8 @@ SERVER=
 INTERVAL=
 WORKER=
 
+START_TIME=$(date +%s)
+
 make lint-no-fix
 if [ $? -eq 1 ]; then
   exit 1
@@ -90,7 +92,7 @@ if [ "$ALL" == 'true' ] ||
     exit 1
   fi
   cd client && yarn build
-  cd .. && cp -rf client/dist/css shared
+  cd .. && rm -rf shared/css && cp -rf client/dist/css shared
   rm -rf client/dist
 
   docker build -t stevenesuh/vinegar-client:latest -t stevenesuh/vinegar-client:$SHA -f ./client/Dockerfile ./client
@@ -107,13 +109,19 @@ fi
 
 if [ "$ALL" == 'true' ] ||
    [ "$INTERVAL" == 'true' ]; then
-docker build -t stevenesuh/vinegar-interval:latest -t stevenesuh/vinegar-interval:$SHA -f ./interval/Dockerfile .
-docker push stevenesuh/vinegar-interval:latest
-docker push stevenesuh/vinegar-interval:$SHA
+  REDIS_POD=$(kubectl get pods -o name | grep redis-deployment | cut -c 5-)
+  kubectl exec -it "$REDIS_POD" redis-cli DEL robin:total robin:rotate
+
+  docker build -t stevenesuh/vinegar-interval:latest -t stevenesuh/vinegar-interval:$SHA -f ./interval/Dockerfile .
+  docker push stevenesuh/vinegar-interval:latest
+  docker push stevenesuh/vinegar-interval:$SHA
 fi
 
 if [ "$ALL" == 'true' ] ||
    [ "$WORKER" == 'true' ]; then
+  REDIS_POD=$(kubectl get pods -o name | grep redis-deployment | cut -c 5-)
+  kubectl exec -it "$REDIS_POD" redis-cli DEL worker:total worker:rotate
+
   docker build -t stevenesuh/vinegar-worker:latest -t stevenesuh/vinegar-worker:$SHA -f ./worker/Dockerfile .
   docker push stevenesuh/vinegar-worker:latest
   docker push stevenesuh/vinegar-worker:$SHA
@@ -140,9 +148,6 @@ if [ $? -eq 1 ]; then
     --namespace cert-manager \
     --version v0.6.6 \
     stable/cert-manager
-else
-  REDIS_POD=$(kubectl get pods -o name | grep redis-deployment | cut -c 5-)
-  kubectl exec -it "$REDIS_POD" redis-cli DEL robin:total robin:rotate
 fi
 
 kubectl get secret google-credentials
@@ -166,8 +171,33 @@ if [ $? -eq 1 ]; then
   # kubectl create secret generic postgrespassword --from-literal POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 fi
 
-kubectl apply -f k8s
-kubectl set image deployments/client-deployment client=stevenesuh/vinegar-client:$SHA
-kubectl set image deployments/server-deployment server=stevenesuh/vinegar-server:$SHA
-kubectl set image deployments/interval-deployment interval=stevenesuh/vinegar-interval:$SHA
-kubectl set image deployments/worker-deployment worker=stevenesuh/vinegar-worker:$SHA
+if [ "$ALL" == 'true' ]; then
+  kubectl apply -f k8s
+  kubectl set image deployments/client-deployment client=stevenesuh/vinegar-client:$SHA
+  kubectl set image deployments/server-deployment server=stevenesuh/vinegar-server:$SHA
+  kubectl set image deployments/interval-deployment interval=stevenesuh/vinegar-interval:$SHA
+  kubectl set image deployments/worker-deployment worker=stevenesuh/vinegar-worker:$SHA
+fi
+
+if [ "$CLIENT" == 'true' ]; then
+  kubectl apply -f k8s/client-deployment.yaml
+  kubectl set image deployments/client-deployment client=stevenesuh/vinegar-client:$SHA
+fi
+
+if [ "$SERVER" == 'true' ]; then
+  kubectl apply -f k8s/server-deployment.yaml
+  kubectl set image deployments/server-deployment server=stevenesuh/vinegar-server:$SHA
+fi
+
+if [ "$INTERVAL" == 'true' ]; then
+  kubectl apply -f k8s/interval-deployment.yaml
+  kubectl set image deployments/interval-deployment interval=stevenesuh/vinegar-interval:$SHA
+fi
+
+if [ "$WORKER" == 'true' ]; then
+  kubectl apply -f k8s/worker-deployment.yaml
+  kubectl set image deployments/worker-deployment worker=stevenesuh/vinegar-worker:$SHA
+fi
+
+END_TIME=$(date +%s)
+echo "It took $((END_TIME - START_TIME)) seconds to deploy."

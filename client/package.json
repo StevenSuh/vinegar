@@ -14,6 +14,7 @@
     "quill-image-drop-module": "^1.0.3",
     "quill-magic-url": "^1.0.2",
     "vue": "^2.5.21",
+    "vue-analytics": "^5.16.4",
     "vue-router": "^3.0.2",
     "web-animations-js": "^2.3.1"
   },
