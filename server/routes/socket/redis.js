@@ -1,6 +1,6 @@
 /* eslint no-param-reassign: 0 */
 const redis = require('redis');
-const { tryCatch } = require('utils');
+const { checkAsync, tryCatch } = require('utils');
 const { SUBSCRIBE_EVENTS } = require('./defs');
 const { socketLogger } = require('./utils');
 
@@ -33,15 +33,30 @@ const redisPubWrapper = (redisClient) => {
 redisPubWrapper(wsRedisPub);
 
 wsRedisSub.on('message', (channel, message) => {
-  socketLogger({ type: channel, message }, { sessions: ['redis'] });
-
   const validCbs = wsCallbacks.filter(item => item.channel === channel);
 
   if (validCbs.length > 0) {
     const data = tryCatch(() => JSON.parse(message));
+    const type = data._type;
 
     validCbs.forEach(({ cb }) => {
-      cb(data);
+      const start = Date.now();
+
+      if (checkAsync(cb)) {
+        cb(data).then(() =>
+          socketLogger(
+            { type: type || channel },
+            { sessions: ['redis'] }),
+            Date.now() - start,
+          );
+      } else {
+        cb(data);
+        socketLogger(
+          { type: type || channel },
+          { sessions: ['redis'] },
+          Date.now() - start,
+        );
+      }
     });
   }
 });

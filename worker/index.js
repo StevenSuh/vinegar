@@ -28,6 +28,7 @@ cssFiles.forEach(file => {
 });
 
 addCallback(PDF_CREATE, async ({ sessionId, userId, workerId }) => {
+  console.log(PDF_CREATE, sessionId, userId, workerId);
   if (!workerId) {
     throw new Error('workerId must be defined');
   }

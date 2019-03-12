@@ -270,6 +270,8 @@ class Interval {
       CONTROL_UPDATE_STATUS,
       { status: Sessions.STATUS_ENDED },
     );
+    const currentInterval = this.intervals[this.current];
+    this.notifyUser(currentInterval, false);
 
     // warning before session is terminated
     await sleep(SESSION_END_DURATION);

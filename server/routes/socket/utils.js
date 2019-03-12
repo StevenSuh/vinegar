@@ -1,36 +1,33 @@
 const cookie = require('cookie');
 const pathToRegexp = require('path-to-regexp');
 
-// const logger = require('services/logger');
+const logger = require('services/logger');
 
 const Chats = require('db/chats/model');
 const Sessions = require('db/sessions/model');
 
-// const { tryCatch } = require('utils');
+const { tryCatch } = require('utils');
 
 const { SOCKET_CLOSE, SOCKET_DUPLICATE } = require('./defs');
 
 const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
 
-const socketLogger = (/* message, ws */) => {
-  // if (process.env.NODE_ENV !== 'production') {
-  //   const now = new Date().toTimeString().split(' ')[0];
-  //   if (message === 'pong') {
-  //     return logger.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${message} - ${now}`);
-  //   }
+const socketLogger = (message, ws, time) => {
+  const now = new Date().toTimeString().split(' ')[0];
+  if (message === 'pong') {
+    return logger.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${time}ms - ${now}`);
+  }
 
-  //   let data = message;
-  //   if (typeof data !== 'object') {
-  //     data = tryCatch(() => JSON.parse(message));
-  //   }
+  let data = message;
+  if (typeof data === 'object') {
+    data = tryCatch(() => JSON.parse(message));
+  }
 
-  //   if (data) {
-  //     delete data.content;
-  //     logger.log(`SOCKET /${data.type} ${ws.sessions.join(', ')} - ${JSON.stringify(data)} - ${now}`);
-  //   } else {
-  //     logger.log(`SOCKET error - ${message} - ${now}`);
-  //   }
-  // }
+  if (data) {
+    logger.log(`SOCKET /${data.type} ${ws.sessions.join(', ')} - ${time}ms - ${now}`);
+  } else {
+    logger.log(`SOCKET error - ${message} - ${time}ms - ${now}`);
+  }
 };
 
 const shouldHandle = function(req) {

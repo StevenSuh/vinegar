@@ -14,5 +14,7 @@ module.exports = {
     'consistent-return': 'off',
     'node/no-extraneous-require': 'off',
     'no-console': 'off',
+    'no-underscore-dangle': 'off',
+    'no-param-reassign': 'off',
   },
 };

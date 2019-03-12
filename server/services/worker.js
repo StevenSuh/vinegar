@@ -25,6 +25,7 @@ const createPdf = async (sessionId, userId) => {
   const workerId = parseInt(await redisClient.incrAsync(WORKER_ROTATE), 10);
   redisClient.setAsync(WORKER_ROTATE, workerId % total);
 
+  console.log('createPdf:', workerId);
   publisher.publishEvent(PDF_CREATE, { sessionId, userId, workerId });
 };
 

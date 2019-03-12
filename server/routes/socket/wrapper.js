@@ -3,7 +3,7 @@
 const uuidv4 = require('uuid/v4');
 const WebSocket = require('ws');
 
-const { tryCatch } = require('utils');
+const { checkAsync, tryCatch } = require('utils');
 
 const { addWsCallback, wsRedisPub } = require('./redis');
 
@@ -28,7 +28,6 @@ const WsWrapper = (ws) => {
   };
 
   ws.on('message', (message) => {
-    socketLogger(message, ws);
 
     if (message === 'pong') {
       if (ws.readyState === WebSocket.OPEN) {
@@ -45,7 +44,15 @@ const WsWrapper = (ws) => {
 
       const validEvents = wsEvents.filter(item => item.type === type);
       validEvents.forEach(({ cb }) => {
-        cb(data);
+        const start = Date.now();
+
+        if (checkAsync) {
+          cb(data).then(() =>
+            socketLogger(message, ws, Date.now() - start));
+        } else {
+          cb(data);
+          socketLogger(message, ws, Date.now() - start);
+        }
       });
     }
   });
@@ -66,7 +73,6 @@ const WsWrapper = (ws) => {
 
   ws.sendEvent = (type, data = {}) => {
     if (ws.readyState === WebSocket.OPEN) {
-      socketLogger({ type, data }, ws);
       const json = JSON.stringify({ ...data, _type: type });
       ws.send(json);
     } else {

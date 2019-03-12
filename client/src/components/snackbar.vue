@@ -53,9 +53,17 @@ export default {
       this.closeItem(id);
     },
     closeItem(id) {
-      const index = this.items.find(item => item.id === id);
-      this.items.splice(index, 1);
-      delete this.timeouts[id];
+      if (document.hasFocus()) {
+        const index = this.items.find(item => item.id === id);
+        this.items.splice(index, 1);
+        delete this.timeouts[id];
+        return;
+      }
+      const fn = () => {
+        this.timeouts[id] = setTimeout(this.closeItem, 5000, id);
+        window.removeEventListener(fn);
+      };
+      window.addEventListener('focus', fn);
     },
   },
 };

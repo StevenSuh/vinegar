@@ -1,7 +1,6 @@
 const schedule = require('node-schedule');
 
 const logger = require('services/logger');
-const { redisClient } = require('services/redis');
 
 const Sessions = require('db/sessions/model');
 const Users = require('db/users/model');
@@ -46,19 +45,5 @@ module.exports = {
       logger.warn(err);
       return null;
     }
-  },
-  exitHandler: sessions => {
-    // do something when app is closing
-    const exitFn = () => {
-      Object.keys(sessions).forEach(sessionId => {
-        const robinQuery = redisClient.robinQuery({ sessionId });
-        redisClient.delAsync(robinQuery);
-      });
-    };
-
-    process.on('exit', exitFn);
-    process.on('SIGHUP', exitFn);
-    process.on('SIGINT', exitFn);
-    process.on('SIGTERM', exitFn);
   },
 };

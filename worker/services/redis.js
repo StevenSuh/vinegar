@@ -29,6 +29,7 @@ const getWorkerId = async () => {
   }
   const index = parseInt(await redisClient.incrAsync(WORKER_TOTAL), 10);
   redisClient.workerId = index;
+  console.log('workerId:', redisClient.workerId);
   return index;
 };
 

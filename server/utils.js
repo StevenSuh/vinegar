@@ -3,7 +3,10 @@ const zlib = require('zlib');
 
 const logger = require('services/logger');
 
+const AsyncFn = (async () => {}).constructor;
+
 module.exports = {
+  checkAsync: fn => fn instanceof AsyncFn,
   sleep: timeout => new Promise(resolve => setTimeout(resolve, timeout)),
   tryCatch: (fn, errCb) => {
     try {

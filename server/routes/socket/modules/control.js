@@ -21,6 +21,8 @@ const {
 
 const { getPeople } = require('routes/socket/utils');
 
+const { tryCatch } = require('utils');
+
 module.exports = async (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
@@ -65,7 +67,7 @@ module.exports = async (wss, ws, session, user) => {
       return;
     }
 
-    await session.reload();
+    session = await session.reload();
 
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_CREATED) {
@@ -91,7 +93,7 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.onServer(CONTROL_WAIT, async () => {
-    await session.reload();
+    session = await session.reload();
 
     const status = session.get(Sessions.STATUS);
     if (status !== Sessions.STATUS_WAITING) {
@@ -115,7 +117,7 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.on('close', async () => {
-    await session.reload();
+    session = await tryCatch(session.reload);
 
     if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
       reassignInterval(sessionId, userId);
