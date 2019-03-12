@@ -67,7 +67,11 @@ export function onExtendBlur(e) {
 
 export function selectionUpdate(type, range, _oldRange, source) {
   if (type === 'selection-change') {
-    if (source !== Quill.sources.API && range) {
+    if (
+      source !== Quill.sources.API &&
+      source !== Quill.sources.SILENT &&
+      range
+    ) {
       // this setTimeout is necessary because
       // textUpdate is occurring at the same time
       // causing cursor to update inaccurately

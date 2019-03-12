@@ -35,6 +35,7 @@ module.exports = (_wss, ws, session, user) => {
         ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: 'Invalid editor content.' });
         return;
       }
+      ws.to(sessionName).sendEvent(EDITOR_CONTENT_REQUEST, { content });
       session.update({ content: deflate(content) });
     });
 

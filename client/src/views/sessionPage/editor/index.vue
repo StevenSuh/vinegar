@@ -216,6 +216,9 @@ export default {
       this.editor.enable();
       this.editor.history.clear();
     },
+    'editor:onEditorContentRequest': function({ content }) {
+      this.editor.root.innerHTML = content;
+    },
     'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
       if (data) {
         const range = new Range(data.index, data.length);
