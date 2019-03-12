@@ -57,6 +57,7 @@ module.exports = {
 
     IDLE_REMIND: 'interval:onRemind',
 
+    INTERVAL_STATUS: 'interval:onStatus',
     INTERVAL_REMIND: 'interval:onRemind',
     INTERVAL_UPDATE: 'interval:onUpdate',
 

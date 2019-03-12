@@ -41,6 +41,7 @@
   max-height: calc(100% - 40px);
   overflow-x: hidden;
   overflow-y: auto;
+  width: 100%;
 }
 
 .ql-cursor,
@@ -133,6 +134,7 @@
 .ql-editor {
   font-family: 'Rubik', sans-serif;
   overflow-y: unset;
+  width: 100%;
 }
 
 .ql-align-center {
@@ -149,7 +151,9 @@
 
 .ql-editor > div {
   display: block;
+  font-family: 'Rubik', sans-serif;
   line-height: 1.5em;
+  width: 100%;
   z-index: 0;
 }
 
@@ -343,11 +347,6 @@ button.active,
   font-weight: 400 !important;
 }
 
-code {
-  display: inline-block;
-  z-index: -1;
-}
-
 code,
 code *,
 pre,
@@ -458,10 +457,14 @@ strong.ql-font-courier {
 
 .ql-editor u,
 .ql-editor s,
-.ql-editor code,
 .ql-editor em,
 .ql-editor strong {
   z-index: 0;
+}
+
+.ql-editor code {
+  display: inline-block;
+  z-index: -1;
 }
 
 .ql-snow .ql-hidden {

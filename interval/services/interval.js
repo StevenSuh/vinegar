@@ -23,6 +23,7 @@ const { sleep } = require('utils');
 class Interval {
   constructor({ session, publisher }, sessions) {
     this.sessions = sessions;
+    this.active = false;
     this.ended = false;
 
     this.current = -1;
@@ -130,6 +131,11 @@ class Interval {
   }
 
   async setupInterval() {
+    if (this.active) {
+      return;
+    }
+
+    this.active = true;
     this.idleRemindJob.cancel();
     this.idleCloseJob.cancel();
     this.current = -1;
@@ -139,7 +145,7 @@ class Interval {
     this.timeout = this.normalizeTimeout();
     this.endTime = this.session.get(Sessions.END_TIME);
 
-    if (this.session.get(Sessions.CURRENT_INTERVAL_ID)) {
+    if (this.session.get(Sessions.CURRENT_INTERVAL_ID) !== null) {
       this.setupExisting();
       return;
     }
@@ -153,7 +159,6 @@ class Interval {
 
     // create jobs and intervals
     for (let i = 0; i < this.count; i += 1) {
-      const initial = i === 0;
       const user = this.intervalUsers[i];
       const startTime = this.endTime - ((this.count - i) * this.timeout);
 
@@ -166,13 +171,13 @@ class Interval {
         userId: user.get(Users.ID),
       }));
 
-      if (!initial) {
+      if (i > 0) {
         jobs.push(schedule.scheduleJob(
           new Date(startTime),
           () => this.startInterval(),
         ));
 
-        const userIdName = `user-${user.get(Users.USER_ID)}`;
+        const userIdName = `user-${user.get(Users.ID)}`;
         this.publisher.to(userIdName).publishEvent(INTERVAL_STATUS, { startTime });
       }
     }
@@ -185,7 +190,7 @@ class Interval {
     this.jobs = jobs;
     this.intervals = await Promise.all(promises);
 
-    console.log(this.count, this.intervals.length);
+    console.log('beforeStartInterval', this.count, this.intervals.length);
 
     this.startInterval(true);
   }
@@ -234,10 +239,16 @@ class Interval {
     this.current += 1;
 
     const currentInterval = this.intervals[this.current];
+
+    console.log('inStartInterval', this.current, this.intervals.length);
+    console.log(currentInterval.get({ plain: true }));
+
     await this.session.update({ currentIntervalId: currentInterval.get(Intervals.ID) });
 
     // update current user view
     this.notifyUser(currentInterval, true);
+
+    console.log(currentInterval.get(Intervals.USERNAME));
 
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
       intervalUserName: currentInterval.get(Intervals.USERNAME),
@@ -288,6 +299,9 @@ class Interval {
   }
 
   async reassignInterval(userId) {
+    console.log('reassignInterval', this.current, this.intervals.length);
+    console.log(userId, this.intervals.map(interval => interval.get({ plain: true })));
+
     const targetIndex = this.intervals.findIndex(interval =>
       userId === interval.get(Intervals.USER_ID));
 

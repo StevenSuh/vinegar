@@ -75,6 +75,7 @@ export const initSocket = (socket) => {
         handleErrorMiddleware(err, 'socket');
       }
       const { _type } = data;
+      console.log(data);
 
       const validCbs = wsCallbacks.filter(item => item.type === _type);
       validCbs.forEach(({ cb }) => cb(data));

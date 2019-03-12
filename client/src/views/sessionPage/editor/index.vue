@@ -1,6 +1,6 @@
 <template>
   <div class="editor">
-    <div ref="toolbar">
+    <div ref="toolbar" @click="onClickToolbar">
       <div
         ref="open"
         class="open"
@@ -150,6 +150,9 @@ export default {
       e.stopPropagation();
       this.editor.imageResize.repositionElements();
     },
+    onClickToolbar(e) {
+      this.editor.imageResize.repositionElements();
+    },
     onExtendBlur,
     onResizeCollapse,
     onScrollEditor() {
@@ -172,7 +175,10 @@ export default {
   sockets: {
     pong() {
       const range = this.editor.getSelection();
-      this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
+
+      if (range) {
+        this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
+      }
       try {
         this.editor.getModule('cursors').update();
       } catch (err) {
@@ -193,11 +199,15 @@ export default {
       this.editor.history.clear();
     },
     'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
-      const range = new Range(data.index, data.length);
-      try {
-        this.editor.getModule('cursors').setCursor(userId, range, name, color);
-      } catch (err) {
-        console.warn(err); // eslint-disable-line no-console
+      if (data) {
+        const range = new Range(data.index, data.length);
+        try {
+          this.editor
+            .getModule('cursors')
+            .setCursor(userId, range, name, color);
+        } catch (err) {
+          console.warn(err); // eslint-disable-line no-console
+        }
       }
     },
     'editor:onEditorSelectionRemove': function({ userId }) {

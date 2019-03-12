@@ -1,6 +1,6 @@
 module.exports = {
   SESSION_END_DURATION: 1000 * 60 * 5,
-  REASSIGN_WAIT_DURATION: 1000 * 60,
+  REASSIGN_WAIT_DURATION: 1000 * 1,
 
   CONTROL_INTERVAL: 'control:onInterval',
   CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',

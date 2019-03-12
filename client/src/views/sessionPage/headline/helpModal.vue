@@ -324,6 +324,17 @@ export default {
   width: calc(100% - 50px);
 }
 
+.instruction-wrapper::before {
+  content: '';
+  border-radius: 8px;
+  width: calc(100% + 30px);
+  height: calc(100% + 20px);
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  background-color: var(--gray-bg-color-hover);
+}
+
 .instruction-header {
   font-size: 18px;
   margin-bottom: 10px;
@@ -366,6 +377,18 @@ export default {
 .participants-input {
   min-width: 124px;
   width: 124px;
+}
+
+.participants-input::before,
+.people-wrapper::before {
+  content: '';
+  width: calc(100% + 20px);
+  border-radius: 6px;
+  height: calc(100% + 20px);
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  background-color: var(--white-bg-color);
 }
 
 .people-item {

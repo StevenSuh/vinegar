@@ -26,5 +26,9 @@ module.exports = {
     historyApiFallback: {
       rewrites: [{ from: /^\/app/, to: '/app/index.html' }],
     },
+    watchOptions: {
+      aggregateTimeout: 300,
+      poll: 1000,
+    },
   },
 };

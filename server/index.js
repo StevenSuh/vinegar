@@ -30,9 +30,6 @@ app.use(limiter);
 require('routes/api')(app);
 require('db');
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(`${__dirname}client/public`));
-}
 app.disable('etag');
 
 const httpServer = new http.Server();

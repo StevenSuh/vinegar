@@ -15,6 +15,7 @@ const {
   CONTROL_INTERVAL,
   CONTROL_UPDATE_STATUS,
   CONTROL_WAIT,
+  INTERVAL_STATUS,
   SOCKET_EXCEPTION,
 } = require('routes/socket/defs');
 
@@ -35,17 +36,25 @@ module.exports = async (wss, ws, session, user) => {
   const interval = !currIntervalId ? null :
     await Intervals.findOne({ where: { id: currIntervalId }});
 
-  if (interval && interval.get(Intervals.USER_ID) === userId) {
-    ws.sendEvent(CONTROL_INTERVAL, {
-      isInterval: true,
-      intervalEndTime: interval.get(Intervals.END_TIME),
-    });
+  if (interval) {
+    if (interval.get(Intervals.USER_ID) === userId) {
+      ws.sendEvent(CONTROL_INTERVAL, {
+        isInterval: true,
+        intervalEndTime: interval.get(Intervals.END_TIME),
+      });
+    } else {
+      const usersInterval = await Intervals.findOne({ where: { sessionId, userId }});
+
+      if (usersInterval) {
+        ws.sendEvent(INTERVAL_STATUS, { startTime: usersInterval.get(Intervals.START_TIME) });
+      }
+    }
   }
 
   ws.sendEvent(CONTROL_ENTER, {
     duration: session.get(Sessions.DURATION),
     endTime: session.get(Sessions.END_TIME),
-    intervalUser: interval ? interval.get(Intervals.USERNAME) : '',
+    intervalUserName: interval ? interval.get(Intervals.USERNAME) : '',
     isOwner,
     participants: session.get(Sessions.PARTICIPANTS),
     status: session.get(Sessions.STATUS),
@@ -81,6 +90,7 @@ module.exports = async (wss, ws, session, user) => {
 
   ws.onServer(CONTROL_WAIT, async () => {
     const status = session.get(Sessions.STATUS);
+    console.log(CONTROL_WAIT, status);
     if (status !== Sessions.STATUS_WAITING) {
       ws.sendEvent(SOCKET_EXCEPTION, { errorMessage: `Session is currently ${status}.` });
       return;
@@ -102,6 +112,9 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.on('close', async () => {
+    await session.reload();
+    console.log('calling reassignInterval', sessionId, userId, session.get(Sessions.STATUS));
+
     if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
       reassignInterval(sessionId, userId);
     }

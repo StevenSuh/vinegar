@@ -14,10 +14,6 @@ import { formatDuration } from '@/views/sessionPage/control/utils';
 
 export default {
   props: {
-    isInterval: {
-      default: false,
-      type: Boolean,
-    },
     intervalEndTime: {
       default: null,
       type: Number,
@@ -35,13 +31,12 @@ export default {
     }
   },
   mounted() {
-    this.remaining = this.intervalEndTime - Date.now();
     this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
   },
   methods: {
     formatDuration,
     onCountEndTime() {
-      this.remaining -= 1000;
+      this.remaining = this.intervalEndTime - Date.now();
 
       if (this.remaining > 0) {
         setTimeout(() => {

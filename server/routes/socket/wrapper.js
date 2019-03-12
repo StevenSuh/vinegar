@@ -66,7 +66,7 @@ const WsWrapper = (ws) => {
 
   ws.sendEvent = (type, data = {}) => {
     if (ws.readyState === WebSocket.OPEN) {
-      socketLogger({ type }, ws);
+      socketLogger({ type, data }, ws);
       const json = JSON.stringify({ ...data, _type: type });
       ws.send(json);
     } else {

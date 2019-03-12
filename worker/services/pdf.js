@@ -3,7 +3,6 @@ const puppeteer = require('puppeteer');
 
 const Sessions = require('db/sessions/model');
 
-const { sleep } = require('utils');
 const { BUCKET_NAME } = require('defs');
 
 const options = {
@@ -37,14 +36,7 @@ class PdfCreator {
       headless: true,
     });
     const page = await browser.newPage();
-    await page.setContent(html);
-    await page.emulateMedia('screen');
-    await page.evaluateHandle('document.fonts.ready');
-    await page.evaluate(() => {
-      /* eslint-disable */
-      console.log(document.fonts);
-      /* enable-eslint */
-    });
+    await page.setContent(html, { waitUntil: 'networkidle0' });
 
     const buffer = await page.pdf(options);
     return storageFile.save(buffer, { gzip: true });

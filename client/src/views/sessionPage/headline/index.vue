@@ -15,12 +15,15 @@
 </template>
 
 <script>
+import { socketMixin } from '@/services/socket';
+
 import Help from './helpModal';
 
 export default {
   components: {
     Help,
   },
+  mixins: [socketMixin],
   props: {
     socket: [Object, WebSocket],
   },
@@ -43,7 +46,13 @@ export default {
     },
   },
   sockets: {
+    'control:onIsInterval': function({ isInterval }) {
+      if (isInterval) {
+        this.startTime = null;
+      }
+    },
     'interval:onStatus': function({ startTime }) {
+      console.log(startTime);
       this.startTime = startTime;
     },
   },

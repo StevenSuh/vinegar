@@ -79,26 +79,28 @@
             @onChange="onNameChange"
           />
         </div>
-        <!-- <div class="marginTop small">
-          <h6 class="input-title">
-            Phone (optional):
-          </h6>
-          <InputComponent
-            id="phone"
-            autocomplete="off"
-            :error-message="phoneError"
-            label="Your Phone"
-            max-len="14"
-            name="phone"
-            placeholder="Your Phone"
-            size="small"
-            suggestion="We will send you a text to remind you of your turn."
-            :on-format="onFormatPhone"
-            :on-validate="onValidatePhone"
-            :value="phone"
-            @onChange="onPhoneChange"
-          />
-        </div> -->
+        <!--
+          <div class="marginTop small">
+            <h6 class="input-title">
+              Phone (optional):
+            </h6>
+            <InputComponent
+              id="phone"
+              autocomplete="off"
+              :error-message="phoneError"
+              label="Your Phone"
+              max-len="14"
+              name="phone"
+              placeholder="Your Phone"
+              size="small"
+              suggestion="We will send you a text to remind you of your turn."
+              :on-format="onFormatPhone"
+              :on-validate="onValidatePhone"
+              :value="phone"
+              @onChange="onPhoneChange"
+            />
+          </div>
+        -->
         <p class="how-works paddingTop">
           How this works:
         </p>

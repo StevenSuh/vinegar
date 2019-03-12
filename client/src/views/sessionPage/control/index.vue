@@ -1,12 +1,11 @@
 <template>
   <div class="control">
     <Ended
-      v-if="status === 'created'"
+      v-if="status === 'ended'"
       :socket="socket"
     />
     <IsInterval
       v-else-if="isInterval"
-      :is-interval="isInterval"
       :interval-end-time="intervalEndTime"
     />
     <Initial
@@ -23,7 +22,7 @@
     <Active
       v-else-if="status === 'active'"
       :end-time="endTime"
-      :interval-username="intervalUserName"
+      :interval-user-name="intervalUserName"
       :is-owner="isOwner"
       :socket="socket"
     />

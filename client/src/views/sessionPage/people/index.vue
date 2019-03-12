@@ -127,6 +127,7 @@ export default {
       this.status = status;
     },
     'interval:onUpdate': function({ intervalUserId }) {
+      console.log(intervalUserId);
       this.intervalUserId = intervalUserId;
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {

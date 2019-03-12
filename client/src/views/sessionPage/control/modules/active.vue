@@ -54,8 +54,6 @@ export default {
     };
   },
   mounted() {
-    this.startTime = Date.now();
-    this.remaining = this.endTime - Date.now();
     this.countEndTimeId = window.requestAnimationFrame(this.onCountEndTime);
   },
   beforeDestroy() {
@@ -66,7 +64,7 @@ export default {
   methods: {
     formatDuration,
     onCountEndTime() {
-      this.remaining -= 1000;
+      this.remaining = this.endTime - Date.now();
 
       if (this.remaining > 0) {
         setTimeout(() => {
@@ -116,16 +114,36 @@ export default {
 .end-text {
   font-size: 15px;
   margin-top: 15px;
-  text-align: center;
+  text-align: right;
 }
 
 .button-wrapper {
   align-items: center;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .bold {
   font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .wrapper {
+    flex-direction: column;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+  }
+
+  .button-wrapper {
+    justify-content: center;
+  }
+
+  .interval-msg,
+  .end-text {
+    text-align: center;
+  }
 }
 </style>

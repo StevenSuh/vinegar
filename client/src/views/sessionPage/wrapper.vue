@@ -142,6 +142,7 @@ export default {
   font-size: 36px;
   font-weight: 500;
   line-height: 44px;
+  vertical-align: bottom;
 }
 
 .session-name {

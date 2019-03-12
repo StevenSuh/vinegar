@@ -42,7 +42,7 @@ addCallback(
     );
     await intervalManager.startIdleCheck();
 
-    if (recreate) {
+    if (recreate || userId) {
       await intervalManager.setupInterval();
     }
     if (userId) {
@@ -79,6 +79,7 @@ addCallback(INTERVAL_CREATE, async ({ robinId, sessionId }) => {
 });
 
 addCallback(INTERVAL_REASSIGN, async ({ sessionId, robinId, userId }) => {
+  console.log(INTERVAL_REASSIGN, sessionId, robinId, userId);
   if (robinId === undefined || robinId === null) {
     throw new Error(
       `RobinId must be defined ${robinId}, sessionId ${sessionId}`,

@@ -17,22 +17,12 @@ const { CONTROL_DOWNLOAD, PDF_CREATE, SUBSCRIBE_EVENTS } = require('defs');
 getWorkerId();
 
 let styles = '';
-fs.readdir(
-  path.resolve(__dirname, 'node_modules', 'client-css'),
-  (_err, filenames) =>
-    filenames.forEach(file =>
-      fs.readFileSync(
-        path.resolve(__dirname, 'node_modules', 'client-css', file),
-        'utf8',
-        (_err2, content) => {
-          styles += content;
-        },
-      ),
-    ),
-);
+const cssFiles = fs.readdirSync(path.resolve(__dirname, 'node_modules', 'client-css'));
+cssFiles.forEach(file => {
+  styles += fs.readFileSync(path.resolve(__dirname, 'node_modules', 'client-css', file), 'utf8');
+});
 
 addCallback(PDF_CREATE, async ({ sessionId, userId, workerId }) => {
-  console.log(sessionId, userId, workerId);
   if (!workerId) {
     throw new Error('workerId must be defined');
   }
@@ -47,12 +37,30 @@ addCallback(PDF_CREATE, async ({ sessionId, userId, workerId }) => {
   const totalContent = `
     <html>
       <head>
+        <meta charset="utf-8">
         <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500" rel="stylesheet">
+        <style type="text/css">
+          @font-face {
+            font-family: 'Times New Roman';
+            src: url("https://raw.githubusercontent.com/StevenSuh/vinegar/master/shared/fonts/Times%20New%20Roman.ttf");
+          }
+          @font-face {
+            font-family: 'Arial';
+            src: url("https://raw.githubusercontent.com/StevenSuh/vinegar/master/shared/fonts/Arial.ttf");
+          }
+          @font-face {
+            font-family: 'Courier New';
+            src: url("https://raw.githubusercontent.com/StevenSuh/vinegar/master/shared/fonts/Courier%20New.ttf");
+          }
+          .ql-align-center {
+            text-align: center;
+          }
+        </style>
         <style type="text/css">${styles}</style>
-      </head>
-      <body>
-        <div class="ql-container ql-snow">
-          <div class="ql-editor">${content}</div>
+        </head>
+      <body style="width: 100vw;">
+        <div class="ql-container ql-snow" style="border: none;">
+          <div class="ql-editor" style="border: none;">${content}</div>
         </div>
       </body>
     </html>

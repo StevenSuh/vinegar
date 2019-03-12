@@ -36,15 +36,13 @@ module.exports = async (_wss, ws, session, user) => {
     isOwner,
   });
 
-  console.log(session.get(Sessions.STATUS));
-  console.log(session.get(Sessions.PARTICIPANTS));
-  console.log(people.length);
-
   if (
     session.get(Sessions.STATUS) === Sessions.STATUS_WAITING &&
-    people.length >= session.get(Sessions.PARTICIPANTS)
+    session.get(Sessions.PARTICIPANTS) &&
+    people.length >= parseInt(session.get(Sessions.PARTICIPANTS), 10)
   ) {
-    const userIdName = `user-${userId}`;
+    const otherPeople = people.filter(({ id }) => id !== userId);
+    const userIdName = `user-${otherPeople[0].id}`;
     ws.to(userIdName).sendServer(CONTROL_WAIT);
   }
 

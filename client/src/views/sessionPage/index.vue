@@ -59,10 +59,7 @@ export default {
   },
   beforeDestroy() {
     disconnectErrorMiddleware(this, this.onError);
-
-    if (this.socket.empty === false) {
-      this.socket.closeSocket();
-    }
+    this.socket.closeSocket();
   },
   methods: {
     onError(msg) {
