@@ -117,7 +117,7 @@ module.exports = async (wss, ws, session, user) => {
   });
 
   ws.on('close', async () => {
-    session = await tryCatch(session.reload);
+    session = await tryCatch(() => session.reload());
 
     if (session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE) {
       reassignInterval(sessionId, userId);

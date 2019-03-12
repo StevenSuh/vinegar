@@ -46,7 +46,7 @@ const WsWrapper = (ws) => {
       validEvents.forEach(({ cb }) => {
         const start = Date.now();
 
-        if (checkAsync) {
+        if (checkAsync(cb)) {
           cb(data).then(() =>
             socketLogger(message, ws, Date.now() - start));
         } else {

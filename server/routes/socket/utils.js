@@ -19,7 +19,7 @@ const socketLogger = (message, ws, time) => {
   }
 
   let data = message;
-  if (typeof data === 'object') {
+  if (typeof data !== 'object') {
     data = tryCatch(() => JSON.parse(message));
   }
 
