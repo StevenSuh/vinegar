@@ -127,7 +127,7 @@ export default {
       this.status = status;
     },
     'interval:onUpdate': function({ intervalUserId }) {
-      this.intervalUserId = intervalUserId;
+      this.intervalUserId = String(intervalUserId);
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {
       this.isOwner = isOwner;
@@ -164,6 +164,13 @@ export default {
 
 .waiting-msg {
   text-align: center;
+}
+
+@media (max-width: 700px) {
+  .waiting-msg {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 }
 
 .people {

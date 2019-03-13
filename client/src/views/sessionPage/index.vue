@@ -73,10 +73,11 @@ export default {
       window.removeEventListener('online', this.onFastConnection);
       handleErrorMiddleware(
         'Detected slow internet... Try refreshing once connected.',
+        'snackbar',
       );
     },
     onError(msg, type) {
-      if (type !== 'socket') {
+      if (type === 'snackbar') {
         return;
       }
       this.errorModal = { header: 'An error has occurred.', msg };

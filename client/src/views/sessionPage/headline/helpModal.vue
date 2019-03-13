@@ -265,6 +265,14 @@ export default {
   width: 40vw;
 }
 
+@media (max-width: 700px) {
+  .help-modal {
+    min-width: unset;
+    padding: 20px;
+    width: 100vw;
+  }
+}
+
 .close-button {
   cursor: pointer;
   height: 25px;
@@ -398,6 +406,7 @@ export default {
 }
 
 .person-name {
+  display: inline-block;
   width: max-content;
 }
 

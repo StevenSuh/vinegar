@@ -2,6 +2,7 @@ module.exports = {
   BUCKET_NAME: 'pdf-vinegar',
 
   CONTROL_DOWNLOAD: 'control:onDownload',
+  CONTROL_DOWNLOAD_ERROR: 'control:onDownloadError',
 
   PDF_CREATE: 'pdf:onCreate',
 

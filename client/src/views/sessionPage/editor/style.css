@@ -3,6 +3,7 @@
   border-radius: 5px;
   height: 100%;
   min-height: 450px;
+  overflow-x: auto;
   overflow-y: auto;
   width: 100%;
 }
@@ -51,6 +52,7 @@
 }
 
 .ql-cursor .ql-cursor-flag {
+  display: inline-block;
   width: max-content;
 }
 

@@ -96,6 +96,11 @@ class Interval {
   async remindIdle() {
     this.session = await this.session.reload();
 
+    if (!this.session) {
+      this.idleCloseJob.cancel();
+      return console.log('Session', this.sessionId, 'has already ended');
+    }
+
     if (
       this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE ||
       this.session.get(Sessions.STATUS) === Sessions.STATUS_ENDED
@@ -111,6 +116,10 @@ class Interval {
 
   async closeIdle() {
     this.session = await this.session.reload();
+
+    if (!this.session) {
+      return console.log('Session', this.sessionId, 'has already ended');
+    }
 
     if (
       this.session.get(Sessions.STATUS) === Sessions.STATUS_ACTIVE ||

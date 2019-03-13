@@ -16,3 +16,6 @@ product:
 - remove phone number to email
 
 bugs:
+- Interval icon (interval:onUpdate not firing)
+- PDF download not working on mobile
+- Tooltip width is messed up on ios (width: max-content CSS)

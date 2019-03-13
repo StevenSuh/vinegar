@@ -85,6 +85,11 @@ textarea:focus {
   outline: 0;
 }
 
+input,
+textarea {
+  appearance: none;
+}
+
 * {
   font-family: 'Rubik', Helvetica, Arial, sans-serif;
   box-sizing: border-box;

@@ -190,19 +190,6 @@ export default {
     textUpdate,
   },
   sockets: {
-    pong() {
-      const range = this.editor.getSelection();
-      if (range) {
-        this.socket.sendEvent('editor:onEditorSelectionUpdate', {
-          data: range,
-        });
-      }
-      try {
-        this.editor.getModule('cursors').update();
-      } catch (err) {
-        console.warn(err); // eslint-disable-line no-console
-      }
-    },
     'socket:onEnter': function() {
       this.socket.sendEvent('editor:onEnter');
     },

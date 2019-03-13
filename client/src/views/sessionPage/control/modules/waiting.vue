@@ -79,7 +79,9 @@ export default {
   background-color: #696969;
   color: #b4b4b4;
   cursor: not-allowed;
+  display: inline-block;
   padding: 6px 12px !important;
+  width: max-content;
 }
 
 .participants:hover {

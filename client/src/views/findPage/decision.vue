@@ -157,7 +157,7 @@ export default {
   }
 
   .action-title {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .action-message {

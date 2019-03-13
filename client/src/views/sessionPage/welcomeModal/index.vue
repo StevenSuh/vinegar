@@ -247,6 +247,14 @@ export default {
   width: 30vw;
 }
 
+@media (max-width: 600px) {
+  .modal {
+    min-width: unset;
+    padding: 20px;
+    width: 100vw;
+  }
+}
+
 .welcome-header {
   color: var(--main-font-color);
   font-weight: 500;

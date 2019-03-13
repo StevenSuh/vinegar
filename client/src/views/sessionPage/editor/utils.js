@@ -118,6 +118,18 @@ export function textUpdate(delta, _oldDelta, source) {
     clearTimeout(this.updateTimeout);
     this.updateFn = () => {
       this.socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.root.innerHTML });
+      const range = this.editor.getSelection();
+      if (range) {
+        this.socket.sendEvent('editor:onEditorSelectionUpdate', {
+          data: range,
+        });
+      }
+      try {
+        setTimeout(() => this.editor.getModule('cursors').update(), 0);
+      } catch (err) {
+        console.warn(err); // eslint-disable-line no-console
+      }
+
       this.updateFn = () => {};
       this.updateTimeout = null;
     };

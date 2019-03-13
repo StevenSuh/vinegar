@@ -10,6 +10,7 @@
       alt="download icon"
     />
     <Tooltip
+      :class="{ loading: isLoading }"
       position="top"
       :force-show="isDownloading"
       :on-click="onStartDownload"
@@ -27,6 +28,7 @@
 </template>
 
 <script>
+import { handleErrorMiddleware } from '@/services/middleware';
 import { socketMixin } from '@/services/socket';
 
 import Loader from '@/components/loader';
@@ -80,8 +82,22 @@ export default {
       const a = document.createElement('a');
       a.href = url;
       a.download = `${school}-${session}.pdf`;
-      a.target = '_blank';
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+
+      if (!this.mouseover) {
+        this.reset = true;
+      } else {
+        this.isLoading = false;
+      }
+    },
+    'control:onDownloadError': function() {
+      this.isDownloading = false;
+      handleErrorMiddleware(
+        'PDF download has failed. Try again later :(',
+        'snackbar',
+      );
 
       if (!this.mouseover) {
         this.reset = true;
@@ -105,5 +121,9 @@ export default {
   height: 100%;
   object-fit: fit;
   width: 100%;
+}
+
+.loading {
+  width: 42px;
 }
 </style>

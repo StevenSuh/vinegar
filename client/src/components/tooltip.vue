@@ -89,6 +89,7 @@ export default {
   background-color: #444444;
   border-radius: 8px;
   color: var(--white-font-color);
+  display: inline-block;
   font-size: 13px;
   opacity: 0;
   padding: 8px 12px;

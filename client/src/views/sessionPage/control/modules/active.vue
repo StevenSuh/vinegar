@@ -137,6 +137,10 @@ export default {
     width: 100%;
   }
 
+  .left {
+    margin-bottom: 20px;
+  }
+
   .button-wrapper {
     justify-content: center;
   }

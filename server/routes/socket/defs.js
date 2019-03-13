@@ -11,6 +11,7 @@ module.exports = {
 
   CONTROL_ENTER: 'control:onEnter',
   CONTROL_DOWNLOAD: 'control:onDownload',
+  CONTROL_DOWNLOAD_ERROR: 'control:onDownloadError',
   CONTROL_INIT: 'control:onInit',
   CONTROL_INTERVAL: 'control:onInterval',
   CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
@@ -47,6 +48,8 @@ module.exports = {
 
     CHAT_SEND: 'chat:onChatSend',
 
+    CONTROL_DOWNLOAD: 'control:onDownload',
+    CONTROL_DOWNLOAD_ERROR: 'control:onDownloadError',
     CONTROL_INTERVAL: 'control:onInterval',
     CONTROL_UPDATE_STATUS: 'control:onUpdateStatus',
     CONTROL_WAIT: 'control:onWait',

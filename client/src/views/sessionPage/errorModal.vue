@@ -46,6 +46,14 @@ export default {
   width: 30vw;
 }
 
+@media (max-width: 600px) {
+  .error-modal {
+    min-width: unset;
+    padding: 20px;
+    width: 100vw;
+  }
+}
+
 .error-header {
   font-weight: 500;
 }
