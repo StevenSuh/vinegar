@@ -74,7 +74,7 @@
             <div class="how-item">
               <div class="how-item-icon-wrapper">
                 <img
-                  class="how-item-icon"
+                  class="how-item-icon findSession"
                   :src="findSessionImage"
                   alt="find session asset"
                 />

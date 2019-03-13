@@ -234,6 +234,10 @@
   display: flex;
 }
 
+.findSession {
+  opacity: 0.825;
+}
+
 @media (max-width: 860px) {
   .how-items,
   .team-items,
@@ -291,7 +295,7 @@
 
   .nav-header,
   .how-item {
-    margin: auto;
+    margin: 20px auto;
   }
 
   .nav-items {
