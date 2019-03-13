@@ -68,6 +68,8 @@ import ToolbarConfig from './toolbarConfig';
 
 import { FONT_SIZES, HEIGHT_SIZES } from '@/defs';
 
+const Delta = Quill.import('delta');
+
 // setup editor
 setupQuill();
 
@@ -83,13 +85,18 @@ export default {
     return {
       active: false,
       content: '',
+      cursor: null,
       editor: null,
       prevEnter: false,
       prevFocus: null,
       sizes: FONT_SIZES,
       height: HEIGHT_SIZES,
-      updateFn: () => {},
+      updating: false,
+
       updateTimeout: null,
+      updateFn: () => {},
+
+      lastTextUpdateTime: 0,
     };
   },
   mounted() {
@@ -99,7 +106,7 @@ export default {
         history: {
           userOnly: true,
         },
-        cursors: { autoRegisterListener: false },
+        cursors: true,
         keyboard: {
           bindings: { 'indent code-block': codeBlockIndentHandler(true) },
         },
@@ -129,18 +136,17 @@ export default {
     window.addEventListener('click', this.onExtendBlur);
     window.addEventListener('resize', this.onResizeCollapse);
     window.addEventListener('offline', this.onSlowConnection);
-    window.updateFn = () => {};
     this.editor.root.addEventListener('scroll', this.onScrollEditor);
   },
   beforeDestroy() {
-    clearTimeout(this.updateTimeout);
-    this.updateFn();
-
     window.removeEventListener('click', this.onCheckBlur);
     window.removeEventListener('click', this.onExtendBlur);
     window.removeEventListener('resize', this.onResizeCollapse);
     window.removeEventListener('offline', this.onSlowConnection);
     this.editor.root.removeEventListener('scroll', this.onScrollEditor);
+
+    clearTimeout(this.updateTimeout);
+    this.updateFn();
   },
   methods: {
     onSlowConnection() {
@@ -181,7 +187,7 @@ export default {
 
       this.editor.theme.tooltip.cancel();
       try {
-        this.editor.getModule('cursors').update();
+        this.cursor.update();
       } catch (err) {
         console.warn(err); // eslint-disable-line no-console
       }
@@ -190,6 +196,9 @@ export default {
     textUpdate,
   },
   sockets: {
+    pong() {
+      this.selectionUpdate('selection-change', this.editor.getSelection());
+    },
     'socket:onEnter': function() {
       this.socket.sendEvent('editor:onEnter');
     },
@@ -197,22 +206,30 @@ export default {
       this.editor.enable(false);
       this.editor.root.innerHTML = '';
     },
+    'people:onJoin': function() {
+      this.selectionUpdate('selection-change', this.editor.getSelection());
+    },
     'editor:onEnter': function({ content }) {
       this.active = true;
-      this.editor.clipboard.dangerouslyPasteHTML(content, 'silent');
+      this.editor.setContents(content, 'silent');
       this.editor.enable();
       this.editor.history.clear();
     },
-    'editor:onEditorContentRequest': function({ content }) {
-      this.editor.root.innerHTML = content;
+    'editor:onEditorContentUpdate': function({ data = {} }) {
+      const range = this.editor.getSelection() || { index: 0 };
+      this.editor.updateContents(
+        new Delta()
+          .delete(this.editor.getLength())
+          .retain(range.index)
+          .concat(data),
+        'silent',
+      );
     },
     'editor:onEditorSelectionUpdate': function({ color, data, name, userId }) {
       if (data) {
         const range = new Range(data.index, data.length);
         try {
-          this.editor
-            .getModule('cursors')
-            .setCursor(userId, range, name, color);
+          this.cursor.setCursor(userId, range, name, color);
         } catch (err) {
           console.warn(err); // eslint-disable-line no-console
         }
@@ -220,18 +237,25 @@ export default {
     },
     'editor:onEditorSelectionRemove': function({ userId }) {
       try {
-        this.editor.getModule('cursors').removeCursor(userId);
+        this.cursor.removeCursor(userId);
       } catch (err) {
         console.warn(err); // eslint-disable-line no-console
       }
     },
-    'editor:onEditorTextUpdate': function({ data }) {
-      this.editor.updateContents(data, 'silent');
-      try {
-        this.editor.getModule('cursors').update();
-      } catch (err) {
-        console.warn(err); // eslint-disable-line no-console
+    'editor:onEditorTextUpdate': function({ data, userId }) {
+      const diff = Date.now() - this.lastTextUpdateTime;
+
+      // normalizer
+      if (Math.abs(diff) < 100) {
+        const retainOp = data.ops.find(op => op.retain !== undefined);
+        const cursor = this.cursor.cursors[userId];
+
+        if (retainOp && cursor && cursor.range.index < retainOp.retain) {
+          retainOp.retain = cursor.range.index;
+        }
       }
+      this.editor.updateContents(data, 'silent');
+      this.selectionUpdate('selection-change', this.editor.getSelection());
     },
   },
 };

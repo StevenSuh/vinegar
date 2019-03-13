@@ -254,7 +254,7 @@ class Interval {
 
     this.publisher.to(this.sessionName).publishEvent(INTERVAL_UPDATE, {
       intervalUserName: currentInterval.get(Intervals.USERNAME),
-      intervalUserId: currentInterval.get(Intervals.ID),
+      intervalUserId: currentInterval.get(Intervals.USER_ID),
     });
 
     if (this.current > 0) {

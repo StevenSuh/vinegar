@@ -19,7 +19,8 @@
         name="search"
         placeholder="Type your session name..."
         suggestion="Try &quot;UCSC&quot;"
-        :class="{ 'search-expanded': searchQuery.length > 0 && searched }"
+        type="search"
+        :class="{ 'search-expanded': searchQuery.length > 1 && searched }"
         :on-autosearch="onSearch"
         :on-clear-search="onClearSearch"
         :value="searchQuery"
@@ -27,7 +28,7 @@
       />
       <transition name="fadeNoDelay">
         <SearchResult
-          v-if="searchQuery.length > 0 && searched"
+          v-if="searchQuery.length > 1 && searched"
           class="searchResult"
           :data="searchResult"
           :has-more="hasMore"

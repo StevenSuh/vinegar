@@ -8,21 +8,9 @@
   width: 100%;
 }
 
-@keyframes blink {
-  0% { opacity: 0 }
-  45% { opacity: 0 }
-  50% { opacity: 1 }
-  95% { opacity: 1 }
-  100% { opacity: 0 }
-}
-
 @keyframes appear {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-.ql-cursor-caret {
-  animation: blink 1s infinite;
 }
 
 .ql-image-resize {
@@ -39,9 +27,10 @@
 }
 
 .ql-container {
-  min-height: 408px;
-  max-height: calc(100% - 40px);
-  overflow-x: hidden;
+  min-height: 410px;
+  height: calc(100% - 40px);
+  max-height: calc(85vh - 40px);
+  overflow-x: auto;
   overflow-y: auto;
   width: 100%;
 }
@@ -53,7 +42,13 @@
 
 .ql-cursor .ql-cursor-flag {
   display: inline-block;
+  transition: opacity var(--transition-mid-duration) var(--transition-curve) !important;
+  transition-delay: 0 !important;
   width: max-content;
+}
+
+.ql-cursor .ql-cursor-flag:hover {
+  transition: inherit !important;
 }
 
 .hide-toolbar {
@@ -136,7 +131,7 @@
 
 .ql-editor {
   font-family: 'Rubik', sans-serif;
-  overflow-y: unset;
+  overflow-y: auto;
   width: 100%;
 }
 
@@ -565,6 +560,6 @@ a.ql-remove:hover {
 
 @media (max-width: 700px) {
   .editor {
-    max-height: 800px;
+    max-height: 85vh;
   }
 }

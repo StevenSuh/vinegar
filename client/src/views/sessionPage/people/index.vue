@@ -7,7 +7,7 @@
         class="person"
       >
         <span
-          v-if="!person.isOwner && person.id === intervalUserId"
+          v-if="person.id === intervalUserId"
           class="person-icon interval"
           v-html="IntervalIcon"
         />
@@ -122,12 +122,15 @@ export default {
     },
   },
   sockets: {
+    'control:onEnter': function({ intervalUserId }) {
+      this.intervalUserId = intervalUserId;
+    },
     'control:onUpdateStatus': function({ participants, status }) {
       this.participants = participants;
       this.status = status;
     },
     'interval:onUpdate': function({ intervalUserId }) {
-      this.intervalUserId = String(intervalUserId);
+      this.intervalUserId = intervalUserId;
     },
     'people:onEnter': function({ isOwner, participants, people, status }) {
       this.isOwner = isOwner;

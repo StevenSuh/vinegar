@@ -60,10 +60,17 @@ export default {
   },
   mounted() {
     this.track();
+
+    this.preventZoom = document.createElement('meta');
+    this.preventZoom.name = 'viewport';
+    this.preventZoom.content =
+      'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+    document.head.appendChild(this.preventZoom);
   },
   beforeDestroy() {
     disconnectErrorMiddleware(this, this.onError);
     this.socket.closeSocket();
+    document.head.removeChild(this.preventZoom);
   },
   methods: {
     onSlowConnection() {

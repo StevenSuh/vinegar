@@ -11,7 +11,7 @@ const {
 
 const Pdf = require('services/pdf');
 
-const { inflate } = require('utils');
+const { inflate, sleep } = require('utils');
 const {
   CONTROL_DOWNLOAD,
   CONTROL_DOWNLOAD_ERROR,
@@ -44,6 +44,8 @@ addCallback(PDF_CREATE, async ({ sessionId, uuid, workerId }) => {
   if (workerId !== clientWorkerId) {
     return;
   }
+
+  await sleep(1000);
 
   const session = await Sessions.findOne({ where: { id: sessionId } }).catch(
     onPdfError,

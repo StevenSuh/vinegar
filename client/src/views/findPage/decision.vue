@@ -11,6 +11,7 @@
         class="find-action join"
         tag="div"
         to="/app/join"
+        ontouchstart
       >
         <div class="find-action-inner-wrapper">
           <img
@@ -30,6 +31,7 @@
         class="find-action create"
         tag="div"
         to="/app/create"
+        ontouchstart
       >
         <div class="find-action-inner-wrapper">
           <img

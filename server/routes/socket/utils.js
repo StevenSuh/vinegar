@@ -12,10 +12,10 @@ const { SOCKET_CLOSE, SOCKET_DUPLICATE } = require('./defs');
 
 const sessionRegex = pathToRegexp('/ws/app/session/:school/:session');
 
-const socketLogger = (message, ws, time) => {
+const socketLogger = (message, _ws, time) => {
   const now = new Date().toTimeString().split(' ')[0];
   if (message === 'pong') {
-    return logger.log(`SOCKET /pong ${ws.sessions.join(', ')} - ${time}ms - ${now}`);
+    return;
   }
 
   let data = message;
@@ -24,7 +24,7 @@ const socketLogger = (message, ws, time) => {
   }
 
   if (data) {
-    logger.log(`SOCKET /${data.type} ${ws.sessions.join(', ')} - ${time}ms - ${now}`);
+    logger.log(`SOCKET /${data.type} - ${time}ms - ${now}`);
   } else {
     logger.log(`SOCKET error - ${message} - ${time}ms - ${now}`);
   }

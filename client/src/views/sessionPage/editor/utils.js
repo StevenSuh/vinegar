@@ -3,7 +3,7 @@ import QuillCursors from 'quill-cursors';
 import { ImageDrop } from 'quill-image-drop-module';
 import MagicUrl from 'quill-magic-url';
 
-import { CONTENT_UPDATE_DUR, FONT_SIZES, HEIGHT_SIZES } from '@/defs';
+import { FONT_SIZES, HEIGHT_SIZES } from '@/defs';
 
 import ImageResize from './modules/imageResize';
 import PlainClipboard from './PlainClipboard';
@@ -41,6 +41,10 @@ export function initEditor() {
   this.editor.format('font', 'rubik');
   this.editor.format('size', '16px');
 
+  const cursor = this.editor.getModule('cursors');
+  cursor.registerTextChangeListener();
+  this.cursor = cursor;
+
   this.editor.on('editor-change', this.selectionUpdate);
   this.editor.on('text-change', this.textUpdate);
 
@@ -65,25 +69,12 @@ export function onExtendBlur(e) {
   }
 }
 
-export function selectionUpdate(type, range, _oldRange, source) {
-  if (type === 'selection-change') {
-    if (
-      source !== Quill.sources.API &&
-      source !== Quill.sources.SILENT &&
-      range
-    ) {
-      // this setTimeout is necessary because
-      // textUpdate is occurring at the same time
-      // causing cursor to update inaccurately
-      setTimeout(() => {
-        this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
-        try {
-          this.editor.getModule('cursors').update();
-        } catch (err) {
-          console.warn(err); // eslint-disable-line no-console
-        }
-      }, 0);
-    }
+export function selectionUpdate(type, range) {
+  if (type === 'selection-change' && range) {
+    // this setTimeout is necessary because
+    // textUpdate is occurring at the same time
+    // causing cursor to update inaccurately
+    this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
   }
 }
 
@@ -111,29 +102,15 @@ export function checkForEnter(delta) {
 
 export function textUpdate(delta, _oldDelta, source) {
   if (source === Quill.sources.USER) {
+    this.lastTextUpdateTime = Date.now();
     this.checkForEnter(delta);
+    this.socket.sendEvent('editor:onEditorTextUpdate', { data: delta, content: this.editor.getContents() });
 
-    this.socket.sendEvent('editor:onEditorTextUpdate', { data: delta });
-
-    clearTimeout(this.updateTimeout);
-    this.updateFn = () => {
-      this.socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.root.innerHTML });
-      const range = this.editor.getSelection();
-      if (range) {
-        this.socket.sendEvent('editor:onEditorSelectionUpdate', {
-          data: range,
-        });
-      }
-      try {
-        setTimeout(() => this.editor.getModule('cursors').update(), 0);
-      } catch (err) {
-        console.warn(err); // eslint-disable-line no-console
-      }
-
-      this.updateFn = () => {};
-      this.updateTimeout = null;
-    };
-    this.updateTimeout = setTimeout(this.updateFn, CONTENT_UPDATE_DUR);
+    // this.updateFn = () => {
+    //   this.socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.getContents() });
+    //   this.updateFn = () => {};
+    // };
+    // this.updateTimeout = setTimeout(this.updateFn, 1000);
   }
 }
 

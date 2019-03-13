@@ -1,5 +1,3 @@
-// const { redisHost, redisPort } = require('config');
-
 const WebSocket = require('ws');
 const { WsWrapper, WssWrapper } = require('routes/socket/wrapper');
 
@@ -52,7 +50,6 @@ module.exports = (server) => {
 
   wss.on('connection', (socket, req) => {
     const ws = WsWrapper(socket);
-
     const names = getSchoolAndSession(req);
     const { cookieId } = getCookieIds(req);
 

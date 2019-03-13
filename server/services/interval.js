@@ -22,7 +22,7 @@ publisher.publishEvent = (type, data) => {
   publisher.publish(type, JSON.stringify(data));
 };
 
-const setupInterval = async (sessionId, recreate, reassign) => {
+const setupInterval = async (sessionId, recreate, reassign, content) => {
   const total = parseInt(await redisClient.getAsync(ROBIN_TOTAL) || 0, 10);
   if (total === 0) {
     throw new Error('There are no interval services running.');
@@ -37,6 +37,9 @@ const setupInterval = async (sessionId, recreate, reassign) => {
   }
   if (reassign) {
     data.userId = reassign;
+  }
+  if (content) {
+    data.content = content;
   }
   publisher.publishEvent(INTERVAL_SETUP, data);
 };

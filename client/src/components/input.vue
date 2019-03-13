@@ -138,7 +138,7 @@ export default {
       }
     },
     onSearchAutosearch(value) {
-      if (value.length > 0) {
+      if (value.length > 1) {
         this.searchTimeout = setTimeout(
           this.onAutosearch,
           this.searchDelay,

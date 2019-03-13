@@ -90,11 +90,17 @@ textarea {
   appearance: none;
 }
 
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
 * {
   font-family: 'Rubik', Helvetica, Arial, sans-serif;
   box-sizing: border-box;
   outline: 0 !important;
   position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* animation */

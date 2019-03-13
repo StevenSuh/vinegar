@@ -57,6 +57,7 @@ module.exports = async (wss, ws, session, user) => {
     duration: session.get(Sessions.DURATION),
     endTime: session.get(Sessions.END_TIME),
     intervalUserName: interval ? interval.get(Intervals.USERNAME) : '',
+    intervalUserId: interval ? interval.get(Intervals.USER_ID) : '',
     isOwner,
     participants: session.get(Sessions.PARTICIPANTS),
     status: session.get(Sessions.STATUS),
