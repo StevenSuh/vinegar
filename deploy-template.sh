@@ -77,7 +77,7 @@ if [ -z "$DEV" ]; then
   gcloud auth activate-service-account --key-file vinegar-google-credentials.json
   gcloud config set project vinegar
   gcloud config set compute/zone us-west1-a
-  gcloud container clusters get-credentials vinegar
+  gcloud container clusters get-credentials vinegar-prod
 else
   kubectl config use-context minikube
 fi
