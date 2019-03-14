@@ -76,8 +76,8 @@ done
 if [ -z "$DEV" ]; then
   gcloud auth activate-service-account --key-file vinegar-google-credentials.json
   gcloud config set project vinegar
-  gcloud config set compute/zone us-west2-a
-  gcloud container clusters get-credentials vinegar-prod
+  gcloud config set compute/zone us-west1-a
+  gcloud container clusters get-credentials vinegar
 else
   kubectl config use-context minikube
 fi
@@ -160,14 +160,14 @@ fi
 kubectl get secret passwordsalt
 if [ $? -eq 1 ]; then
   echo "The cluster is missing passwordsalt"
-  # exit 1
+  exit 1
   # kubectl create secret generic passwordsalt --from-literal PASSWORD_SALT_SECRET=$SALT
 fi
 
 kubectl get secret postgrespassword
 if [ $? -eq 1 ]; then
   echo "The cluster is missing postgrespassword"
-  # exit 1
+  exit 1
   # kubectl create secret generic postgrespassword --from-literal POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 fi
 
