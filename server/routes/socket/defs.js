@@ -28,7 +28,6 @@ module.exports = {
 
   INTERVAL_CREATE: 'interval:onCreate',
   INTERVAL_REASSIGN: 'interval:onReassign',
-  INTERVAL_REMIND: 'interval:onRemind',
   INTERVAL_SETUP: 'interval:onSetup',
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
@@ -63,7 +62,6 @@ module.exports = {
     IDLE_REMIND: 'interval:onRemind',
 
     INTERVAL_STATUS: 'interval:onStatus',
-    INTERVAL_REMIND: 'interval:onRemind',
     INTERVAL_UPDATE: 'interval:onUpdate',
 
     PEOPLE_JOIN: 'people:onJoin',

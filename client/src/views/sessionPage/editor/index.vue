@@ -92,10 +92,6 @@ export default {
       sizes: FONT_SIZES,
       height: HEIGHT_SIZES,
       updating: false,
-
-      updateTimeout: null,
-      updateFn: () => {},
-
       lastTextUpdateTime: 0,
     };
   },
@@ -144,9 +140,6 @@ export default {
     window.removeEventListener('resize', this.onResizeCollapse);
     window.removeEventListener('offline', this.onSlowConnection);
     this.editor.root.removeEventListener('scroll', this.onScrollEditor);
-
-    clearTimeout(this.updateTimeout);
-    this.updateFn();
   },
   methods: {
     onSlowConnection() {

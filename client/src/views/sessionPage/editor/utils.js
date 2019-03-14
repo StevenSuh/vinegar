@@ -69,15 +69,6 @@ export function onExtendBlur(e) {
   }
 }
 
-export function selectionUpdate(type, range) {
-  if (type === 'selection-change' && range) {
-    // this setTimeout is necessary because
-    // textUpdate is occurring at the same time
-    // causing cursor to update inaccurately
-    this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
-  }
-}
-
 export function checkForEnter(delta) {
   const ops = delta.ops || [];
 
@@ -105,12 +96,12 @@ export function textUpdate(delta, _oldDelta, source) {
     this.lastTextUpdateTime = Date.now();
     this.checkForEnter(delta);
     this.socket.sendEvent('editor:onEditorTextUpdate', { data: delta, content: this.editor.getContents() });
+  }
+}
 
-    // this.updateFn = () => {
-    //   this.socket.sendEvent('editor:onEditorContentUpdate', { content: this.editor.getContents() });
-    //   this.updateFn = () => {};
-    // };
-    // this.updateTimeout = setTimeout(this.updateFn, 1000);
+export function selectionUpdate(type, range) {
+  if (type === 'selection-change' && range) {
+    this.socket.sendEvent('editor:onEditorSelectionUpdate', { data: range });
   }
 }
 

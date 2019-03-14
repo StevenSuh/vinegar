@@ -1,5 +1,6 @@
 const schedule = require('node-schedule');
 
+const Chats = require('db/chats/model');
 const Intervals = require('db/intervals/model');
 const Sessions = require('db/sessions/model');
 const Users = require('db/users/model');
@@ -7,11 +8,13 @@ const Users = require('db/users/model');
 const { getRoundRobinId, redisClient } = require('services/redis');
 
 const {
+  DEFAULT_COLOR,
+  DEFAULT_REMIND_MSG,
   SESSION_END_DURATION,
+  CHAT_SEND,
   CONTROL_INTERVAL,
   CONTROL_UPDATE_STATUS,
   IDLE_REMIND,
-  INTERVAL_REMIND,
   INTERVAL_STATUS,
   INTERVAL_UPDATE,
   REASSIGN_WAIT_DURATION,
@@ -284,9 +287,21 @@ class Interval {
 
     // warning before session is terminated
     await sleep(SESSION_END_DURATION);
-    const people = await this.session.getUsers({ where: { active: true }});
-    const userIdName = `user-${people[0].get(Users.ID)}`;
-    this.publisher.to(userIdName).publishServer(INTERVAL_REMIND);
+    const schoolEnding = this.session.get(Sessions.SCHOOL_NAME);
+    const sessionEnding = this.session.get(Sessions.SESSION_NAME);
+    const chat = {
+      color: DEFAULT_COLOR,
+      message: DEFAULT_REMIND_MSG,
+      name: `${schoolEnding}/${sessionEnding}`,
+      type: Chats.TYPE_SYSTEM,
+      userId: this.session.get(Sessions.OWNER_ID),
+    }
+    Chats.create(chat);
+    this.publisher.to(this.sessionName).publishEvent(CHAT_SEND, {
+      ...chat,
+      msg: DEFAULT_REMIND_MSG,
+      date: Date.now(),
+    });
 
     // terminate session
     await sleep(SESSION_END_DURATION);
