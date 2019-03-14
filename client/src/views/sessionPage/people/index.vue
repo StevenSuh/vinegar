@@ -122,25 +122,33 @@ export default {
     },
   },
   sockets: {
-    'control:onEnter': function({ intervalUserId }) {
+    'control:onEnter': function({ intervalUserId, status }) {
       this.intervalUserId = intervalUserId;
+      this.status = status;
+
+      if (this.status === 'ended') {
+        this.intervalUserId = null;
+      }
     },
     'control:onUpdateStatus': function({ participants, status }) {
       this.participants = participants;
       this.status = status;
 
-      if (status === 'ended') {
+      if (this.status === 'ended') {
         this.intervalUserId = null;
       }
     },
     'interval:onUpdate': function({ intervalUserId }) {
       this.intervalUserId = intervalUserId;
+
+      if (this.status === 'ended') {
+        this.intervalUserId = null;
+      }
     },
-    'people:onEnter': function({ isOwner, participants, people, status }) {
+    'people:onEnter': function({ isOwner, participants, people }) {
       this.isOwner = isOwner;
       this.participants = participants;
       this.people = this.sortByOwner(people);
-      this.status = status;
     },
     'people:onJoin': function(person) {
       if (!person.isOwner) {

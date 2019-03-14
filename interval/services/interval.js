@@ -293,6 +293,7 @@ class Interval {
       color: DEFAULT_COLOR,
       message: DEFAULT_REMIND_MSG,
       name: `${schoolEnding}/${sessionEnding}`,
+      sessionId: this.sessionId,
       type: Chats.TYPE_SYSTEM,
       userId: this.session.get(Sessions.OWNER_ID),
     }

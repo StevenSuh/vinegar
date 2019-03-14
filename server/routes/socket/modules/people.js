@@ -27,7 +27,6 @@ module.exports = async (_wss, ws, session, user) => {
     isOwner,
     participants: session.get(Sessions.PARTICIPANTS),
     people,
-    status: session.get(Sessions.STATUS),
   });
 
   ws.to(sessionName).sendEvent(PEOPLE_JOIN, {

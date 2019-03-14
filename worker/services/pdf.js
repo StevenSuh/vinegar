@@ -33,7 +33,7 @@ class PdfCreator {
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
     const buffer = await page.pdf(options);
-    return storageFile.save(buffer, { gzip: true });
+    await storageFile.save(buffer, { gzip: true });
   }
 
   async generateSignedUrl() {

@@ -31,8 +31,10 @@ cssFiles.forEach(file => {
   );
 });
 
-const onPdfError = uuid =>
+const onPdfError = uuid => {
   publisher.to(uuid).publishEvent(CONTROL_DOWNLOAD_ERROR);
+  throw new Error(`Pdf error: ${uuid}`);
+};
 
 addCallback(PDF_CREATE, async ({ content, uuid, workerId }) => {
   console.log(PDF_CREATE, workerId);
