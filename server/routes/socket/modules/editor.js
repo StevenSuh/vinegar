@@ -11,7 +11,7 @@ const {
 
 const { deflate, inflate, tryCatch } = require('utils');
 
-module.exports = (_wss, ws, session, user) => {
+module.exports = (wss, ws, session, user) => {
   const sessionId = session.get(Sessions.ID);
   const sessionName = `session-${sessionId}`;
 
@@ -40,8 +40,8 @@ module.exports = (_wss, ws, session, user) => {
           () => '',
         );
         session.update({ content: deflate(contentStr) });
-        ws.to(sessionName).sendEvent(EDITOR_CONTENT_UPDATE, { data: content });
-      }, 500);
+        wss.to(sessionName).sendEvent(EDITOR_CONTENT_UPDATE, { data: content });
+      }, 1000);
     });
 
     ws.onServer(EDITOR_TEXT_UPDATE, () => {

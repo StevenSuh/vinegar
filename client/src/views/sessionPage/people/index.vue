@@ -128,6 +128,10 @@ export default {
     'control:onUpdateStatus': function({ participants, status }) {
       this.participants = participants;
       this.status = status;
+
+      if (status === 'ended') {
+        this.intervalUserId = null;
+      }
     },
     'interval:onUpdate': function({ intervalUserId }) {
       this.intervalUserId = intervalUserId;

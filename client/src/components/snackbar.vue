@@ -61,7 +61,7 @@ export default {
       }
       const fn = () => {
         this.timeouts[id] = setTimeout(this.closeItem, 5000, id);
-        window.removeEventListener(fn);
+        window.removeEventListener('focus', fn);
       };
       window.addEventListener('focus', fn);
     },

@@ -113,8 +113,8 @@ module.exports = async (wss, ws, session, user) => {
     await createInterval(sessionId);
   });
 
-  ws.onEvent(CONTROL_DOWNLOAD, async () => {
-    createPdf(sessionId, ws.id);
+  ws.onEvent(CONTROL_DOWNLOAD, async ({ content }) => {
+    createPdf(ws.id, content);
   });
 
   ws.on('close', async () => {

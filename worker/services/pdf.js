@@ -1,8 +1,6 @@
 const { Storage } = require('@google-cloud/storage');
 const puppeteer = require('puppeteer');
 
-const Sessions = require('db/sessions/model');
-
 const { BUCKET_NAME } = require('defs');
 
 const options = {
@@ -16,12 +14,8 @@ const options = {
 };
 
 class PdfCreator {
-  constructor(session) {
-    this.session = session;
-    this.school = session.get(Sessions.SCHOOL_NAME);
-    this.session = session.get(Sessions.SESSION_NAME);
-
-    this.filename = `${this.school}-${this.session}.pdf`;
+  constructor() {
+    this.filename = `${Date.now()}.pdf`;
     this.url = null;
     this.stream = null;
 

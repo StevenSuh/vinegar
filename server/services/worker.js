@@ -17,7 +17,7 @@ publisher.publishEvent = (type, data) => {
   publisher.publish(type, JSON.stringify(data));
 };
 
-const createPdf = async (sessionId, uuid) => {
+const createPdf = async (uuid, content) => {
   const total = parseInt(await redisClient.getAsync(WORKER_TOTAL) || 0, 10);
   if (total === 0) {
     throw new Error('There are no worker services running.');
@@ -26,7 +26,7 @@ const createPdf = async (sessionId, uuid) => {
   redisClient.setAsync(WORKER_ROTATE, workerId % total);
 
   console.log('createPdf:', workerId);
-  publisher.publishEvent(PDF_CREATE, { sessionId, uuid, workerId });
+  publisher.publishEvent(PDF_CREATE, { content, uuid, workerId });
 };
 
 module.exports = {

@@ -59,7 +59,9 @@ export default {
         this.isDownloading = true;
         this.isLoading = true;
 
-        this.socket.sendEvent('control:onDownload');
+        const content = document.getElementsByClassName('ql-editor')[0]
+          .innerHTML;
+        this.socket.sendEvent('control:onDownload', { content });
       }
     },
     onResetDownload() {

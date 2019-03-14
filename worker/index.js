@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const Sessions = require('db/sessions/model');
 
 const {
   addCallback,
@@ -11,7 +10,7 @@ const {
 
 const Pdf = require('services/pdf');
 
-const { inflate, sleep } = require('utils');
+const { sleep } = require('utils');
 const {
   CONTROL_DOWNLOAD,
   CONTROL_DOWNLOAD_ERROR,
@@ -35,8 +34,8 @@ cssFiles.forEach(file => {
 const onPdfError = uuid =>
   publisher.to(uuid).publishEvent(CONTROL_DOWNLOAD_ERROR);
 
-addCallback(PDF_CREATE, async ({ sessionId, uuid, workerId }) => {
-  console.log(PDF_CREATE, sessionId, workerId);
+addCallback(PDF_CREATE, async ({ content, uuid, workerId }) => {
+  console.log(PDF_CREATE, workerId);
   if (!workerId) {
     throw new Error('workerId must be defined');
   }
@@ -46,11 +45,6 @@ addCallback(PDF_CREATE, async ({ sessionId, uuid, workerId }) => {
   }
 
   await sleep(1000);
-
-  const session = await Sessions.findOne({ where: { id: sessionId } }).catch(
-    onPdfError,
-  );
-  const content = inflate(session.get(Sessions.CONTENT));
 
   const totalContent = `
     <html>
@@ -84,13 +78,13 @@ addCallback(PDF_CREATE, async ({ sessionId, uuid, workerId }) => {
     </html>
   `;
 
-  const pdf = new Pdf(session);
+  const pdf = new Pdf();
   await pdf.createPdf(totalContent).catch(onPdfError);
   await pdf.generateSignedUrl().catch(onPdfError);
 
   const { url } = pdf;
   publisher.to(uuid).publishEvent(CONTROL_DOWNLOAD, { url });
-  console.log(CONTROL_DOWNLOAD, uuid, sessionId, url);
+  console.log(CONTROL_DOWNLOAD, uuid, url);
 });
 
 subscriber.subscribe(...Object.values(SUBSCRIBE_EVENTS));
