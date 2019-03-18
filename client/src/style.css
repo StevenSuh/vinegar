@@ -114,7 +114,8 @@ input[type="search"]::-webkit-search-decoration {
 .fade-enter,
 .fade-leave-to,
 .fade-enter-active,
-.fade-enter-leave {
+.fade-enter-leave,
+.fade-leave-active {
   height: 100%;
   position: absolute;
   width: 100%;
