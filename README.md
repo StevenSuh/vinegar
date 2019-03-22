@@ -1,4 +1,4 @@
-### Vinegar
+## Vinegar
 A real-time, collaborative note taking app that assigns a note taker in intervals.
 
 ## Instructions
