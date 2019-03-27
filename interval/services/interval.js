@@ -113,8 +113,10 @@ class Interval {
     }
 
     const people = await this.session.getUsers({ where: { active: true }});
-    const userIdName = `user-${people[0].get(Users.ID)}`;
-    this.publisher.to(userIdName).publishServer(IDLE_REMIND);
+    if (people && people.length > 0) {
+      const userIdName = `user-${people[0].get(Users.ID)}`;
+      this.publisher.to(userIdName).publishServer(IDLE_REMIND);
+    }
   }
 
   async closeIdle() {
