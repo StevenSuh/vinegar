@@ -38,6 +38,10 @@ const router = new Router({
           path: 'create',
           component: Create,
         },
+        {
+          path: '*',
+          redirect: 'find',
+        },
       ],
     },
     {
@@ -46,10 +50,6 @@ const router = new Router({
       component: sessionPage,
       meta: { title: 'Vinegar - :school/:session'},
     },
-    // {
-    //   path: '/app',
-    //   redirect: '/app/find',
-    // },
     {
       path: '*',
       redirect: '/',
