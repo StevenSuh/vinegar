@@ -7,6 +7,9 @@ metadata:
     certmanager.k8s.io/cluster-issuer: 'letsencrypt-prod'
     nginx.ingress.kubernetes.io/permanent-redirect-code: '301'
     nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.org/use-forwarded-headers: 'true'
+    nginx.org/use-proxy-protocol: 'true'
+    nginx.org/http-redirect-code: '301'
 spec:
   tls:
     - hosts:
