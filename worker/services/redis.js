@@ -5,7 +5,7 @@ const {
 const redis = require('redis');
 const bluebird = require('bluebird');
 
-const { REDIS_SOCKET, WORKER_TOTAL } = require('defs');
+const { REDIS_SOCKET, WORKER_INVALID, WORKER_TOTAL } = require('defs');
 
 const { tryCatch } = require('utils');
 
@@ -28,6 +28,7 @@ const getWorkerId = async () => {
     return redisClient.workerId;
   }
   const index = parseInt(await redisClient.incrAsync(WORKER_TOTAL), 10);
+  await redisClient.sremAsync(WORKER_INVALID, index);
   redisClient.workerId = index;
   console.log('workerId:', redisClient.workerId);
   return index;

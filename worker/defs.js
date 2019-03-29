@@ -8,6 +8,7 @@ module.exports = {
 
   REDIS_SOCKET: 'redis:websocket',
 
+  WORKER_INVALID: 'worker:invalid',
   WORKER_TOTAL: 'worker:total',
   WORKER_ROTATE: 'worker:rotate',
 

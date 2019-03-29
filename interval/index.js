@@ -4,6 +4,7 @@ const Sessions = require('db/sessions/model');
 const {
   addCallback,
   getRoundRobinId,
+  redisClient,
   publisher,
   subscriber,
 } = require('services/redis');
@@ -13,6 +14,7 @@ const {
   INTERVAL_CREATE,
   INTERVAL_REASSIGN,
   INTERVAL_SETUP,
+  ROBIN_INVALID,
   SUBSCRIBE_EVENTS,
 } = require('defs');
 const { cleanupJob } = require('utils');
@@ -98,5 +100,19 @@ addCallback(INTERVAL_REASSIGN, async ({ sessionId, robinId, userId }) => {
 });
 
 subscriber.subscribe(...Object.values(SUBSCRIBE_EVENTS));
+
+process.on('SIGTERM', async () => {
+  const robinId = await getRoundRobinId();
+  await redisClient.saddAsync(ROBIN_INVALID, robinId);
+
+  const promises = [];
+  Object.keys(sessions).forEach(key =>
+    promises.push(
+      redisClient.delAsync(redisClient.robinQuery({ sessionId: key }, robinId)),
+    ),
+  );
+
+  await Promise.all(promises);
+});
 
 cleanupJob();

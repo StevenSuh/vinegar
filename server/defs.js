@@ -10,8 +10,11 @@ module.exports = {
   MIN_PASSWORD_LENGTH: 4,
   MAX_BLOCK_COUNT: 3,
 
+  ROBIN_INVALID: 'robin:invalid',
   ROBIN_ROTATE: 'robin:rotate',
   ROBIN_TOTAL: 'robin:total',
+
+  WORKER_INVALID: 'worker:invalid',
   WORKER_ROTATE: 'worker:rotate',
   WORKER_TOTAL: 'worker:total',
 };

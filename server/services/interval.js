@@ -2,7 +2,11 @@ const redis = require('redis');
 
 const redisClient = require('services/redis');
 
-const { ROBIN_ROTATE, ROBIN_TOTAL } = require('defs');
+const {
+  ROBIN_INVALID,
+  ROBIN_ROTATE,
+  ROBIN_TOTAL,
+} = require('defs');
 const {
   INTERVAL_CREATE,
   INTERVAL_REASSIGN,
@@ -27,9 +31,21 @@ const setupInterval = async (sessionId, recreate, reassign, content) => {
   if (total === 0) {
     throw new Error('There are no interval services running.');
   }
-  const robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE), 10);
-  redisClient.setAsync(ROBIN_ROTATE, robinId % total);
 
+  let robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE), 10);
+  let isInvalid = await redisClient.sismemberAsync(ROBIN_INVALID, robinId);
+
+  while (robinId <= total && isInvalid) {
+    robinId = parseInt(await redisClient.incrAsync(ROBIN_ROTATE), 10);
+    isInvalid = await redisClient.sismemberAsync(ROBIN_INVALID, robinId);
+  }
+
+  if (robinId > total) {
+    redisClient.setAsync(ROBIN_ROTATE, 0);
+    throw new Error('Interval service is not available');
+  } else {
+    redisClient.setAsync(ROBIN_ROTATE, robinId % total);
+  }
 
   const data = { robinId, sessionId };
   if (recreate) {

@@ -5,7 +5,7 @@ const {
 const redis = require('redis');
 const bluebird = require('bluebird');
 
-const { REDIS_SOCKET, ROBIN_TOTAL } = require('defs');
+const { REDIS_SOCKET, ROBIN_INVALID, ROBIN_TOTAL } = require('defs');
 
 const { tryCatch } = require('utils');
 
@@ -59,6 +59,7 @@ const getRoundRobinId = async () => {
     return redisClient.robinId;
   }
   const index = parseInt(await redisClient.incrAsync(ROBIN_TOTAL) || 1, 10);
+  await redisClient.sremAsync(ROBIN_INVALID, index);
   redisClient.robinId = index;
   console.log('robinId:', redisClient.robinId);
   return index;

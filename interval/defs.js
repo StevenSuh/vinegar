@@ -16,6 +16,7 @@ module.exports = {
   INTERVAL_STATUS: 'interval:onStatus',
   INTERVAL_UPDATE: 'interval:onUpdate',
 
+  ROBIN_INVALID: 'robin:invalid',
   ROBIN_ROTATE: 'robin:rotate',
   ROBIN_TOTAL: 'robin:total',
 

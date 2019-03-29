@@ -4,6 +4,7 @@ const path = require('path');
 const {
   addCallback,
   getWorkerId,
+  redisClient,
   publisher,
   subscriber,
 } = require('services/redis');
@@ -16,6 +17,7 @@ const {
   CONTROL_DOWNLOAD_ERROR,
   PDF_CREATE,
   SUBSCRIBE_EVENTS,
+  WORKER_INVALID,
 } = require('defs');
 
 getWorkerId();
@@ -90,3 +92,8 @@ addCallback(PDF_CREATE, async ({ content, uuid, workerId }) => {
 });
 
 subscriber.subscribe(...Object.values(SUBSCRIBE_EVENTS));
+
+process.on('SIGTERM', async () => {
+  const workerId = await getWorkerId();
+  await redisClient.saddAsync(WORKER_INVALID, workerId);
+});

@@ -110,7 +110,7 @@ fi
 if [ "$ALL" == 'true' ] ||
    [ "$INTERVAL" == 'true' ]; then
   REDIS_POD=$(kubectl get pods -o name | grep redis-deployment | cut -c 5-)
-  kubectl exec -it "$REDIS_POD" redis-cli DEL robin:total robin:rotate
+  kubectl exec -it "$REDIS_POD" redis-cli DEL robin:total robin:rotate robin:invalid
 
   docker build -t stevenesuh/vinegar-interval:latest -t stevenesuh/vinegar-interval:$SHA -f ./interval/Dockerfile .
   docker push stevenesuh/vinegar-interval:latest
@@ -120,7 +120,7 @@ fi
 if [ "$ALL" == 'true' ] ||
    [ "$WORKER" == 'true' ]; then
   REDIS_POD=$(kubectl get pods -o name | grep redis-deployment | cut -c 5-)
-  kubectl exec -it "$REDIS_POD" redis-cli DEL worker:total worker:rotate
+  kubectl exec -it "$REDIS_POD" redis-cli DEL worker:total worker:rotate worker:invalid
 
   docker build -t stevenesuh/vinegar-worker:latest -t stevenesuh/vinegar-worker:$SHA -f ./worker/Dockerfile .
   docker push stevenesuh/vinegar-worker:latest
@@ -172,6 +172,7 @@ if [ $? -eq 1 ]; then
 fi
 
 if [ "$ALL" == 'true' ]; then
+  kubectl apply -f k8s/issuer.yaml
   kubectl apply -f k8s
   kubectl set image deployments/client-deployment client=stevenesuh/vinegar-client:$SHA
   kubectl set image deployments/server-deployment server=stevenesuh/vinegar-server:$SHA
