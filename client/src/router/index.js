@@ -38,10 +38,10 @@ const router = new Router({
           path: 'create',
           component: Create,
         },
-        {
-          path: '*',
-          redirect: 'find',
-        },
+        // {
+        //   path: '*',
+        //   redirect: 'find',
+        // },
       ],
     },
     {
